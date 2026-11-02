@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#181a20">
+<title>QMidApp</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+:root {
+  --radius: 8px;
+  --accent: #4f8cff; --accent-hover: #6b9dff; --accent-text: #fff;
+  --titlebar:#181a20; --titlebar-text:#e8e8e8;
+  --win-bg:#1f2128; --win-border:#2f333d;
+  --panel:#262932; --panel-2:#2f333d; --panel-3:#3a3f4b;
+  --text:#e8ebf2; --text-dim:#8b93a7;
+  --danger:#e5484d; --danger-hover:#f06066;
+  --tabbar:#15171c; --shadow:0 20px 60px rgba(0,0,0,.55);
+  --input-bg:#12141a; --border:#3a3f4b;
+  --taskbar:#14161b;
+}
+:root[data-theme="light"] {
+  --titlebar:#f0f2f5; --titlebar-text:#1a1a1a;
+  --win-bg:#f7f8fa; --win-border:#d0d4dc;
+  --panel:#ffffff; --panel-2:#f0f2f5; --panel-3:#e4e7ec;
+  --text:#1a1a1a; --text-dim:#5a606b;
+  --tabbar:#e9ebef; --shadow:0 20px 60px rgba(0,0,0,.2);
+  --input-bg:#ffffff; --border:#d0d4dc;
+  --taskbar:#e2e5ea;
+}
+* { box-sizing:border-box; }
+html, body { height:100%; margin:0; overflow:hidden; }
+body {
+  font-family:"Segoe UI", system-ui, sans-serif; font-size:13px;
+  background:#000; color:var(--text); user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#wallpaper {
+  position:fixed; inset:0; z-index:0;
+  background-size:cover; background-position:center; background-color:#0f1115;
+}
+
+/* ОКНО */
+.win {
+  position:fixed; background:var(--win-bg); border:1px solid var(--win-border);
+  box-shadow:var(--shadow); display:flex; flex-direction:column;
+  color:var(--text); overflow:hidden;
+  border-radius:var(--radius); z-index:10;
+  min-width:520px; min-height:360px;
+}
+.win.maximized {
+  left:0 !important; top:0 !important;
+  width:100vw !important; height:calc(100vh - 48px) !important;
+  border-radius:0; border:0;
+}
+.win.minimized { display:none; }
+.win .titlebar {
+  height:34px; background:var(--titlebar); color:var(--titlebar-text);
+  display:flex; align-items:center; padding-left:12px; font-size:12px; flex-shrink:0;
+  border-top-left-radius:var(--radius); border-top-right-radius:var(--radius);
+}
+.win.maximized .titlebar { border-radius:0; }
+.win .titlebar .title { flex:1; letter-spacing:.2px; display:flex; align-items:center; gap:6px; }
+.win .titlebar .title b { font-weight:600; }
+.win-btn {
+  width:46px; height:34px; background:transparent; border:0; color:inherit;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .12s;
+}
+.win-btn .material-icons { font-size:16px; }
+.win-btn:hover { background:rgba(255,255,255,.08); }
+:root[data-theme="light"] .win-btn:hover { background:rgba(0,0,0,.08); }
+.win-btn.close:hover { background:var(--danger); color:#fff; }
+
+/* TOPBAR: вкладки + файл */
+.topbar {
+  display:flex; align-items:stretch; height:44px; flex-shrink:0;
+  background:var(--tabbar); border-bottom:1px solid var(--border);
+  gap:2px; padding:0 8px; overflow-x:auto;
+}
+.tab {
+  background:transparent; border:0; border-bottom:2px solid transparent;
+  color:var(--text-dim); padding:0 16px; font-size:12px; font-family:inherit;
+  cursor:pointer; transition:all .12s; white-space:nowrap;
+  display:flex; align-items:center; gap:6px;
+}
+.tab:hover { background:var(--panel-2); color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--panel); }
+.tab .material-icons { font-size:16px; }
+.topbar .spacer { flex:1; }
+.file-btn {
+  align-self:center; margin:0 4px; background:var(--accent); color:var(--accent-text);
+  border:0; border-radius:4px; padding:7px 14px; font-family:inherit;
+  font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:background .12s;
+}
+.file-btn:hover { background:var(--accent-hover); }
+.file-btn .material-icons { font-size:16px; }
+
+/* ТРАНСПОРТ */
+.transport {
+  flex-shrink:0; background:var(--panel); border-bottom:1px solid var(--border);
+  padding:10px 14px; display:flex; flex-direction:column; gap:8px;
+}
+.transport .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.transport .grow { flex:1; min-width:120px; }
+.progress {
+  height:8px; background:var(--input-bg); border:1px solid var(--border);
+  border-radius:4px; overflow:hidden; cursor:pointer; position:relative;
+}
+.progress > div { height:100%; width:0%; background:var(--accent); transition:width .1s linear; pointer-events:none; }
+
+/* визуализатор */
+.visualizer {
+  height:36px; background:var(--input-bg); border:1px solid var(--border);
+  border-radius:4px; overflow:hidden; margin-top:6px;
+}
+.visualizer canvas { width:100%; height:100%; display:block; }
+
+/* КОНТЕНТ */
+.content { flex:1; overflow:auto; padding:14px 16px; display:flex; flex-direction:column; gap:12px; }
+.section {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:6px; padding:14px 16px;
+}
+.section-title {
+  font-size:11px; text-transform:uppercase; letter-spacing:.6px;
+  color:var(--text-dim); margin-bottom:10px;
+  display:flex; align-items:center; gap:6px;
+}
+.section-title .material-icons { font-size:14px; }
+.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+button.btn {
+  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
+  border-radius:4px; padding:7px 14px; font-size:13px; cursor:pointer; font-family:inherit;
+  transition:background .12s, border-color .12s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+button.btn .material-icons { font-size:16px; }
+button.btn:hover:not(:disabled) { background:var(--panel-3); border-color:var(--accent); }
+button.btn:disabled { opacity:.45; cursor:default; }
+button.btn.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-text); }
+button.btn.primary:hover:not(:disabled) { background:var(--accent-hover); }
+button.btn.danger { background:var(--danger); border-color:var(--danger); color:#fff; }
+button.btn.danger:hover:not(:disabled) { background:var(--danger-hover); }
+
+input[type=range] { width:100%; accent-color:var(--accent); }
+input[type=number], select, input[type=text] {
+  background:var(--input-bg); color:var(--text); border:1px solid var(--border);
+  border-radius:4px; padding:6px 8px; font-size:13px; font-family:inherit; max-width:100%;
+}
+select:focus, input:focus { outline:1px solid var(--accent); }
+label.field { display:flex; flex-direction:column; gap:4px; font-size:11px; color:var(--text-dim); }
+label.field > b { color:var(--text); }
+
+.badge {
+  display:inline-block; padding:2px 8px; border-radius:4px;
+  background:var(--panel-2); border:1px solid var(--border);
+  font-size:11px; color:var(--text-dim);
+}
+
+.track {
+  display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
+  background:var(--panel-2); border:1px solid var(--border);
+  border-radius:6px; padding:10px 12px; margin-bottom:8px;
+}
+.track .num { font-weight:700; color:var(--accent); font-size:12px; }
+.track .meta { font-size:11px; color:var(--text-dim); margin-top:2px; }
+.track .controls { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.track .controls button { padding:5px 8px; }
+.track .controls button.active { background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+.track-vis { height:22px; background:var(--input-bg); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-top:6px; }
+.track-vis canvas { width:100%; height:100%; display:block; }
+
+.status { font-size:12px; color:var(--text-dim); min-height:16px; }
+
+/* ПОДВКЛАДКИ В НАСТРОЙКАХ */
+.subtabs {
+  display:flex; gap:4px; flex-wrap:wrap; margin-bottom:14px;
+  border-bottom:1px solid var(--border); padding-bottom:8px;
+}
+.subtab {
+  background:transparent; border:1px solid transparent; border-radius:4px;
+  padding:6px 12px; font-size:12px; font-family:inherit; cursor:pointer;
+  color:var(--text-dim); display:flex; align-items:center; gap:6px;
+}
+.subtab:hover { background:var(--panel-2); color:var(--text); }
+.subtab.active { background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+.subtab .material-icons { font-size:14px; }
+
+.wallpaper-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.wp-thumb {
+  aspect-ratio:16/10; border-radius:4px; border:2px solid var(--border);
+  background-size:cover; background-position:center; cursor:pointer;
+  transition:border-color .12s;
+}
+.wp-thumb:hover { border-color:var(--accent); }
+.wp-thumb.active { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent); }
+
+.accent-grid { display:flex; gap:8px; flex-wrap:wrap; }
+.accent-dot {
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  border:2px solid var(--border); transition:transform .1s;
+}
+.accent-dot:hover { transform:scale(1.1); }
+.accent-dot.active { border-color:var(--text); box-shadow:0 0 0 2px var(--accent); }
+
+/* ОШИБКИ (Windows-style) */
+.err-window {
+  position:fixed; z-index:5000; min-width:340px; max-width:460px;
+  background:var(--win-bg); border:1px solid var(--win-border);
+  border-radius:var(--radius); box-shadow:0 20px 60px rgba(0,0,0,.6);
+  display:flex; flex-direction:column; color:var(--text); overflow:hidden;
+  animation:errIn .15s ease-out;
+}
+@keyframes errIn { from { transform:scale(.94); opacity:0; } to { transform:scale(1); opacity:1; } }
+.err-titlebar {
+  height:32px; background:var(--titlebar); color:var(--titlebar-text);
+  display:flex; align-items:center; padding-left:12px; font-size:12px;
+  cursor:move; touch-action:none;
+}
+.err-titlebar .etitle { flex:1; display:flex; align-items:center; gap:6px; font-weight:600; }
+.err-body {
+  padding:16px; display:flex; flex-direction:column; gap:14px; user-select:text;
+}
+.err-msg { font-size:12px; line-height:1.5; color:var(--text); }
+.err-actions { display:flex; justify-content:flex-end; gap:8px; }
+.err-icon { color:var(--danger); font-size:28px; }
+
+/* TASKBAR */
+.taskbar {
+  position:fixed; left:0; right:0; bottom:0; height:48px;
+  background:var(--taskbar); border-top:1px solid var(--border);
+  display:flex; align-items:center; padding:0 8px; z-index:4000; gap:6px;
+  box-shadow:0 -4px 16px rgba(0,0,0,.2);
+}
+.start-btn {
+  width:42px; height:42px; border-radius:6px; border:0;
+  background:transparent; color:var(--text);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:background .12s;
+}
+.start-btn:hover { background:var(--panel-2); }
+.start-btn .material-icons { font-size:22px; color:var(--accent); }
+
+.taskbar-icons { flex:1; display:flex; gap:6px; overflow-x:auto; justify-content:center; }
+.task-icon {
+  min-width:44px; height:40px; border-radius:6px; border:1px solid transparent;
+  background:var(--panel-2); color:var(--text);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  position:relative; padding:0 10px; gap:6px; font-size:11px;
+  transition:background .12s;
+  white-space:nowrap;
+}
+.task-icon:hover { background:var(--panel-3); }
+.task-icon.active { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
+.task-icon.pinned::before {
+  content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
+  width:6px; height:2px; background:var(--accent); border-radius:2px;
+}
+.task-icon .material-icons { font-size:18px; }
+
+.taskbar-clock {
+  display:flex; flex-direction:column; align-items:flex-end; justify-content:center;
+  font-size:11px; line-height:1.3; color:var(--text); padding:0 12px;
+  min-width:90px; cursor:default;
+}
+.taskbar-clock .time { font-weight:600; }
+.taskbar-clock .date { color:var(--text-dim); font-size:10px; }
+
+/* taskbar preview (долгое нажатие) */
+.task-preview {
+  position:fixed; z-index:6000; background:var(--win-bg);
+  border:1px solid var(--win-border); border-radius:var(--radius);
+  box-shadow:0 12px 40px rgba(0,0,0,.5); padding:12px; min-width:240px;
+  color:var(--text); display:none;
+}
+.task-preview.show { display:block; }
+.task-preview .tp-name {
+  font-size:12px; font-weight:600; margin-bottom:10px;
+  display:flex; align-items:center; gap:6px;
+}
+.task-preview .tp-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.task-preview .tp-actions button {
+  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
+  border-radius:4px; padding:5px 10px; font-size:11px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:4px; font-family:inherit;
+}
+.task-preview .tp-actions button:hover { background:var(--panel-3); border-color:var(--accent); }
+.task-preview .tp-actions .material-icons { font-size:14px; }
+
+/* START MENU */
+.start-menu {
+  position:fixed; left:8px; bottom:56px; z-index:5000;
+  width:280px; max-height:70vh; overflow:auto;
+  background:var(--win-bg); border:1px solid var(--win-border);
+  border-radius:var(--radius); box-shadow:0 20px 60px rgba(0,0,0,.6);
+  padding:10px; display:none; color:var(--text);
+}
+.start-menu.show { display:block; }
+.start-menu .sm-header {
+  font-size:11px; text-transform:uppercase; letter-spacing:.6px;
+  color:var(--text-dim); padding:6px 10px; margin-top:4px;
+}
+.start-menu button {
+  width:100%; background:transparent; border:0; color:var(--text);
+  padding:9px 12px; font-size:13px; font-family:inherit; text-align:left;
+  cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:10px;
+}
+.start-menu button:hover { background:var(--panel-2); }
+.start-menu button .material-icons { font-size:16px; color:var(--accent); }
+.start-menu hr { border:0; border-top:1px solid var(--border); margin:6px 0; }
+
+@media (max-width: 700px) {
+  .win { min-width:0; }
+  .track { grid-template-columns:1fr; }
+  .track .num { display:none; }
+  .wallpaper-grid { grid-template-columns:repeat(2,1fr); }
+  .taskbar-clock { min-width:70px; font-size:10px; }
+}
+</style>
+</head>
+<body>
+<div id="wallpaper"></div>
+
+<div class="win" id="mainWin">
+  <div class="titlebar" id="titlebar">
+    <div class="title"><b>QMidApp</b> <span style="color:var(--text-dim);font-size:11px" id="versionLabel">v26-nov-2.4</span></div>
+    <button class="win-btn" id="btnMinimize" title="min"><span class="material-icons">remove</span></button>
+    <button class="win-btn" id="btnMaximize" title="max"><span class="material-icons">crop_square</span></button>
+    <button class="win-btn close" id="btnCloseWin" title="close"><span class="material-icons">close</span></button>
+  </div>
+
+  <div class="topbar" id="topbar">
+    <button class="tab" data-tab="file"><span class="material-icons">folder_open</span><span data-i18n="tabFile">Файл</span></button>
+    <button class="tab" data-tab="settings"><span class="material-icons">settings</span><span data-i18n="tabSettings">Настройки</span></button>
+    <button class="tab" data-tab="about"><span class="material-icons">info</span><span data-i18n="tabAbout">О программе</span></button>
+    <div class="spacer"></div>
+    <button class="file-btn" id="fileBtn"><span class="material-icons">upload_file</span><span data-i18n="openMid">Открыть .mid</span></button>
+    <input type="file" id="file" accept=".mid,.midi,audio/midi" style="display:none">
+  </div>
+
+  <div class="transport">
+    <div class="row">
+      <button class="btn primary" id="play" disabled><span class="material-icons">play_arrow</span><span data-i18n="play">Играть</span></button>
+      <button class="btn" id="pause" disabled><span class="material-icons">pause</span><span data-i18n="pause">Пауза</span></button>
+      <button class="btn danger" id="stop" disabled><span class="material-icons">stop</span><span data-i18n="stop">Стоп</span></button>
+      <div class="grow" style="display:flex;align-items:center;gap:8px">
+        <span class="material-icons" style="font-size:16px;color:var(--text-dim)">volume_up</span>
+        <input type="range" id="masterVol" min="0" max="100" value="70" style="flex:1">
+      </div>
+      <span class="badge" id="meta">—</span>
+    </div>
+    <div class="progress" id="progress"><div id="bar"></div></div>
+    <div class="visualizer"><canvas id="visCanvas" width="800" height="36"></canvas></div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="content" id="content"></div>
+
+  <div style="position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--border) 50%);z-index:20" class="resize-handle" id="resizeHandle"></div>
+</div>
+
+<!-- TASKBAR -->
+<div class="taskbar" id="taskbar">
+  <button class="start-btn" id="startBtn" title="QMidApp"><span class="material-icons">piano</span></button>
+  <div class="taskbar-icons" id="taskbarIcons"></div>
+  <div class="taskbar-clock" id="taskbarClock">
+    <span class="time" id="clockTime">--:--</span>
+    <span class="date" id="clockDate">--.--.----</span>
+  </div>
+</div>
+
+<!-- START MENU -->
+<div class="start-menu" id="startMenu">
+  <div class="sm-header" data-i18n="apps">Приложения</div>
+  <button data-open-tab="file"><span class="material-icons">folder_open</span><span data-i18n="tabFile">Файл</span></button>
+  <button data-open-tab="settings"><span class="material-icons">settings</span><span data-i18n="tabSettings">Настройки</span></button>
+  <button data-open-tab="about"><span class="material-icons">info</span><span data-i18n="tabAbout">О программе</span></button>
+  <hr>
+  <button id="smRestoreWin"><span class="material-icons">open_in_full</span><span data-i18n="restore">Показать окно</span></button>
+  <button id="smQuit"><span class="material-icons">power_settings_new</span><span data-i18n="quit">Выход</span></button>
+</div>
+
+<!-- TASK PREVIEW -->
+<div class="task-preview" id="taskPreview">
+  <div class="tp-name"><span class="material-icons">piano</span><span id="tpName">QMidApp</span></div>
+  <div class="tp-actions">
+    <button data-tp-action="open"><span class="material-icons">open_in_new</span><span data-i18n="open">Открыть</span></button>
+    <button data-tp-action="hide"><span class="material-icons">visibility_off</span><span data-i18n="hide">Скрыть</span></button>
+    <button data-tp-action="pin"><span class="material-icons">push_pin</span><span data-i18n="pin">Закрепить</span></button>
+    <button data-tp-action="close"><span class="material-icons">close</span><span data-i18n="close">Закрыть</span></button>
+  </div>
+</div>
+
+<script>
+/* ======================================================================
+   0. LOCALSTORAGE STATE
+   ====================================================================== */
+const LS_KEY = 'qmidapp_v24_state';
+const DEFAULTS = {
+  theme:'dark',
+  radius:8,
+  accent:'#4f8cff',
+  wallpaper:'none',
+  wallpaperData:null,
+  lang:'ru',
+  win:{x:null,y:null,w:1080,h:700,maximized:false},
+  masterVol:0.7,
+  globalWave:'triangle',
+  globalPreset:'piano',
+  outputMode:'webaudio',
+  trackSettings:{},
+  pinnedTask:false
+};
+function loadState() {
+  try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(LS_KEY)) || {}); }
+  catch(e) { return {...DEFAULTS}; }
+}
+function saveState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+}
+let state = loadState();
+
+/* ======================================================================
+   1. I18N
+   ====================================================================== */
+const I18N = {
+  ru: {
+    tabFile:'Файл', tabSettings:'Настройки', tabAbout:'О программе',
+    openMid:'Открыть .mid', play:'Играть', pause:'Пауза', stop:'Стоп',
+    apps:'Приложения', restore:'Показать окно', quit:'Выход',
+    open:'Открыть', hide:'Скрыть', pin:'Закрепить', close:'Закрыть',
+    subAppearance:'Внешний вид', subSynth:'Синтез', subOutput:'Вывод',
+    subTracks:'Дорожки', subExport:'Экспорт', subLang:'Язык',
+    theme:'Тема', themeDark:'Тёмная', themeLight:'Светлая',
+    radius:'Скругление окон', accent:'Акцентный цвет',
+    wallpaper:'Обои', wpNone:'Нет', wpUpload:'Загрузить фото',
+    synthWave:'Волна по умолчанию', synthPreset:'Пресет по умолчанию',
+    testTone:'Тестовая нота',
+    outputMode:'Режим', outAudio:'Web Audio (браузер)', outMidi:'Web MIDI (устройство)',
+    midiPort:'MIDI-порт', refresh:'Обновить', testMidi:'Тест MIDI',
+    noMidi:'— нет MIDI-устройств —',
+    instrument:'Инструмент', preset:'Пресет', wave:'Волна',
+    volume:'Громкость', reverb:'Реверб',
+    exportMid:'Скачать .mid', exportJs:'Скачать .js',
+    language:'Язык интерфейса',
+    fileLoaded:'Файл загружен', fileNotLoaded:'Файл не загружен',
+    loadFirst:'Сначала загрузите .mid файл',
+    aboutText:'Загрузите .mid файл через кнопку сверху. Играет через Web Audio или Web MIDI. Все настройки сохраняются автоматически.',
+    dev:'Разработчик', version:'Версия', thanks:'Особая благодарность',
+    thanksDeepSeek:'ИИ DeepSeek за помощь в создании проекта',
+    features:'Возможности', secStatus:'Статус', tracks:'Дорожки',
+    loaded:'Загружено', duration:'Длительность', sec:'с',
+    errTitle:'Ошибка', ok:'OK', errReadMidi:'Не удалось прочитать .mid файл',
+    noTrack:'Загрузите .mid файл — появится список дорожек.',
+    trackName:'Дорожка', notes:'нот', channel:'канал'
+  },
+  en: {
+    tabFile:'File', tabSettings:'Settings', tabAbout:'About',
+    openMid:'Open .mid', play:'Play', pause:'Pause', stop:'Stop',
+    apps:'Apps', restore:'Show window', quit:'Quit',
+    open:'Open', hide:'Hide', pin:'Pin', close:'Close',
+    subAppearance:'Appearance', subSynth:'Synth', subOutput:'Output',
+    subTracks:'Tracks', subExport:'Export', subLang:'Language',
+    theme:'Theme', themeDark:'Dark', themeLight:'Light',
+    radius:'Window rounding', accent:'Accent color',
+    wallpaper:'Wallpaper', wpNone:'None', wpUpload:'Upload image',
+    synthWave:'Default waveform', synthPreset:'Default preset',
+    testTone:'Test tone',
+    outputMode:'Mode', outAudio:'Web Audio (browser)', outMidi:'Web MIDI (device)',
+    midiPort:'MIDI port', refresh:'Refresh', testMidi:'Test MIDI',
+    noMidi:'— no MIDI devices —',
+    instrument:'Instrument', preset:'Preset', wave:'Wave',
+    volume:'Volume', reverb:'Reverb',
+    exportMid:'Download .mid', exportJs:'Download .js',
+    language:'Interface language',
+    fileLoaded:'File loaded', fileNotLoaded:'No file loaded',
+    loadFirst:'Load a .mid file first',
+    aboutText:'Load a .mid file via the top button. Plays through Web Audio or Web MIDI. All settings auto-save.',
+    dev:'Developer', version:'Version', thanks:'Special thanks',
+    thanksDeepSeek:'DeepSeek AI for help with the project',
+    features:'Features', secStatus:'Status', tracks:'Tracks',
+    loaded:'Loaded', duration:'Duration', sec:'s',
+    errTitle:'Error', ok:'OK', errReadMidi:'Failed to read .mid file',
+    noTrack:'Load a .mid file — track list will appear.',
+    trackName:'Track', notes:'notes', channel:'channel'
+  },
+  zh: {
+    tabFile:'文件', tabSettings:'设置', tabAbout:'关于',
+    openMid:'打开 .mid', play:'播放', pause:'暂停', stop:'停止',
+    apps:'应用', restore:'显示窗口', quit:'退出',
+    open:'打开', hide:'隐藏', pin:'固定', close:'关闭',
+    subAppearance:'外观', subSynth:'合成', subOutput:'输出',
+    subTracks:'音轨', subExport:'导出', subLang:'语言',
+    theme:'主题', themeDark:'深色', themeLight:'浅色',
+    radius:'窗口圆角', accent:'强调色',
+    wallpaper:'壁纸', wpNone:'无', wpUpload:'上传图片',
+    synthWave:'默认波形', synthPreset:'默认预设',
+    testTone:'测试音',
+    outputMode:'模式', outAudio:'Web Audio（浏览器）', outMidi:'Web MIDI（设备）',
+    midiPort:'MIDI 端口', refresh:'刷新', testMidi:'测试 MIDI',
+    noMidi:'— 无 MIDI 设备 —',
+    instrument:'乐器', preset:'预设', wave:'波形',
+    volume:'音量', reverb:'混响',
+    exportMid:'下载 .mid', exportJs:'下载 .js',
+    language:'界面语言',
+    fileLoaded:'文件已加载', fileNotLoaded:'未加载文件',
+    loadFirst:'请先加载 .mid 文件',
+    aboutText:'通过顶部按钮加载 .mid 文件。通过 Web Audio 或 Web MIDI 播放。所有设置自动保存。',
+    dev:'开发者', version:'版本', thanks:'特别感谢',
+    thanksDeepSeek:'DeepSeek AI 对项目的帮助',
+    features:'功能', secStatus:'状态', tracks:'音轨',
+    loaded:'已加载', duration:'时长', sec:'秒',
+    errTitle:'错误', ok:'确定', errReadMidi:'无法读取 .mid 文件',
+    noTrack:'加载 .mid 文件 — 将显示音轨列表。',
+    trackName:'音轨', notes:'音符', channel:'通道'
+  },
+  ja: {
+    tabFile:'ファイル', tabSettings:'設定', tabAbout:'情報',
+    openMid:'.mid を開く', play:'再生', pause:'一時停止', stop:'停止',
+    apps:'アプリ', restore:'ウィンドウを表示', quit:'終了',
+    open:'開く', hide:'隠す', pin:'ピン留め', close:'閉じる',
+    subAppearance:'外観', subSynth:'シンセ', subOutput:'出力',
+    subTracks:'トラック', subExport:'エクスポート', subLang:'言語',
+    theme:'テーマ', themeDark:'ダーク', themeLight:'ライト',
+    radius:'ウィンドウの角丸', accent:'アクセントカラー',
+    wallpaper:'壁紙', wpNone:'なし', wpUpload:'画像をアップロード',
+    synthWave:'既定の波形', synthPreset:'既定のプリセット',
+    testTone:'テスト音',
+    outputMode:'モード', outAudio:'Web Audio（ブラウザ）', outMidi:'Web MIDI（デバイス）',
+    midiPort:'MIDI ポート', refresh:'更新', testMidi:'MIDI テスト',
+    noMidi:'— MIDI デバイスなし —',
+    instrument:'楽器', preset:'プリセット', wave:'波形',
+    volume:'音量', reverb:'リバーブ',
+    exportMid:'.mid を保存', exportJs:'.js を保存',
+    language:'UI 言語',
+    fileLoaded:'ファイル読み込み済み', fileNotLoaded:'ファイル未読み込み',
+    loadFirst:'先に .mid ファイルを読み込んでください',
+    aboutText:'上部のボタンから .mid ファイルを読み込みます。Web Audio または Web MIDI で再生。設定は自動保存されます。',
+    dev:'開発者', version:'バージョン', thanks:'特別な感謝',
+    thanksDeepSeek:'プロジェクトを支援した DeepSeek AI',
+    features:'機能', secStatus:'状態', tracks:'トラック',
+    loaded:'読み込み済み', duration:'再生時間', sec:'秒',
+    errTitle:'エラー', ok:'OK', errReadMidi:'.mid ファイルの読み込みに失敗',
+    noTrack:'.mid ファイルを読み込むとトラック一覧が表示されます。',
+    trackName:'トラック', notes:'ノート', channel:'チャンネル'
+  },
+  fr: {
+    tabFile:'Fichier', tabSettings:'Paramètres', tabAbout:'À propos',
+    openMid:'Ouvrir .mid', play:'Lecture', pause:'Pause', stop:'Arrêt',
+    apps:'Applications', restore:'Afficher la fenêtre', quit:'Quitter',
+    open:'Ouvrir', hide:'Masquer', pin:'Épingler', close:'Fermer',
+    subAppearance:'Apparence', subSynth:'Synthèse', subOutput:'Sortie',
+    subTracks:'Pistes', subExport:'Export', subLang:'Langue',
+    theme:'Thème', themeDark:'Sombre', themeLight:'Clair',
+    radius:'Arrondi des fenêtres', accent:'Couleur d’accent',
+    wallpaper:'Fond d’écran', wpNone:'Aucun', wpUpload:'Téléverser image',
+    synthWave:'Forme d’onde par défaut', synthPreset:'Préréglage par défaut',
+    testTone:'Note de test',
+    outputMode:'Mode', outAudio:'Web Audio (navigateur)', outMidi:'Web MIDI (appareil)',
+    midiPort:'Port MIDI', refresh:'Actualiser', testMidi:'Tester MIDI',
+    noMidi:'— aucun appareil MIDI —',
+    instrument:'Instrument', preset:'Préréglage', wave:'Onde',
+    volume:'Volume', reverb:'Réverbération',
+    exportMid:'Télécharger .mid', exportJs:'Télécharger .js',
+    language:'Langue de l’interface',
+    fileLoaded:'Fichier chargé', fileNotLoaded:'Aucun fichier',
+    loadFirst:'Chargez d’abord un fichier .mid',
+    aboutText:'Chargez un fichier .mid via le bouton du haut. Lit via Web Audio ou Web MIDI. Tous les réglages sont sauvegardés.',
+    dev:'Développeur', version:'Version', thanks:'Remerciements',
+    thanksDeepSeek:'à DeepSeek AI pour son aide sur le projet',
+    features:'Fonctionnalités', secStatus:'Statut', tracks:'Pistes',
+    loaded:'Chargé', duration:'Durée', sec:'s',
+    errTitle:'Erreur', ok:'OK', errReadMidi:'Échec de lecture du .mid',
+    noTrack:'Chargez un fichier .mid — la liste des pistes apparaîtra.',
+    trackName:'Piste', notes:'notes', channel:'canal'
+  },
+  it: {
+    tabFile:'File', tabSettings:'Impostazioni', tabAbout:'Informazioni',
+    openMid:'Apri .mid', play:'Riproduci', pause:'Pausa', stop:'Stop',
+    apps:'App', restore:'Mostra finestra', quit:'Esci',
+    open:'Apri', hide:'Nascondi', pin:'Fissa', close:'Chiudi',
+    subAppearance:'Aspetto', subSynth:'Sintesi', subOutput:'Uscita',
+    subTracks:'Tracce', subExport:'Esporta', subLang:'Lingua',
+    theme:'Tema', themeDark:'Scuro', themeLight:'Chiaro',
+    radius:'Arrotondamento finestre', accent:'Colore d’accento',
+    wallpaper:'Sfondo', wpNone:'Nessuno', wpUpload:'Carica immagine',
+    synthWave:'Forma d’onda predefinita', synthPreset:'Preset predefinito',
+    testTone:'Nota di test',
+    outputMode:'Modalità', outAudio:'Web Audio (browser)', outMidi:'Web MIDI (dispositivo)',
+    midiPort:'Porta MIDI', refresh:'Aggiorna', testMidi:'Test MIDI',
+    noMidi:'— nessun dispositivo MIDI —',
+    instrument:'Strumento', preset:'Preset', wave:'Onda',
+    volume:'Volume', reverb:'Riverbero',
+    exportMid:'Scarica .mid', exportJs:'Scarica .js',
+    language:'Lingua interfaccia',
+    fileLoaded:'File caricato', fileNotLoaded:'Nessun file',
+    loadFirst:'Carica prima un file .mid',
+    aboutText:'Carica un file .mid dal pulsante in alto. Riproduce con Web Audio o Web MIDI. Tutte le impostazioni si salvano.',
+    dev:'Sviluppatore', version:'Versione', thanks:'Ringraziamenti speciali',
+    thanksDeepSeek:'a DeepSeek AI per il supporto al progetto',
+    features:'Funzionalità', secStatus:'Stato', tracks:'Tracce',
+    loaded:'Caricato', duration:'Durata', sec:'s',
+    errTitle:'Errore', ok:'OK', errReadMidi:'Impossibile leggere .mid',
+    noTrack:'Carica un file .mid — apparirà la lista delle tracce.',
+    trackName:'Traccia', notes:'note', channel:'canale'
+  }
+};
+function t(key) {
+  const dict = I18N[state.lang] || I18N.en;
+  return dict[key] || I18N.en[key] || key;
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    el.textContent = t(k);
+  });
+}
+
+/* ======================================================================
+   2. ОБОИ / ТЕМА / АКЦЕНТ / РАДИУС
+   ====================================================================== */
+const WALLPAPERS = {
+  none: null,
+  dark1: 'linear-gradient(135deg,#0f2027,#203a43,#2c5364)',
+  dark2: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)',
+  purple: 'linear-gradient(135deg,#2d1b69,#4a2b8c,#6d4cb0)',
+  sunset: 'linear-gradient(135deg,#ff6e7f,#bfe9ff)',
+  forest: 'linear-gradient(135deg,#134e5e,#71b280)',
+  night: 'radial-gradient(ellipse at top,#1a1a1a,#000)',
+  orange: 'linear-gradient(135deg,#f12711,#f5af19)'
+};
+function applyWallpaper(key, data) {
+  state.wallpaper = key;
+  state.wallpaperData = data || null;
+  const el = document.getElementById('wallpaper');
+  if (key === 'custom' && data) {
+    el.style.backgroundImage = `url("${data}")`;
+  } else if (WALLPAPERS[key]) {
+    el.style.backgroundImage = WALLPAPERS[key];
+  } else {
+    el.style.backgroundImage = 'none';
+    el.style.background = 'var(--win-bg)';
+  }
+  saveState();
+}
+function applyTheme(th) {
+  state.theme = th;
+  document.documentElement.dataset.theme = th;
+  saveState();
+}
+function applyRadius(r) {
+  state.radius = r;
+  document.documentElement.style.setProperty('--radius', r + 'px');
+  saveState();
+}
+function applyAccent(c) {
+  state.accent = c;
+  const darker = shade(c, -15);
+  document.documentElement.style.setProperty('--accent', c);
+  document.documentElement.style.setProperty('--accent-hover', darker);
+  saveState();
+}
+function shade(hex, percent) {
+  const n = parseInt(hex.replace('#',''), 16);
+  let r = (n>>16)+Math.round(2.55*percent);
+  let g = ((n>>8)&0xff)+Math.round(2.55*percent);
+  let b = (n&0xff)+Math.round(2.55*percent);
+  r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
+  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+}
+
+/* ======================================================================
+   3. ERROR WINDOWS
+   ====================================================================== */
+function showError(title, msg, x, y) {
+  const win = document.createElement('div');
+  win.className = 'err-window';
+  const px = x != null ? x : (window.innerWidth/2 - 200);
+  const py = y != null ? y : (window.innerHeight/2 - 100);
+  win.style.left = px + 'px';
+  win.style.top  = py + 'px';
+  win.innerHTML = `
+    <div class="err-titlebar">
+      <div class="etitle"><span class="material-icons" style="font-size:16px">error_outline</span>${title}</div>
+      <button class="win-btn close"><span class="material-icons" style="font-size:14px">close</span></button>
+    </div>
+    <div class="err-body">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span class="material-icons err-icon">error</span>
+        <div class="err-msg">${msg}</div>
+      </div>
+      <div class="err-actions"><button class="btn primary err-ok">${t('ok')}</button></div>
+    </div>`;
+  document.body.appendChild(win);
+  win.querySelector('.err-ok').onclick = () => win.remove();
+  win.querySelector('.win-btn.close').onclick = () => win.remove();
+  // drag
+  const tb = win.querySelector('.err-titlebar');
+  let dragging=false, sx=0, sy=0, ox=0, oy=0;
+  tb.addEventListener('pointerdown', e => {
+    if (e.target.closest('.win-btn')) return;
+    dragging=true; sx=e.clientX; sy=e.clientY;
+    ox=win.offsetLeft; oy=win.offsetTop;
+    try { tb.setPointerCapture(e.pointerId); } catch(_){}
+  });
+  tb.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    win.style.left = (ox + e.clientX - sx) + 'px';
+    win.style.top  = (oy + e.clientY - sy) + 'px';
+  });
+  tb.addEventListener('pointerup', () => dragging=false);
+  tb.addEventListener('pointercancel', () => dragging=false);
+}
+
+/* ======================================================================
+   4. MIDI ПАРСЕР
+   ====================================================================== */
+class MidiParser {
+  constructor(buf) {
+    this.dv = new DataView(buf);
+    this.pos = 0; this.tracks = [];
+    this.format = 0; this.division = 480; this.tempoMap = [];
+  }
+  u8(){ return this.dv.getUint8(this.pos++); }
+  u16(){ const v=this.dv.getUint16(this.pos); this.pos+=2; return v; }
+  u32(){ const v=this.dv.getUint32(this.pos); this.pos+=4; return v; }
+  str(n){ let s=''; for(let i=0;i<n;i++) s+=String.fromCharCode(this.u8()); return s; }
+  varlen(){ let v=0,b; do{ b=this.u8(); v=(v<<7)|(b&0x7f);}while(b&0x80); return v; }
+  parse() {
+    if (this.str(4)!=='MThd') throw new Error('Not MIDI');
+    const hlen=this.u32();
+    this.format=this.u16();
+    const ntrks=this.u16();
+    this.division=this.u16();
+    this.pos += hlen-6;
+    for (let i=0;i<ntrks;i++) this.parseTrack(i);
+    return { format:this.format, division:this.division, tracks:this.tracks,
+             tempoMap:this.tempoMap.sort((a,b)=>a.tick-b.tick) };
+  }
+  parseTrack(index) {
+    if (this.str(4)!=='MTrk') { const len=this.u32(); this.pos+=len; return; }
+    const len=this.u32(); const end=this.pos+len;
+    const track={index, notes:[], name:'', channel:0, program:0};
+    let tick=0, running=0;
+    while (this.pos<end) {
+      tick += this.varlen();
+      let status=this.dv.getUint8(this.pos);
+      if (status<0x80) { status=running; }
+      else { this.pos++; if (status<0xF0) running=status; }
+      const type=status&0xF0, ch=status&0x0F;
+      if (type===0x90 || type===0x80) {
+        const note=this.u8(), vel=this.u8();
+        if (type===0x90 && vel>0) track.notes.push({tick,note,vel,ch,dur:0});
+        else for (let j=track.notes.length-1;j>=0;j--) {
+          const n=track.notes[j];
+          if (n.note===note && n.ch===ch && n.dur===0) { n.dur=Math.max(tick-n.tick,1); break; }
+        }
+      } else if (type===0xA0||type===0xB0||type===0xE0) { this.pos+=2; }
+      else if (type===0xC0) { track.program=this.u8(); track.channel=ch; }
+      else if (type===0xD0) { this.pos+=1; }
+      else if (status===0xFF) {
+        const mt=this.u8(), ml=this.varlen();
+        if (mt===0x03) { let s=''; for(let i=0;i<ml;i++) s+=String.fromCharCode(this.u8()); track.name=s; }
+        else if (mt===0x51) { const us=(this.u8()<<16)|(this.u8()<<8)|this.u8(); this.tempoMap.push({tick,usPerQuarter:us}); }
+        else this.pos+=ml;
+      } else if (status===0xF0||status===0xF7) { this.pos+=this.varlen(); }
+      else break;
+    }
+    track.notes.sort((a,b)=>a.tick-b.tick);
+    if (track.notes.length) this.tracks.push(track);
+  }
+}
+function ticksToSeconds(tick, division, tempoMap) {
+  let sec=0, prev=0, us=500000;
+  for (const tt of tempoMap) {
+    if (tt.tick>=tick) break;
+    sec += (tt.tick-prev)*us/division/1e6;
+    prev=tt.tick; us=tt.usPerQuarter;
+  }
+  sec += (tick-prev)*us/division/1e6;
+  return sec;
+}
+
+/* ======================================================================
+   5. GM / ПРЕСЕТЫ
+   ====================================================================== */
+const GM_NAMES = ['Acoustic Grand Piano','Bright Acoustic Piano','Electric Grand Piano','Honky-tonk Piano',
+'Electric Piano 1','Electric Piano 2','Harpsichord','Clavi','Celesta','Glockenspiel','Music Box','Vibraphone',
+'Marimba','Xylophone','Tubular Bells','Dulcimer','Drawbar Organ','Percussive Organ','Rock Organ','Church Organ',
+'Reed Organ','Accordion','Harmonica','Tango Accordion','Acoustic Guitar (nylon)','Acoustic Guitar (steel)',
+'Electric Guitar (jazz)','Electric Guitar (clean)','Electric Guitar (muted)','Overdriven Guitar',
+'Distortion Guitar','Guitar Harmonics','Acoustic Bass','Electric Bass (finger)','Electric Bass (pick)',
+'Fretless Bass','Slap Bass 1','Slap Bass 2','Synth Bass 1','Synth Bass 2','Violin','Viola','Cello','Contrabass',
+'Tremolo Strings','Pizzicato Strings','Orchestral Harp','Timpani','String Ensemble 1','String Ensemble 2',
+'Synth Strings 1','Synth Strings 2','Choir Aahs','Voice Oohs','Synth Voice','Orchestra Hit','Trumpet','Trombone',
+'Tuba','Muted Trumpet','French Horn','Brass Section','Synth Brass 1','Synth Brass 2','Soprano Sax','Alto Sax',
+'Tenor Sax','Baritone Sax','Oboe','English Horn','Bassoon','Clarinet','Piccolo','Flute','Recorder','Pan Flute',
+'Blown Bottle','Shakuhachi','Whistle','Ocarina','Lead 1 (square)','Lead 2 (sawtooth)','Lead 3 (calliope)',
+'Lead 4 (chiff)','Lead 5 (charang)','Lead 6 (voice)','Lead 7 (fifths)','Lead 8 (bass+lead)','Pad 1 (new age)',
+'Pad 2 (warm)','Pad 3 (polysynth)','Pad 4 (choir)','Pad 5 (bowed)','Pad 6 (metallic)','Pad 7 (halo)',
+'Pad 8 (sweep)','FX 1 (rain)','FX 2 (soundtrack)','FX 3 (crystal)','FX 4 (atmosphere)','FX 5 (brightness)',
+'FX 6 (goblins)','FX 7 (echoes)','FX 8 (sci-fi)','Sitar','Banjo','Shamisen','Koto','Kalimba','Bagpipe','Fiddle',
+'Shanai','Tinkle Bell','Agogo','Steel Drums','Woodblock','Taiko Drum','Melodic Tom','Synth Drum','Reverse Cymbal',
+'Guitar Fret Noise','Breath Noise','Seashore','Bird Tweet','Telephone Ring','Helicopter','Applause','Gunshot'];
+
+const PRESETS = {
+  piano:   { wave:'triangle', attack:0.005, decay:0.35, sustain:0.15, release:0.35, gain:0.9 },
+  organ:   { wave:'square',   attack:0.02,  decay:0.1,  sustain:0.8,  release:0.2,  gain:0.5 },
+  strings: { wave:'sawtooth', attack:0.12,  decay:0.2,  sustain:0.7,  release:0.5,  gain:0.45 },
+  bass:    { wave:'sine',     attack:0.005, decay:0.2,  sustain:0.4,  release:0.25, gain:1.0 },
+  pluck:   { wave:'sawtooth', attack:0.001, decay:0.08, sustain:0.0,  release:0.15, gain:0.8 }
+};
+function presetFromGM(program) {
+  if (program < 8) return 'piano';
+  if (program >= 16 && program < 24) return 'organ';
+  if (program >= 40 && program < 56) return 'strings';
+  if (program >= 32 && program < 40) return 'bass';
+  if (program >= 24 && program < 32) return 'pluck';
+  return 'piano';
+}
+
+/* ======================================================================
+   6. AUDIO PLAYER
+   ====================================================================== */
+const player = {
+  ctx:null, master:null, analyser:null,
+  dryGain:null, wetGain:null, convolver:null,
+  playing:false, paused:false,
+  startTime:0, pauseAt:0,
+  nodes:[], schedule:[], duration:0,
+  volume:0.7, outputMode:'webaudio',
+  midiOut:null, midiTimers:[],
+  trackSettings:{},
+  globalWave:'triangle', globalPreset:'piano',
+  trackGains:{},
+
+  async ensureCtx() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = this.volume;
+
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.analyser.smoothingTimeConstant = 0.7;
+
+      this.master.connect(this.analyser);
+      this.analyser.connect(this.ctx.destination);
+
+      this.convolver = this.ctx.createConvolver();
+      this.convolver.buffer = this.makeImpulse(2.0, 2.0);
+      this.dryGain = this.ctx.createGain(); this.dryGain.gain.value = 1;
+      this.wetGain = this.ctx.createGain(); this.wetGain.gain.value = 0;
+      this.dryGain.connect(this.master);
+      this.convolver.connect(this.wetGain).connect(this.master);
+    }
+    if (this.ctx.state === 'suspended') await this.ctx.resume();
+    return this.ctx;
+  },
+
+  makeImpulse(duration, decay) {
+    const rate = this.ctx.sampleRate;
+    const len = Math.max(1, Math.floor(rate * duration));
+    const buf = this.ctx.createBuffer(2, len, rate);
+    for (let c=0;c<2;c++){
+      const d = buf.getChannelData(c);
+      for (let i=0;i<len;i++){
+        d[i] = (Math.random()*2-1) * Math.pow(1-i/len, decay);
+      }
+    }
+    return buf;
+  },
+
+  midiFreq(n){ return 440*Math.pow(2,(n-69)/12); },
+  setVolume(v){ this.volume=v; if (this.master) this.master.gain.setTargetAtTime(v,this.ctx.currentTime,0.02); },
+  setTrackVolume(idx, v) { if (this.trackGains[idx]) this.trackGains[idx].gain.setTargetAtTime(v, this.ctx.currentTime, 0.02); },
+  setReverb(amount) { if (this.wetGain) this.wetGain.gain.setTargetAtTime(amount, this.ctx.currentTime, 0.05); },
+
+  buildSchedule(parsed) {
+    const { tracks, division, tempoMap } = parsed;
+    const events=[]; let maxEnd=0;
+    const anySolo = Object.values(this.trackSettings).some(s => s.solo);
+
+    tracks.forEach(track => {
+      const s = this.trackSettings[track.index] || {};
+      if (track.channel === 9) return;
+      if (s.mute) return;
+      if (anySolo && !s.solo) return;
+
+      const presetName = s.preset || presetFromGM(track.program);
+      const preset = PRESETS[presetName] || PRESETS.piano;
+      const wave = s.wave || this.globalWave || preset.wave;
+      const trGain = s.gain != null ? s.gain : 1;
+
+      track.notes.forEach(n => {
+        const t0 = ticksToSeconds(n.tick, division, tempoMap);
+        const t1 = ticksToSeconds(n.tick+n.dur, division, tempoMap);
+        events.push({
+          time:t0, end:t1, note:n.note, ch:n.ch, program:track.program|0,
+          vel:n.vel/127, wave, preset, gain:trGain, track:track.index
+        });
+        if (t1>maxEnd) maxEnd=t1;
+      });
+    });
+    events.sort((a,b)=>a.time-b.time);
+    this.schedule=events;
+    this.duration=maxEnd;
+  },
+
+  async play(offset=0) {
+    if (this.outputMode === 'webmidi') return this.playMidi(offset);
+    const ctx = await this.ensureCtx();
+
+    this.stopNodes();
+    this.playing=true; this.paused=false;
+    const now = ctx.currentTime + 0.15;
+    this.startTime = now - offset;
+
+    // Пересоздать trackGains
+    this.trackGains = {};
+    const trackIds = new Set(this.schedule.map(ev => ev.track));
+    for (const trId of trackIds) {
+      const tg = ctx.createGain();
+      const s = this.trackSettings[trId] || {};
+      tg.gain.value = s.gain != null ? s.gain : 1;
+      tg.connect(this.dryGain);
+      tg.connect(this.convolver);
+      this.trackGains[trId] = tg;
+    }
+
+    // Реверб — по среднему
+    const avgRev = trackIds.size
+      ? [...trackIds].reduce((a,id)=>a+(this.trackSettings[id]?.reverb||0),0) / trackIds.size
+      : 0;
+    this.setReverb(avgRev);
+
+    for (const ev of this.schedule) {
+      if (ev.end < offset) continue;
+      this.scheduleNote(ev, now, offset);
+    }
+  },
+
+  scheduleNote(ev, now, offset) {
+    const startRel = Math.max(ev.time - offset, 0);
+    const start = now + startRel;
+    const stopAt = now + Math.max(ev.end - offset, startRel + 0.02);
+    const p = ev.preset;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = ev.wave;
+    osc.frequency.value = this.midiFreq(ev.note);
+
+    const peak = Math.max(0.0001, ev.vel * p.gain * 0.5);
+    const sustain = peak * p.sustain;
+
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(peak, start + p.attack);
+    gain.gain.linearRampToValueAtTime(sustain, start + p.attack + p.decay);
+    const relStart = Math.max(stopAt, start + p.attack + p.decay);
+    gain.gain.setValueAtTime(gain.gain.value, relStart);
+    gain.gain.linearRampToValueAtTime(0.0001, relStart + p.release);
+
+    const dest = this.trackGains[ev.track] || this.master;
+    osc.connect(gain).connect(dest);
+    osc.start(start);
+    osc.stop(relStart + p.release + 0.05);
+    this.nodes.push({ osc, gain, end: relStart+p.release+0.05 });
+    if (this.nodes.length > 4000) this.cleanNodes();
+  },
+
+  playMidi(offset=0) {
+    if (!this.midiOut) { showError(t('errTitle'), 'No MIDI output selected'); return; }
+    this.stopMidiTimers();
+    this.playing=true; this.paused=false;
+    const now = performance.now();
+    this.startTime = now/1000 - offset;
+
+    const chProg = {};
+    for (const trId in this.trackSettings) {
+      const s = this.trackSettings[trId]; const ch = s._ch;
+      if (ch == null || ch === 9) continue;
+      if (s.mute) { try { this.midiOut.send([0xB0|ch, 7, 0]); } catch(e){} continue; }
+      const g = Math.max(0, Math.min(127, Math.round((s.gain != null ? s.gain : 1) * 127)));
+      const r = Math.max(0, Math.min(127, Math.round((s.reverb || 0) * 127)));
+      try {
+        this.midiOut.send([0xB0|ch, 7, g]);
+        this.midiOut.send([0xB0|ch, 91, r]);
+        const prog = s.presetIndex != null ? s.presetIndex : 0;
+        this.midiOut.send([0xC0|ch, prog & 0x7f]);
+        chProg[ch] = prog;
+      } catch(e){}
+    }
+
+    for (const ev of this.schedule) {
+      if (ev.end < offset) continue;
+      const onDelay  = Math.max(0, (ev.time - offset)*1000);
+      const offDelay = Math.max(0, (ev.end  - offset)*1000);
+      const ch = ev.ch & 0xF;
+      const vel = Math.max(1, Math.round(ev.vel*127));
+      this.midiTimers.push(setTimeout(() => {
+        try { this.midiOut.send([0x90|ch, ev.note&0x7f, vel]); } catch(e){}
+      }, onDelay));
+      this.midiTimers.push(setTimeout(() => {
+        try { this.midiOut.send([0x80|ch, ev.note&0x7f, 0]); } catch(e){}
+      }, offDelay));
+    }
+  },
+
+  stopMidiTimers() {
+    for (const id of this.midiTimers) clearTimeout(id);
+    this.midiTimers = [];
+    if (this.midiOut) for (let ch=0; ch<16; ch++) {
+      try { this.midiOut.send([0xB0|ch, 123, 0]); this.midiOut.send([0xB0|ch, 120, 0]); } catch(e){}
+    }
+  },
+  cleanNodes() { const tt=this.ctx.currentTime; this.nodes = this.nodes.filter(n=>n.end>tt); },
+  stopNodes() {
+    for (const n of this.nodes) {
+      try { n.osc.stop(); } catch(e){}
+      try { n.osc.disconnect(); n.gain.disconnect(); } catch(e){}
+    }
+    this.nodes=[];
+    // отключаем track gains
+    for (const k in this.trackGains) {
+      try { this.trackGains[k].disconnect(); } catch(e){}
+    }
+    this.trackGains={};
+  },
+  stop() { this.playing=false; this.paused=false; this.pauseAt=0; this.stopNodes(); this.stopMidiTimers(); },
+  pause() {
+    if (!this.playing) return;
+    this.pauseAt = this.outputMode==='webmidi' ? (performance.now()/1000 - this.startTime) : (this.ctx.currentTime - this.startTime);
+    this.playing=false; this.paused=true; this.stopNodes(); this.stopMidiTimers();
+  },
+  resume() { if (!this.paused) return; const at=this.pauseAt; this.paused=false; this.play(at); },
+  seek(to) {
+    if (!this.schedule.length) return;
+    const wasPlaying = this.playing;
+    this.stop();
+    if (wasPlaying) this.play(to);
+    else { this.paused=true; this.pauseAt=to; }
+  },
+  currentTime() {
+    if (this.paused) return this.pauseAt;
+    if (!this.playing) return 0;
+    const tt = this.outputMode==='webmidi' ? (performance.now()/1000 - this.startTime) : (this.ctx.currentTime - this.startTime);
+    return Math.min(tt, this.duration);
+  }
+};
+
+/* ======================================================================
+   7. WEB MIDI
+   ====================================================================== */
+let midiAccess = null;
+async function initMIDI() {
+  if (midiAccess) return midiAccess;
+  if (!navigator.requestMIDIAccess) { showError(t('errTitle'), 'Web MIDI not supported'); return null; }
+  try {
+    midiAccess = await navigator.requestMIDIAccess({ sysex:false });
+    midiAccess.onstatechange = () => refreshMidiPorts();
+    return midiAccess;
+  } catch(e) { showError(t('errTitle'), 'MIDI access denied'); return null; }
+}
+function refreshMidiPorts() {
+  const sel = document.getElementById('midiPortSel');
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = '';
+  const outs = midiAccess ? [...midiAccess.outputs.values()] : [];
+  if (!outs.length) {
+    const o = document.createElement('option'); o.value=''; o.textContent = t('noMidi'); sel.appendChild(o);
+    player.midiOut = null; return;
+  }
+  for (const out of outs) {
+    const o = document.createElement('option'); o.value=out.id;
+    o.textContent = out.name + (out.state==='connected'?'':' (offline)');
+    sel.appendChild(o);
+  }
+  const pick = outs.find(o=>o.id===prev) || outs.find(o=>o.state==='connected') || outs[0];
+  sel.value = pick.id; player.midiOut = pick;
+}
+
+/* ======================================================================
+   8. ГЛАВНОЕ ОКНО И UI
+   ====================================================================== */
+const $ = id => document.getElementById(id);
+let parsed = null;
+const winEl = $('mainWin');
+const state_win = { dragging:false };
+
+/* apply window geometry */
+function applyWindowGeom() {
+  const g = state.win;
+  if (g.maximized) {
+    winEl.classList.add('maximized');
+  } else {
+    winEl.classList.remove('maximized');
+    const w = g.w || Math.min(window.innerWidth*0.94, 1080);
+    const h = g.h || Math.min(window.innerHeight*0.85, 700);
+    const x = g.x != null ? g.x : (window.innerWidth-w)/2;
+    const y = g.y != null ? g.y : (window.innerHeight-h-56)/2;
+    winEl.style.left = x+'px';
+    winEl.style.top = y+'px';
+    winEl.style.width = w+'px';
+    winEl.style.height = h+'px';
+  }
+  const icon = $('btnMaximize').querySelector('.material-icons');
+  icon.textContent = g.maximized ? 'filter_none' : 'crop_square';
+}
+
+$('btnMinimize').onclick = () => {
+  winEl.classList.add('minimized');
+  updateTaskbar();
+};
+$('btnMaximize').onclick = () => {
+  state.win.maximized = !state.win.maximized;
+  applyWindowGeom(); saveState();
+};
+$('btnCloseWin').onclick = () => {
+  if (confirm('Закрыть QMidApp?')) {
+    window.close();
+    winEl.classList.add('minimized');
+    updateTaskbar();
+  }
+};
+
+/* window drag — pointer events, без дёрганья */
+(() => {
+  const tb = $('titlebar');
+  let dragging=false, sx=0, sy=0, ox=0, oy=0, pid=null;
+  tb.style.touchAction = 'none';
+  tb.addEventListener('pointerdown', e => {
+    if (e.target.closest('.win-btn')) return;
+    if (state.win.maximized) return;
+    dragging=true; pid=e.pointerId; sx=e.clientX; sy=e.clientY;
+    ox = parseFloat(winEl.style.left)||0; oy = parseFloat(winEl.style.top)||0;
+    try { tb.setPointerCapture(pid); } catch(_){}
+  });
+  tb.addEventListener('pointermove', e => {
+    if (!dragging || e.pointerId !== pid) return;
+    e.preventDefault();
+    let nx = ox + (e.clientX - sx);
+    let ny = oy + (e.clientY - sy);
+    nx = Math.max(-winEl.offsetWidth+120, Math.min(window.innerWidth-120, nx));
+    ny = Math.max(0, Math.min(window.innerHeight-48-40, ny));
+    winEl.style.left = nx+'px'; winEl.style.top = ny+'px';
+    state.win.x = nx; state.win.y = ny;
+  });
+  const end = e => {
+    if (!dragging || (pid != null && e.pointerId !== pid)) return;
+    dragging=false; pid=null;
+    try { tb.releasePointerCapture(e.pointerId); } catch(_){}
+    saveState();
+  };
+  tb.addEventListener('pointerup', end);
+  tb.addEventListener('pointercancel', end);
+})();
+
+/* resize */
+(() => {
+  const rh = $('resizeHandle');
+  let resizing=false, sx=0, sy=0, ow=0, oh=0, pid=null;
+  rh.style.touchAction = 'none';
+  rh.addEventListener('pointerdown', e => {
+    if (state.win.maximized) return;
+    resizing=true; pid=e.pointerId; sx=e.clientX; sy=e.clientY;
+    ow=winEl.offsetWidth; oh=winEl.offsetHeight;
+    try { rh.setPointerCapture(pid); } catch(_){}
+  });
+  rh.addEventListener('pointermove', e => {
+    if (!resizing || e.pointerId !== pid) return;
+    e.preventDefault();
+    const nw = Math.max(520, ow + (e.clientX - sx));
+    const nh = Math.max(360, oh + (e.clientY - sy));
+    winEl.style.width = nw+'px'; winEl.style.height = nh+'px';
+    state.win.w = nw; state.win.h = nh;
+  });
+  const end = e => { if (resizing) { resizing=false; pid=null; saveState(); } };
+  rh.addEventListener('pointerup', end);
+  rh.addEventListener('pointercancel', end);
+})();
+
+/* верхние вкладки */
+let activeTab = 'file';
+document.querySelectorAll('.topbar .tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeTab = btn.dataset.tab;
+    document.querySelectorAll('.topbar .tab').forEach(b => b.classList.toggle('active', b===btn));
+    renderTab();
+  });
+});
+function renderTab() {
+  const content = $('content'); content.innerHTML = '';
+  if (activeTab === 'file') buildFileTab(content);
+  else if (activeTab === 'settings') buildSettingsTab(content);
+  else if (activeTab === 'about') buildAboutTab(content);
+}
+
+/* ======================================================================
+   9. ВКЛАДКА «ФАЙЛ»
+   ====================================================================== */
+function buildFileTab(content) {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = `
+    <div class="section-title"><span class="material-icons">folder_open</span>${t('tabFile')}</div>
+    <div class="row">
+      <span class="badge">${parsed ? (state.fileName||t('fileLoaded')) : t('fileNotLoaded')}</span>
+      ${parsed ? `<span class="badge">${parsed.tracks.length} ${t('tracks').toLowerCase()}</span>` : ''}
+    </div>`;
+  content.appendChild(sec);
+
+  // hero
+  const hero = document.createElement('div');
+  hero.className = 'section';
+  hero.style.background = 'linear-gradient(135deg, var(--panel-2), var(--panel))';
+  hero.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+    <span class="material-icons" style="font-size:36px;color:var(--accent)">piano</span>
+    <div>
+      <div style="font-size:17px;font-weight:600">QMidApp</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${t('aboutText')}</div>
+    </div>
+  </div>`;
+  content.appendChild(hero);
+
+  if (parsed && parsed.tracks.length) {
+    const trSec = document.createElement('div');
+    trSec.className = 'section';
+    trSec.innerHTML = `<div class="section-title"><span class="material-icons">queue_music</span>${t('tracks')} — ${parsed.tracks.length}</div>`;
+    const box = document.createElement('div');
+    trSec.appendChild(box);
+    content.appendChild(trSec);
+    parsed.tracks.forEach((tr, i) => {
+      const s = player.trackSettings[tr.index] = player.trackSettings[tr.index] || {};
+      s._ch = tr.channel;
+      if (s.gain == null) s.gain = 1;
+      if (s.reverb == null) s.reverb = 0;
+      const progName = GM_NAMES[tr.program] || ('Program '+tr.program);
+      const el = document.createElement('div');
+      el.className = 'track';
+      el.innerHTML = `
+        <div class="num">#${tr.index}</div>
+        <div>
+          <div>${tr.name || (t('trackName')+' '+(i+1))} <span class="badge">${t('channel')} ${tr.channel+1}</span></div>
+          <div class="meta">${tr.notes.length} ${t('notes')} • ${progName}</div>
+          <div class="track-vis"><canvas width="800" height="22"></canvas></div>
+          <div class="row" style="margin-top:8px;gap:10px">
+            <label class="field" style="flex:1;min-width:160px">${t('instrument')}
+              <select data-role="presetIndex" data-idx="${tr.index}">
+                ${GM_NAMES.map((n,pi)=>`<option value="${pi}" ${pi===tr.program?'selected':''}>${pi}: ${n}</option>`).join('')}
+              </select>
+            </label>
+            <label class="field" style="flex:1;min-width:110px">${t('preset')}
+              <select data-role="preset" data-idx="${tr.index}">
+                <option value="">auto</option>
+                <option value="piano">piano</option>
+                <option value="organ">organ</option>
+                <option value="strings">strings</option>
+                <option value="bass">bass</option>
+                <option value="pluck">pluck</option>
+              </select>
+            </label>
+            <label class="field" style="flex:0 0 90px">${t('wave')}
+              <select data-role="wave" data-idx="${tr.index}">
+                <option value="">auto</option>
+                <option value="sine">sine</option>
+                <option value="triangle">triangle</option>
+                <option value="square">square</option>
+                <option value="sawtooth">sawtooth</option>
+              </select>
+            </label>
+          </div>
+          <div class="row" style="margin-top:8px;gap:10px">
+            <label class="field" style="flex:1;min-width:100px">${t('volume')}
+              <input type="range" data-role="gain" data-idx="${tr.index}" min="0" max="150" value="${Math.round(s.gain*100)}">
+            </label>
+            <label class="field" style="flex:1;min-width:100px">${t('reverb')}
+              <input type="range" data-role="reverb" data-idx="${tr.index}" min="0" max="100" value="${Math.round(s.reverb*100)}">
+            </label>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn" data-role="mute" data-idx="${tr.index}"><span class="material-icons">volume_off</span></button>
+          <button class="btn" data-role="solo" data-idx="${tr.index}"><span class="material-icons">headphones</span></button>
+        </div>`;
+      box.appendChild(el);
+
+      if (s.preset) el.querySelector('select[data-role="preset"]').value = s.preset;
+      if (s.wave) el.querySelector('select[data-role="wave"]').value = s.wave;
+      if (s.mute) el.querySelector('[data-role="mute"]').classList.add('active');
+      if (s.solo) el.querySelector('[data-role="solo"]').classList.add('active');
+      if (s.presetIndex != null) el.querySelector('select[data-role="presetIndex"]').value = s.presetIndex;
+
+      drawTrackVis(el.querySelector('canvas'), tr);
+
+      el.querySelectorAll('[data-role]').forEach(inp => {
+        const role = inp.dataset.role;
+        if (inp.tagName === 'BUTTON') {
+          inp.addEventListener('click', () => {
+            const st = player.trackSettings[tr.index];
+            st[role] = !st[role];
+            inp.classList.toggle('active', st[role]);
+            saveTrackSettings();
+          });
+        } else if (role === 'gain') {
+          inp.addEventListener('input', () => {
+            const v = +inp.value / 100;
+            player.trackSettings[tr.index].gain = v;
+            player.setTrackVolume(tr.index, v);
+            saveTrackSettings();
+          });
+        } else if (role === 'reverb') {
+          inp.addEventListener('input', () => {
+            const v = +inp.value / 100;
+            player.trackSettings[tr.index].reverb = v;
+            saveTrackSettings();
+          });
+        } else if (role === 'presetIndex') {
+          inp.addEventListener('change', () => {
+            player.trackSettings[tr.index].presetIndex = +inp.value;
+            saveTrackSettings();
+          });
+        } else {
+          inp.addEventListener('change', () => {
+            if (inp.value) player.trackSettings[tr.index][role] = inp.value;
+            else delete player.trackSettings[tr.index][role];
+            saveTrackSettings();
+          });
+        }
+      });
+    });
+  }
+}
+function saveTrackSettings() {
+  const clean = {};
+  for (const k in player.trackSettings) {
+    const { _ch, ...rest } = player.trackSettings[k];
+    clean[k] = rest;
+  }
+  state.trackSettings = clean;
+  saveState();
+}
+function drawTrackVis(canvas, track) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  if (!track.notes.length) return;
+  const lo = Math.min(...track.notes.map(n=>n.note));
+  const hi = Math.max(...track.notes.map(n=>n.note));
+  const span = Math.max(1, hi-lo);
+  const totalTicks = Math.max(...track.notes.map(n=>n.tick+n.dur), 1);
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4f8cff';
+  ctx.fillStyle = accent;
+  track.notes.forEach(n => {
+    const x = (n.tick/totalTicks)*W;
+    const w = Math.max(1,(n.dur/totalTicks)*W);
+    const y = H - ((n.note-lo)/span)*(H-3)-2;
+    ctx.fillRect(x, y, w, 1.5);
+  });
+}
+
+/* ======================================================================
+   10. ВКЛАДКА «НАСТРОЙКИ» — с подвкладками
+   ====================================================================== */
+const SUBTABS = [
+  { id:'appearance', icon:'palette', key:'subAppearance' },
+  { id:'synth',      icon:'tune',    key:'subSynth' },
+  { id:'output',     icon:'speaker', key:'subOutput' },
+  { id:'lang',       icon:'translate', key:'subLang' }
+];
+let activeSub = 'appearance';
+function buildSettingsTab(content) {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+
+  const bar = document.createElement('div');
+  bar.className = 'subtabs';
+  SUBTABS.forEach(st => {
+    const b = document.createElement('button');
+    b.className = 'subtab' + (st.id===activeSub?' active':'');
+    b.innerHTML = `<span class="material-icons">${st.icon}</span>${t(st.key)}`;
+    b.onclick = () => { activeSub = st.id; renderTab(); };
+    bar.appendChild(b);
+  });
+  sec.appendChild(bar);
+
+  const inner = document.createElement('div');
+  sec.appendChild(inner);
+  content.appendChild(sec);
+
+  if (activeSub === 'appearance') buildSubAppearance(inner);
+  else if (activeSub === 'synth') buildSubSynth(inner);
+  else if (activeSub === 'output') buildSubOutput(inner);
+  else if (activeSub === 'lang') buildSubLang(inner);
+}
+
+function buildSubAppearance(box) {
+  box.innerHTML = `
+    <label class="field">${t('theme')}
+      <select id="setTheme">
+        <option value="dark">${t('themeDark')}</option>
+        <option value="light">${t('themeLight')}</option>
+      </select>
+    </label>
+    <label class="field" style="margin-top:12px">${t('radius')} (0–24)
+      <input type="range" id="setRadius" min="0" max="24" value="${state.radius}">
+      <b id="radiusVal">${state.radius}px</b>
+    </label>
+    <div class="field" style="margin-top:12px">${t('accent')}
+      <div class="accent-grid" id="accentGrid"></div>
+    </div>
+    <div class="field" style="margin-top:16px">${t('wallpaper')}
+      <div class="wallpaper-grid" id="wpGrid"></div>
+      <div style="margin-top:8px">
+        <label class="btn" style="cursor:pointer;display:inline-flex">
+          <span class="material-icons">upload</span>${t('wpUpload')}
+          <input type="file" id="wpUploadInput" accept="image/*" style="display:none">
+        </label>
+      </div>
+    </div>`;
+
+  const tSel = box.querySelector('#setTheme');
+  tSel.value = state.theme;
+  tSel.onchange = () => applyTheme(tSel.value);
+
+  const rInp = box.querySelector('#setRadius');
+  rInp.oninput = () => {
+    applyRadius(+rInp.value);
+    box.querySelector('#radiusVal').textContent = rInp.value + 'px';
+  };
+
+  const ACCENTS = ['#4f8cff','#e5484d','#2f9e44','#f59f00','#9c36b5','#e64980','#12b886','#fab005'];
+  const ag = box.querySelector('#accentGrid');
+  ACCENTS.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'accent-dot' + (state.accent===c?' active':'');
+    d.style.background = c;
+    d.onclick = () => { applyAccent(c); ag.querySelectorAll('.accent-dot').forEach(x=>x.classList.remove('active')); d.classList.add('active'); };
+    ag.appendChild(d);
+  });
+
+  const grid = box.querySelector('#wpGrid');
+  const wpList = [
+    ['none', t('wpNone')],
+    ['dark1','dark1'],['dark2','dark2'],['purple','purple'],
+    ['sunset','sunset'],['forest','forest'],['night','night'],['orange','orange']
+  ];
+  wpList.forEach(([key,label]) => {
+    const d = document.createElement('div');
+    d.className = 'wp-thumb' + (state.wallpaper===key ? ' active':'');
+    d.title = label;
+    if (key === 'none') {
+      d.style.background = 'var(--panel-3)';
+      d.style.display = 'flex'; d.style.alignItems='center'; d.style.justifyContent='center';
+      d.style.color = 'var(--text-dim)'; d.style.fontSize='12px';
+      d.textContent = label;
+    } else {
+      d.style.backgroundImage = WALLPAPERS[key];
+    }
+    d.onclick = () => {
+      grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));
+      d.classList.add('active');
+      applyWallpaper(key);
+    };
+    grid.appendChild(d);
+  });
+
+  box.querySelector('#wpUploadInput').onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      applyWallpaper('custom', reader.result);
+      grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));
+    };
+    reader.readAsDataURL(f);
+  };
+}
+
+function buildSubSynth(box) {
+  box.innerHTML = `
+    <label class="field">${t('synthWave')}
+      <select id="setWave">
+        <option value="sine">Sine</option>
+        <option value="triangle">Triangle</option>
+        <option value="square">Square</option>
+        <option value="sawtooth">Sawtooth</option>
+      </select>
+    </label>
+    <label class="field" style="margin-top:10px">${t('synthPreset')}
+      <select id="setPreset">
+        <option value="piano">Piano</option>
+        <option value="organ">Organ</option>
+        <option value="strings">Strings</option>
+        <option value="bass">Bass</option>
+        <option value="pluck">Pluck</option>
+      </select>
+    </label>
+    <button class="btn" id="testTone" style="margin-top:12px"><span class="material-icons">notifications_active</span>${t('testTone')}</button>`;
+  const wSel = box.querySelector('#setWave');
+  wSel.value = state.globalWave;
+  wSel.onchange = () => { state.globalWave = wSel.value; player.globalWave = wSel.value; saveState(); };
+  const pSel = box.querySelector('#setPreset');
+  pSel.value = state.globalPreset;
+  pSel.onchange = () => { state.globalPreset = pSel.value; player.globalPreset = pSel.value; saveState(); };
+  box.querySelector('#testTone').onclick = async () => {
+    const ctx = await player.ensureCtx();
+    const osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = 440;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    g.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.65);
+  };
+}
+
+function buildSubOutput(box) {
+  box.innerHTML = `
+    <label class="field">${t('outputMode')}
+      <select id="outModeSel">
+        <option value="webaudio">${t('outAudio')}</option>
+        <option value="webmidi">${t('outMidi')}</option>
+      </select>
+    </label>
+    <label class="field" style="margin-top:10px">${t('midiPort')}
+      <select id="midiPortSel"><option>—</option></select>
+    </label>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="btnRefreshMidi"><span class="material-icons">refresh</span>${t('refresh')}</button>
+      <button class="btn" id="btnTestMidi"><span class="material-icons">notifications_active</span>${t('testMidi')}</button>
+    </div>`;
+  const modeSel = box.querySelector('#outModeSel');
+  modeSel.value = state.outputMode;
+  modeSel.onchange = async () => {
+    state.outputMode = modeSel.value; player.outputMode = modeSel.value; saveState();
+    if (modeSel.value === 'webmidi') { await initMIDI(); refreshMidiPorts(); }
+  };
+  const portSel = box.querySelector('#midiPortSel');
+  portSel.onchange = () => { if (midiAccess) player.midiOut = midiAccess.outputs.get(portSel.value) || null; };
+  box.querySelector('#btnRefreshMidi').onclick = async () => { await initMIDI(); refreshMidiPorts(); };
+  box.querySelector('#btnTestMidi').onclick = () => {
+    if (!player.midiOut) { showError(t('errTitle'), 'No MIDI port selected'); return; }
+    player.midiOut.send([0xC0,0]); player.midiOut.send([0x90,60,100]);
+    setTimeout(() => player.midiOut.send([0x80,60,0]), 500);
+  };
+  if (midiAccess) refreshMidiPorts();
+}
+
+function buildSubLang(box) {
+  box.innerHTML = `
+    <label class="field">${t('language')}
+      <select id="langSel">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="fr">Français</option>
+        <option value="it">Italiano</option>
+      </select>
+    </label>`;
+  const lSel = box.querySelector('#langSel');
+  lSel.value = state.lang;
+  lSel.onchange = () => {
+    state.lang = lSel.value;
+    saveState();
+    applyI18n();
+    renderTab();
+    updateTaskbar();
+  };
+}
+
+/* ======================================================================
+   11. ВКЛАДКА «О ПРОГРАММЕ»
+   ====================================================================== */
+function buildAboutTab(content) {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = `
+    <div class="section-title"><span class="material-icons">info</span>${t('tabAbout')}</div>
+    <div style="text-align:center;padding:16px 0">
+      <span class="material-icons" style="font-size:56px;color:var(--accent)">piano</span>
+      <div style="font-size:22px;font-weight:600;margin-top:8px">QMidApp</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${t('version')} 26-nov-2.4</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:10px">
+        ${t('dev')}: <b>Quantum ACD</b><br>
+        <a href="https://github.com/q-acd" target="_blank" style="color:var(--accent);text-decoration:none">github.com/q-acd</a>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--panel-2);border-radius:6px;border:1px solid var(--border)">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:4px">${t('thanks')}</div>
+        <div style="font-size:14px;font-weight:600;color:var(--accent)">DeepSeek AI</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t('thanksDeepSeek')}</div>
+      </div>
+    </div>
+    <div style="font-size:12px;line-height:1.7;color:var(--text-dim);margin-top:8px">
+      <b>${t('features')}:</b>
+      <ul style="margin:6px 0;padding-left:20px">
+        <li>MIDI parser (format 0/1)</li>
+        <li>Web Audio synth + reverb</li>
+        <li>Web MIDI (program change, CC7, CC91)</li>
+        <li>Per-track instrument / gain / mute / solo / reverb</li>
+        <li>Export .mid (with params) and .js</li>
+        <li>Track visualization</li>
+        <li>Dark/light theme, radius, accent, wallpaper</li>
+        <li>6 languages: EN / RU / ZH / JA / FR / IT</li>
+        <li>Windows-style taskbar with preview</li>
+      </ul>
+    </div>`;
+  content.appendChild(sec);
+}
+
+/* ======================================================================
+   12. ФАЙЛ / ТРАНСПОРТ / SEEK
+   ====================================================================== */
+function setStatus(m) { $('status').textContent = m; }
+$('fileBtn').onclick = () => $('file').click();
+$('file').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const buf = await f.arrayBuffer();
+    parsed = new MidiParser(buf).parse();
+    state.fileName = f.name; saveState();
+    $('meta').textContent = `${f.name} • fmt${parsed.format} • ${parsed.tracks.length}`;
+    const totalTicks = Math.max(...parsed.tracks.flatMap(tt => tt.notes.map(n => n.tick+n.dur)), 0);
+    const dur = ticksToSeconds(totalTicks, parsed.division, parsed.tempoMap);
+    setStatus(`${t('loaded')}. ${t('duration')} ≈ ${dur.toFixed(1)} ${t('sec')}.`);
+    player.trackSettings = {};
+    for (const idx in state.trackSettings) {
+      if (parsed.tracks.find(tt=>tt.index==idx)) player.trackSettings[idx] = {...state.trackSettings[idx]};
+    }
+    ['play','stop'].forEach(id => $(id).disabled = false);
+    $('pause').disabled = true;
+    renderTab();
+  } catch(err) {
+    console.error(err);
+    showError(t('errTitle'), t('errReadMidi') + ': ' + err.message);
+  }
+});
+
+$('masterVol').addEventListener('input', e => {
+  const v = +e.target.value / 100;
+  state.masterVol = v; player.setVolume(v); saveState();
+});
+
+$('play').addEventListener('click', async () => {
+  if (!parsed) return;
+  if (player.paused) player.resume();
+  else {
+    player.outputMode = state.outputMode;
+    player.globalWave = state.globalWave;
+    player.globalPreset = state.globalPreset;
+    player.buildSchedule(parsed);
+    await player.play(0);
+  }
+  $('pause').disabled = false;
+  animateProgress();
+});
+$('pause').addEventListener('click', () => { player.pause(); $('pause').disabled = true; });
+$('stop').addEventListener('click', () => { player.stop(); $('bar').style.width='0%'; $('pause').disabled = true; });
+
+/* SEEK — клик по прогресс-бару */
+$('progress').addEventListener('click', e => {
+  if (!player.duration) return;
+  const rect = $('progress').getBoundingClientRect();
+  const rel = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const to = rel * player.duration;
+  player.seek(to);
+  $('bar').style.width = (rel*100)+'%';
+  if (player.playing) { $('pause').disabled = false; animateProgress(); }
+});
+$('progress').addEventListener('touchstart', e => {
+  if (!player.duration) return;
+  const t = e.touches[0];
+  const rect = $('progress').getBoundingClientRect();
+  const rel = Math.max(0, Math.min(1, (t.clientX - rect.left) / rect.width));
+  const to = rel * player.duration;
+  player.seek(to);
+  $('bar').style.width = (rel*100)+'%';
+  if (player.playing) { $('pause').disabled = false; animateProgress(); }
+}, {passive:true});
+
+function animateProgress() {
+  if (!player.playing && !player.paused) return;
+  const tt = player.currentTime(), d = player.duration||1;
+  $('bar').style.width = Math.min(100,(tt/d)*100)+'%';
+  if (tt >= d) { player.stop(); $('bar').style.width='0%'; return; }
+  requestAnimationFrame(animateProgress);
+}
+
+/* визуализатор */
+function drawVisualizer() {
+  const c = $('visCanvas');
+  if (!c) { requestAnimationFrame(drawVisualizer); return; }
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4f8cff';
+  ctx.fillStyle = accent;
+  if (player.analyser) {
+    const data = new Uint8Array(player.analyser.frequencyBinCount);
+    player.analyser.getByteFrequencyData(data);
+    const bars = 64;
+    const step = Math.floor(data.length / bars);
+    const bw = W / bars;
+    for (let i=0;i<bars;i++) {
+      let v = 0;
+      for (let j=0;j<step;j++) v = Math.max(v, data[i*step+j]);
+      const h = (v/255) * H;
+      ctx.fillRect(i*bw, H-h, bw-1, h);
+    }
+  }
+  requestAnimationFrame(drawVisualizer);
+}
+
+/* ======================================================================
+   13. ЧАСЫ
+   ====================================================================== */
+function updateClock() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  $('clockTime').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  $('clockDate').textContent = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ======================================================================
+   14. TASKBAR + START MENU + PREVIEW
+   ====================================================================== */
+function updateTaskbar() {
+  const box = $('taskbarIcons');
+  box.innerHTML = '';
+  const isMin = winEl.classList.contains('minimized');
+  const el = document.createElement('div');
+  el.className = 'task-icon' + (isMin?'':' active') + (state.pinnedTask?' pinned':'');
+  el.innerHTML = `<span class="material-icons">piano</span><span>QMidApp</span>`;
+  el.dataset.task = 'main';
+
+  let longPressTimer = null;
+  let longPressTriggered = false;
+
+  const showPreview = (ev) => {
+    const pr = $('taskPreview');
+    const rect = el.getBoundingClientRect();
+    pr.style.left = Math.min(window.innerWidth-260, rect.left)+'px';
+    pr.style.top  = (rect.top - 130)+'px';
+    pr.classList.add('show');
+    $('tpName').textContent = 'QMidApp';
+  };
+  const hidePreview = () => $('taskPreview').classList.remove('show');
+
+  const onDown = (ev) => {
+    longPressTriggered = false;
+    longPressTimer = setTimeout(() => {
+      longPressTriggered = true;
+      showPreview(ev);
+    }, 500);
+  };
+  const onUp = (ev) => {
+    clearTimeout(longPressTimer);
+    if (longPressTriggered) return;
+    // обычный клик — открыть/свернуть
+    if (winEl.classList.contains('minimized')) winEl.classList.remove('minimized');
+    else winEl.classList.add('minimized');
+    updateTaskbar();
+  };
+  el.addEventListener('pointerdown', onDown);
+  el.addEventListener('pointerup', onUp);
+  el.addEventListener('pointerleave', () => clearTimeout(longPressTimer));
+  el.addEventListener('contextmenu', e => { e.preventDefault(); showPreview(e); });
+
+  box.appendChild(el);
+
+  document.querySelectorAll('[data-tp-action]').forEach(btn => {
+    btn.onclick = () => {
+      const a = btn.dataset.tpAction;
+      if (a === 'open') { winEl.classList.remove('minimized'); }
+      else if (a === 'hide') { winEl.classList.add('minimized'); }
+      else if (a === 'pin') { state.pinnedTask = !state.pinnedTask; saveState(); }
+      else if (a === 'close') { winEl.classList.add('minimized'); }
+      hidePreview();
+      updateTaskbar();
+    };
+  });
+  document.addEventListener('pointerdown', e => {
+    if (!e.target.closest('#taskPreview') && !e.target.closest('.task-icon')) {
+      $('taskPreview').classList.remove('show');
+    }
+  }, {capture:true});
+}
+
+/* START MENU */
+$('startBtn').onclick = e => {
+  e.stopPropagation();
+  $('startMenu').classList.toggle('show');
+};
+document.querySelectorAll('[data-open-tab]').forEach(b => {
+  b.onclick = () => {
+    const tab = b.dataset.openTab;
+    activeTab = tab;
+    document.querySelectorAll('.topbar .tab').forEach(x => x.classList.toggle('active', x.dataset.tab === tab));
+    renderTab();
+    winEl.classList.remove('minimized');
+    $('startMenu').classList.remove('show');
+  };
+});
+$('smRestoreWin').onclick = () => { winEl.classList.remove('minimized'); $('startMenu').classList.remove('show'); updateTaskbar(); };
+$('smQuit').onclick = () => {
+  $('startMenu').classList.remove('show');
+  if (confirm('Quit QMidApp?')) {
+    window.close();
+    winEl.classList.add('minimized');
+    updateTaskbar();
+  }
+};
+document.addEventListener('pointerdown', e => {
+  if (!e.target.closest('#startMenu') && !e.target.closest('#startBtn')) {
+    $('startMenu').classList.remove('show');
+  }
+});
+
+/* ======================================================================
+   15. INIT
+   ====================================================================== */
+applyTheme(state.theme);
+applyRadius(state.radius);
+applyAccent(state.accent);
+if (state.wallpaper === 'custom' && state.wallpaperData) applyWallpaper('custom', state.wallpaperData);
+else applyWallpaper(state.wallpaper);
+player.volume = state.masterVol;
+player.outputMode = state.outputMode;
+player.globalWave = state.globalWave;
+player.globalPreset = state.globalPreset;
+$('masterVol').value = Math.round(state.masterVol*100);
+applyWindowGeom();
+applyI18n();
+document.querySelector('.topbar .tab[data-tab="file"]').classList.add('active');
+renderTab();
+updateTaskbar();
+drawVisualizer();
+
+window.addEventListener('resize', () => {
+  if (!state.win.maximized) {
+    const x = Math.max(0, Math.min(parseFloat(winEl.style.left)||0, window.innerWidth - 200));
+    const y = Math.max(0, Math.min(parseFloat(winEl.style.top)||0, window.innerHeight - 100));
+    winEl.style.left = x+'px';
+    winEl.style.top  = y+'px';
+  }
+});
+
+/* ======================================================================
+   16. RESIZE / EXPORT HELPERS
+   ====================================================================== */
+function downloadBlob(data, filename, mime) {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+</script>
+</body>
+</html>
