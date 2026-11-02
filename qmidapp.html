@@ -3,344 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#181a20">
 <title>QMidApp</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&family=Montserrat:wght@400;600&family=Pacifico&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root {
-  --radius: 8px;
-  --accent: #4f8cff; --accent-hover: #6b9dff; --accent-text: #fff;
+:root{
+  --radius:8px; --accent:#4f8cff; --accent-hover:#6b9dff; --accent-text:#fff;
+  --font:'Segoe UI',system-ui,sans-serif;
   --titlebar:#181a20; --titlebar-text:#e8e8e8;
   --win-bg:#1f2128; --win-border:#2f333d;
   --panel:#262932; --panel-2:#2f333d; --panel-3:#3a3f4b;
   --text:#e8ebf2; --text-dim:#8b93a7;
   --danger:#e5484d; --danger-hover:#f06066;
+  --warning:#f59f00; --info:#4f8cff; --success:#2f9e44;
   --tabbar:#15171c; --shadow:0 20px 60px rgba(0,0,0,.55);
-  --input-bg:#12141a; --border:#3a3f4b;
-  --taskbar:#14161b;
+  --input-bg:#12141a; --border:#3a3f4b; --taskbar:#14161b;
+  --btn-radius:4px; --panel-radius:6px;
 }
-:root[data-theme="light"] {
-  --titlebar:#f0f2f5; --titlebar-text:#1a1a1a;
-  --win-bg:#f7f8fa; --win-border:#d0d4dc;
-  --panel:#ffffff; --panel-2:#f0f2f5; --panel-3:#e4e7ec;
-  --text:#1a1a1a; --text-dim:#5a606b;
-  --tabbar:#e9ebef; --shadow:0 20px 60px rgba(0,0,0,.2);
-  --input-bg:#ffffff; --border:#d0d4dc;
-  --taskbar:#e2e5ea;
+:root[data-theme="light"]{
+  --titlebar:#eef0f4; --titlebar-text:#1f2328;
+  --win-bg:#f6f7f9; --win-border:#d4d7dd;
+  --panel:#ffffff; --panel-2:#eef0f3; --panel-3:#e1e4e9;
+  --text:#1f2328; --text-dim:#57606a;
+  --tabbar:#f0f2f5; --shadow:0 12px 40px rgba(0,0,0,.12);
+  --input-bg:#ffffff; --border:#d4d7dd; --taskbar:#e6e8ec;
+  --accent-text:#ffffff;
 }
-* { box-sizing:border-box; }
-html, body { height:100%; margin:0; overflow:hidden; }
-body {
-  font-family:"Segoe UI", system-ui, sans-serif; font-size:13px;
-  background:#000; color:var(--text); user-select:none;
-  -webkit-tap-highlight-color:transparent;
+/* XP */
+:root[data-style="xp"]{
+  --radius:0; --btn-radius:2px; --panel-radius:2px;
+  --font:Tahoma,'Segoe UI',sans-serif;
+  --titlebar:linear-gradient(180deg,#0058ee,#3f8cf3 8%,#0054e3 40%,#0054e3);
+  --titlebar-text:#fff;
+  --win-bg:#ece9d8; --win-border:#0054e3;
+  --panel:#f1efe2; --panel-2:#e3dfd0; --panel-3:#d4cfbe;
+  --text:#000; --text-dim:#5a5a5a;
+  --tabbar:#d4d0c8; --input-bg:#fff; --border:#a0a0a0;
+  --shadow:2px 2px 8px rgba(0,0,0,.4);
 }
-#wallpaper {
-  position:fixed; inset:0; z-index:0;
-  background-size:cover; background-position:center; background-color:#0f1115;
+/* 98 */
+:root[data-style="98"]{
+  --radius:0; --btn-radius:0; --panel-radius:0;
+  --font:'MS Sans Serif',Tahoma,sans-serif;
+  --titlebar:linear-gradient(90deg,#000080,#1084d0);
+  --titlebar-text:#fff;
+  --win-bg:#c0c0c0; --win-border:#808080;
+  --panel:#c0c0c0; --panel-2:#d4d0c8; --panel-3:#a0a0a0;
+  --text:#000; --text-dim:#404040;
+  --tabbar:#c0c0c0; --input-bg:#fff; --border:#808080;
+  --shadow:2px 2px 0 #000; --accent:#000080;
 }
+/* macOS */
+:root[data-style="mac"]{
+  --radius:12px; --btn-radius:8px; --panel-radius:10px;
+  --font:-apple-system,'SF Pro Display','Inter',sans-serif;
+  --titlebar:linear-gradient(180deg,#eef0f4,#dde1e8); --titlebar-text:#1a1a1a;
+  --win-bg:#f6f6f8; --win-border:#c9c9ce;
+  --panel:rgba(255,255,255,.95); --panel-2:rgba(240,241,245,.92); --panel-3:rgba(224,226,232,.92);
+  --text:#1d1d1f; --text-dim:#6e6e73;
+  --tabbar:#e8eaf0; --input-bg:#ffffff; --border:#d2d2d7;
+  --shadow:0 16px 48px rgba(0,0,0,.22); --accent:#007aff; --accent-hover:#0066d6;
+  --danger:#ff3b30; --warning:#ff9500; --success:#34c759;
+}
+:root[data-style="mac"] .win .titlebar{padding-left:74px;position:relative;}
+:root[data-style="mac"] .win .titlebar::before{
+  content:'';position:absolute;left:12px;top:12px;width:12px;height:12px;border-radius:50%;
+  background:#ff5f57;box-shadow:20px 0 0 #febc2e,40px 0 0 #28c840;
+}
+:root[data-style="mac"] .win .win-btn{display:none;}
+:root[data-style="mac"] button.btn{border-radius:8px;}
+:root[data-style="mac"] .tab{border-radius:8px;border-bottom-color:transparent;}
+:root[data-style="mac"] .tab.active{background:rgba(0,122,255,.12);border-bottom-color:transparent;}
 
-/* ОКНО */
-.win {
-  position:fixed; background:var(--win-bg); border:1px solid var(--win-border);
-  box-shadow:var(--shadow); display:flex; flex-direction:column;
-  color:var(--text); overflow:hidden;
-  border-radius:var(--radius); z-index:10;
-  min-width:520px; min-height:360px;
-}
-.win.maximized {
-  left:0 !important; top:0 !important;
-  width:100vw !important; height:calc(100vh - 48px) !important;
-  border-radius:0; border:0;
-}
-.win.minimized { display:none; }
-.win .titlebar {
-  height:34px; background:var(--titlebar); color:var(--titlebar-text);
-  display:flex; align-items:center; padding-left:12px; font-size:12px; flex-shrink:0;
-  border-top-left-radius:var(--radius); border-top-right-radius:var(--radius);
-}
-.win.maximized .titlebar { border-radius:0; }
-.win .titlebar .title { flex:1; letter-spacing:.2px; display:flex; align-items:center; gap:6px; }
-.win .titlebar .title b { font-weight:600; }
-.win-btn {
-  width:46px; height:34px; background:transparent; border:0; color:inherit;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:background .12s;
-}
-.win-btn .material-icons { font-size:16px; }
-.win-btn:hover { background:rgba(255,255,255,.08); }
-:root[data-theme="light"] .win-btn:hover { background:rgba(0,0,0,.08); }
-.win-btn.close:hover { background:var(--danger); color:#fff; }
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;overflow:hidden;font-family:var(--font);font-size:13px;}
+body{background:#000;color:var(--text);user-select:none;-webkit-tap-highlight-color:transparent;}
 
-/* TOPBAR: вкладки + файл */
-.topbar {
-  display:flex; align-items:stretch; height:44px; flex-shrink:0;
-  background:var(--tabbar); border-bottom:1px solid var(--border);
-  gap:2px; padding:0 8px; overflow-x:auto;
-}
-.tab {
-  background:transparent; border:0; border-bottom:2px solid transparent;
-  color:var(--text-dim); padding:0 16px; font-size:12px; font-family:inherit;
-  cursor:pointer; transition:all .12s; white-space:nowrap;
-  display:flex; align-items:center; gap:6px;
-}
-.tab:hover { background:var(--panel-2); color:var(--text); }
-.tab.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--panel); }
-.tab .material-icons { font-size:16px; }
-.topbar .spacer { flex:1; }
-.file-btn {
-  align-self:center; margin:0 4px; background:var(--accent); color:var(--accent-text);
-  border:0; border-radius:4px; padding:7px 14px; font-family:inherit;
-  font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;
-  transition:background .12s;
-}
-.file-btn:hover { background:var(--accent-hover); }
-.file-btn .material-icons { font-size:16px; }
+#wallpaper{position:fixed;inset:0;z-index:0;background-color:#0f1115;background-size:cover;background-position:center;background-repeat:no-repeat;}
+#wallpaperVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:none;}
+#desktop{position:fixed;inset:0 0 48px 0;z-index:1;pointer-events:none;}
+#desktop .shortcut{pointer-events:auto;}
+.shortcut{position:absolute;width:88px;text-align:center;color:#fff;font-size:11px;text-shadow:0 1px 3px rgba(0,0,0,.8);cursor:pointer;padding:6px;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.shortcut:hover{background:rgba(255,255,255,.12);}
+.shortcut .sc-icon{width:46px;height:46px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4);}
+.shortcut .sc-icon .material-icons{font-size:26px;color:#fff;}
+.shortcut .sc-label{word-break:break-word;line-height:1.2;}
 
-/* ТРАНСПОРТ */
-.transport {
-  flex-shrink:0; background:var(--panel); border-bottom:1px solid var(--border);
-  padding:10px 14px; display:flex; flex-direction:column; gap:8px;
-}
-.transport .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.transport .grow { flex:1; min-width:120px; }
-.progress {
-  height:8px; background:var(--input-bg); border:1px solid var(--border);
-  border-radius:4px; overflow:hidden; cursor:pointer; position:relative;
-}
-.progress > div { height:100%; width:0%; background:var(--accent); transition:width .1s linear; pointer-events:none; }
+.win{position:fixed;background:var(--win-bg);border:1px solid var(--win-border);box-shadow:var(--shadow);display:flex;flex-direction:column;color:var(--text);overflow:hidden;border-radius:var(--radius);z-index:10;min-width:520px;min-height:360px;}
+.win.maximized{left:0!important;top:0!important;width:100vw!important;height:calc(100vh - 48px)!important;border-radius:0;border:0;}
+.win.minimized{display:none;}
+.win .titlebar{height:34px;background:var(--titlebar);color:var(--titlebar-text);display:flex;align-items:center;padding-left:12px;font-size:12px;flex-shrink:0;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);position:relative;}
+:root[data-style="xp"] .win .titlebar,:root[data-style="98"] .win .titlebar{padding-left:4px;font-weight:700;}
+.win.maximized .titlebar{border-radius:0;}
+.win .titlebar .title{flex:1;display:flex;align-items:center;gap:6px;letter-spacing:.2px;}
+.win-btn{width:46px;height:34px;background:transparent;border:0;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.win-btn .material-icons{font-size:16px;}
+.win-btn:hover{background:rgba(255,255,255,.08);}
+:root[data-theme="light"] .win-btn:hover{background:rgba(0,0,0,.06);}
+:root[data-style="xp"] .win-btn,:root[data-style="98"] .win-btn{width:20px;height:18px;margin-right:2px;background:var(--panel-2);border:1px solid var(--border);border-radius:2px;}
+:root[data-style="xp"] .win-btn:hover,:root[data-style="98"] .win-btn:hover{background:var(--panel-3);}
+.win-btn.close:hover{background:var(--danger);color:#fff;}
 
-/* визуализатор */
-.visualizer {
-  height:36px; background:var(--input-bg); border:1px solid var(--border);
-  border-radius:4px; overflow:hidden; margin-top:6px;
-}
-.visualizer canvas { width:100%; height:100%; display:block; }
+.topbar{display:flex;align-items:stretch;height:44px;flex-shrink:0;background:var(--tabbar);border-bottom:1px solid var(--border);gap:2px;padding:0 8px;overflow-x:auto;}
+.tab{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--text-dim);padding:0 16px;font-size:12px;font-family:var(--font);cursor:pointer;transition:all .12s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab:hover{background:var(--panel-2);color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--panel);}
+.tab .material-icons{font-size:16px;}
+.topbar .spacer{flex:1;}
 
-/* КОНТЕНТ */
-.content { flex:1; overflow:auto; padding:14px 16px; display:flex; flex-direction:column; gap:12px; }
-.section {
-  background:var(--panel); border:1px solid var(--border);
-  border-radius:6px; padding:14px 16px;
-}
-.section-title {
-  font-size:11px; text-transform:uppercase; letter-spacing:.6px;
-  color:var(--text-dim); margin-bottom:10px;
-  display:flex; align-items:center; gap:6px;
-}
-.section-title .material-icons { font-size:14px; }
-.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.transport{flex-shrink:0;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+.transport .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.transport .grow{flex:1;min-width:120px;}
+.progress{height:8px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--btn-radius);overflow:hidden;cursor:pointer;}
+.progress>div{height:100%;width:0%;background:var(--accent);pointer-events:none;transition:width .08s linear;}
+.visualizer{height:36px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--btn-radius);overflow:hidden;margin-top:6px;}
+.visualizer.hidden{display:none;}
+.visualizer canvas{width:100%;height:100%;display:block;}
 
-button.btn {
-  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
-  border-radius:4px; padding:7px 14px; font-size:13px; cursor:pointer; font-family:inherit;
-  transition:background .12s, border-color .12s;
-  display:inline-flex; align-items:center; gap:6px;
-}
-button.btn .material-icons { font-size:16px; }
-button.btn:hover:not(:disabled) { background:var(--panel-3); border-color:var(--accent); }
-button.btn:disabled { opacity:.45; cursor:default; }
-button.btn.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-text); }
-button.btn.primary:hover:not(:disabled) { background:var(--accent-hover); }
-button.btn.danger { background:var(--danger); border-color:var(--danger); color:#fff; }
-button.btn.danger:hover:not(:disabled) { background:var(--danger-hover); }
+.content{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:var(--panel-radius);padding:14px 16px;}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.section-title .material-icons{font-size:14px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 
-input[type=range] { width:100%; accent-color:var(--accent); }
-input[type=number], select, input[type=text] {
-  background:var(--input-bg); color:var(--text); border:1px solid var(--border);
-  border-radius:4px; padding:6px 8px; font-size:13px; font-family:inherit; max-width:100%;
-}
-select:focus, input:focus { outline:1px solid var(--accent); }
-label.field { display:flex; flex-direction:column; gap:4px; font-size:11px; color:var(--text-dim); }
-label.field > b { color:var(--text); }
+button.btn{background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:var(--btn-radius);padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--font);transition:background .12s,border-color .12s;display:inline-flex;align-items:center;gap:6px;}
+button.btn .material-icons{font-size:16px;}
+button.btn:hover:not(:disabled){background:var(--panel-3);border-color:var(--accent);}
+button.btn:disabled{opacity:.45;cursor:default;}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
+button.btn.primary:hover:not(:disabled){background:var(--accent-hover);}
+button.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff;}
 
-.badge {
-  display:inline-block; padding:2px 8px; border-radius:4px;
-  background:var(--panel-2); border:1px solid var(--border);
-  font-size:11px; color:var(--text-dim);
-}
+input[type=range]{width:100%;accent-color:var(--accent);}
+input[type=number],select,input[type=text]{background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:var(--btn-radius);padding:6px 8px;font-size:13px;font-family:var(--font);max-width:100%;}
+select:focus,input:focus{outline:1px solid var(--accent);}
+label.field{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text-dim);}
+label.field>b{color:var(--text);}
+.badge{display:inline-block;padding:2px 8px;border-radius:var(--btn-radius);background:var(--panel-2);border:1px solid var(--border);font-size:11px;color:var(--text-dim);}
+.status{font-size:12px;color:var(--text-dim);min-height:16px;}
 
-.track {
-  display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
-  background:var(--panel-2); border:1px solid var(--border);
-  border-radius:6px; padding:10px 12px; margin-bottom:8px;
-}
-.track .num { font-weight:700; color:var(--accent); font-size:12px; }
-.track .meta { font-size:11px; color:var(--text-dim); margin-top:2px; }
-.track .controls { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-.track .controls button { padding:5px 8px; }
-.track .controls button.active { background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
-.track-vis { height:22px; background:var(--input-bg); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-top:6px; }
-.track-vis canvas { width:100%; height:100%; display:block; }
+.fl-track{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--panel-radius);margin-bottom:10px;overflow:hidden;}
+.fl-track-header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(180deg,var(--panel-3),var(--panel-2));border-bottom:1px solid var(--border);}
+.fl-track-header .num{font-weight:700;color:var(--accent);font-size:12px;min-width:20px;}
+.fl-track-header .name{flex:1;font-size:12px;font-weight:600;}
+.fl-track-header .ch{font-size:10px;color:var(--text-dim);}
+.fl-track-header .mini-btns{display:flex;gap:4px;}
+.fl-track-header .mini-btns button{background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:var(--btn-radius);padding:3px 8px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-family:var(--font);}
+.fl-track-header .mini-btns button.active{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
+.fl-track-header .mini-btns .material-icons{font-size:14px;}
+.fl-track-body{padding:8px 12px;}
+.fl-pianoroll{height:70px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--btn-radius);position:relative;overflow:hidden;margin-bottom:8px;}
+.fl-pianoroll canvas{width:100%;height:100%;display:block;}
+.fl-track-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.fl-track-controls label{font-size:11px;color:var(--text-dim);display:flex;flex-direction:column;gap:2px;min-width:90px;flex:1;}
+.fl-track-controls label>b{color:var(--text);font-weight:400;font-size:11px;}
 
-.status { font-size:12px; color:var(--text-dim); min-height:16px; }
+.wallpaper-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.wp-thumb{aspect-ratio:16/10;border-radius:var(--btn-radius);border:2px solid var(--border);background-size:cover;background-position:center;background-repeat:no-repeat;cursor:pointer;transition:border-color .12s;}
+.wp-thumb:hover{border-color:var(--accent);}
+.wp-thumb.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);}
+.accent-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.accent-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid var(--border);transition:transform .1s;}
+.accent-dot:hover{transform:scale(1.1);}
+.accent-dot.active{border-color:var(--text);}
 
-/* ПОДВКЛАДКИ В НАСТРОЙКАХ */
-.subtabs {
-  display:flex; gap:4px; flex-wrap:wrap; margin-bottom:14px;
-  border-bottom:1px solid var(--border); padding-bottom:8px;
-}
-.subtab {
-  background:transparent; border:1px solid transparent; border-radius:4px;
-  padding:6px 12px; font-size:12px; font-family:inherit; cursor:pointer;
-  color:var(--text-dim); display:flex; align-items:center; gap:6px;
-}
-.subtab:hover { background:var(--panel-2); color:var(--text); }
-.subtab.active { background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
-.subtab .material-icons { font-size:14px; }
+/* УВЕДОМЛЕНИЯ */
+.notif-modal{position:fixed;z-index:5000;min-width:340px;max-width:460px;background:var(--win-bg);border:1px solid var(--win-border);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;color:var(--text);overflow:hidden;animation:errIn .15s ease-out;}
+@keyframes errIn{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+.notif-titlebar{height:32px;background:var(--titlebar);color:var(--titlebar-text);display:flex;align-items:center;padding-left:12px;font-size:12px;cursor:move;touch-action:none;}
+.notif-titlebar .etitle{flex:1;display:flex;align-items:center;gap:6px;font-weight:600;}
+.notif-body{padding:16px;display:flex;flex-direction:column;gap:14px;user-select:text;}
+.notif-msg{font-size:12px;line-height:1.5;color:var(--text);white-space:pre-wrap;}
+.notif-actions{display:flex;justify-content:flex-end;gap:8px;}
+.notif-icon{font-size:28px;}
+.notif-icon.error{color:var(--danger);}
+.notif-icon.warning{color:var(--warning);}
+.notif-icon.info{color:var(--info);}
 
-.wallpaper-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-.wp-thumb {
-  aspect-ratio:16/10; border-radius:4px; border:2px solid var(--border);
-  background-size:cover; background-position:center; cursor:pointer;
-  transition:border-color .12s;
-}
-.wp-thumb:hover { border-color:var(--accent); }
-.wp-thumb.active { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent); }
-
-.accent-grid { display:flex; gap:8px; flex-wrap:wrap; }
-.accent-dot {
-  width:32px; height:32px; border-radius:50%; cursor:pointer;
-  border:2px solid var(--border); transition:transform .1s;
-}
-.accent-dot:hover { transform:scale(1.1); }
-.accent-dot.active { border-color:var(--text); box-shadow:0 0 0 2px var(--accent); }
-
-/* ОШИБКИ (Windows-style) */
-.err-window {
-  position:fixed; z-index:5000; min-width:340px; max-width:460px;
-  background:var(--win-bg); border:1px solid var(--win-border);
-  border-radius:var(--radius); box-shadow:0 20px 60px rgba(0,0,0,.6);
-  display:flex; flex-direction:column; color:var(--text); overflow:hidden;
-  animation:errIn .15s ease-out;
-}
-@keyframes errIn { from { transform:scale(.94); opacity:0; } to { transform:scale(1); opacity:1; } }
-.err-titlebar {
-  height:32px; background:var(--titlebar); color:var(--titlebar-text);
-  display:flex; align-items:center; padding-left:12px; font-size:12px;
-  cursor:move; touch-action:none;
-}
-.err-titlebar .etitle { flex:1; display:flex; align-items:center; gap:6px; font-weight:600; }
-.err-body {
-  padding:16px; display:flex; flex-direction:column; gap:14px; user-select:text;
-}
-.err-msg { font-size:12px; line-height:1.5; color:var(--text); }
-.err-actions { display:flex; justify-content:flex-end; gap:8px; }
-.err-icon { color:var(--danger); font-size:28px; }
+.toast-container{position:fixed;right:16px;bottom:64px;z-index:7000;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{pointer-events:auto;min-width:280px;max-width:360px;background:var(--win-bg);border:1px solid var(--win-border);border-left:4px solid var(--info);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;color:var(--text);font-size:12px;animation:toastIn .3s ease-out;}
+.toast.error{border-left-color:var(--danger);}
+.toast.warning{border-left-color:var(--warning);}
+.toast.info{border-left-color:var(--info);}
+.toast.success{border-left-color:var(--success);}
+.toast .material-icons{font-size:20px;flex-shrink:0;}
+.toast.error .material-icons{color:var(--danger);}
+.toast.warning .material-icons{color:var(--warning);}
+.toast.info .material-icons{color:var(--info);}
+.toast.success .material-icons{color:var(--success);}
+.toast .toast-body{flex:1;}
+.toast .toast-title{font-weight:600;margin-bottom:2px;}
+.toast .toast-close{background:transparent;border:0;color:var(--text-dim);cursor:pointer;padding:0;}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes toastOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(120%);opacity:0;}}
 
 /* TASKBAR */
-.taskbar {
-  position:fixed; left:0; right:0; bottom:0; height:48px;
-  background:var(--taskbar); border-top:1px solid var(--border);
-  display:flex; align-items:center; padding:0 8px; z-index:4000; gap:6px;
-  box-shadow:0 -4px 16px rgba(0,0,0,.2);
-}
-.start-btn {
-  width:42px; height:42px; border-radius:6px; border:0;
-  background:transparent; color:var(--text);
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  transition:background .12s;
-}
-.start-btn:hover { background:var(--panel-2); }
-.start-btn .material-icons { font-size:22px; color:var(--accent); }
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:48px;background:var(--taskbar);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 8px;z-index:4000;gap:6px;box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+.start-btn{width:42px;height:42px;border-radius:var(--btn-radius);border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.start-btn:hover{background:var(--panel-2);}
+.start-btn .material-icons{font-size:22px;color:var(--accent);}
+.taskbar-icons{flex:1;display:flex;gap:6px;overflow-x:auto;justify-content:center;}
+.task-icon{min-width:44px;height:40px;border-radius:var(--btn-radius);border:1px solid transparent;background:var(--panel-2);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:0 10px;gap:6px;font-size:11px;white-space:nowrap;}
+.task-icon:hover{background:var(--panel-3);}
+.task-icon.active{border-color:var(--accent);}
+.task-icon.pinned::before{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:6px;height:2px;background:var(--accent);border-radius:2px;}
+.task-icon .material-icons{font-size:18px;}
+.taskbar-clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;font-size:11px;line-height:1.3;color:var(--text);padding:0 12px;min-width:90px;}
+.taskbar-clock .time{font-weight:600;}
+.taskbar-clock .date{color:var(--text-dim);font-size:10px;}
 
-.taskbar-icons { flex:1; display:flex; gap:6px; overflow-x:auto; justify-content:center; }
-.task-icon {
-  min-width:44px; height:40px; border-radius:6px; border:1px solid transparent;
-  background:var(--panel-2); color:var(--text);
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  position:relative; padding:0 10px; gap:6px; font-size:11px;
-  transition:background .12s;
-  white-space:nowrap;
-}
-.task-icon:hover { background:var(--panel-3); }
-.task-icon.active { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
-.task-icon.pinned::before {
-  content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
-  width:6px; height:2px; background:var(--accent); border-radius:2px;
-}
-.task-icon .material-icons { font-size:18px; }
+.task-preview{position:fixed;z-index:6000;background:var(--win-bg);border:1px solid var(--win-border);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,.5);padding:12px;min-width:240px;color:var(--text);display:none;}
+.task-preview.show{display:block;}
+.task-preview .tp-name{font-size:12px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.task-preview .tp-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.task-preview .tp-actions button{background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:var(--btn-radius);padding:5px 10px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:var(--font);}
+.task-preview .tp-actions button:hover{background:var(--panel-3);}
+.task-preview .tp-actions .material-icons{font-size:14px;}
 
-.taskbar-clock {
-  display:flex; flex-direction:column; align-items:flex-end; justify-content:center;
-  font-size:11px; line-height:1.3; color:var(--text); padding:0 12px;
-  min-width:90px; cursor:default;
-}
-.taskbar-clock .time { font-weight:600; }
-.taskbar-clock .date { color:var(--text-dim); font-size:10px; }
+.start-menu{position:fixed;left:8px;bottom:56px;z-index:5000;width:280px;max-height:70vh;overflow:auto;background:var(--win-bg);border:1px solid var(--win-border);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.6);padding:10px;display:none;color:var(--text);}
+.start-menu.show{display:block;}
+.start-menu .sm-header{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);padding:6px 10px;margin-top:4px;}
+.start-menu button{width:100%;background:transparent;border:0;color:var(--text);padding:9px 12px;font-size:13px;font-family:var(--font);text-align:left;cursor:pointer;border-radius:var(--btn-radius);display:flex;align-items:center;gap:10px;}
+.start-menu button:hover{background:var(--panel-2);}
+.start-menu button .material-icons{font-size:16px;color:var(--accent);}
+.start-menu hr{border:0;border-top:1px solid var(--border);margin:6px 0;}
 
-/* taskbar preview (долгое нажатие) */
-.task-preview {
-  position:fixed; z-index:6000; background:var(--win-bg);
-  border:1px solid var(--win-border); border-radius:var(--radius);
-  box-shadow:0 12px 40px rgba(0,0,0,.5); padding:12px; min-width:240px;
-  color:var(--text); display:none;
-}
-.task-preview.show { display:block; }
-.task-preview .tp-name {
-  font-size:12px; font-weight:600; margin-bottom:10px;
-  display:flex; align-items:center; gap:6px;
-}
-.task-preview .tp-actions { display:flex; gap:6px; flex-wrap:wrap; }
-.task-preview .tp-actions button {
-  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
-  border-radius:4px; padding:5px 10px; font-size:11px; cursor:pointer;
-  display:inline-flex; align-items:center; gap:4px; font-family:inherit;
-}
-.task-preview .tp-actions button:hover { background:var(--panel-3); border-color:var(--accent); }
-.task-preview .tp-actions .material-icons { font-size:14px; }
+/* Dialog */
+.dlg-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:8000;display:flex;align-items:center;justify-content:center;}
+.dlg{background:var(--win-bg);border:1px solid var(--win-border);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.6);min-width:400px;max-width:520px;color:var(--text);overflow:hidden;animation:errIn .15s ease-out;}
+.dlg-tb{height:32px;background:var(--titlebar);color:var(--titlebar-text);display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;gap:6px;}
+.dlg-tb .material-icons{font-size:16px;}
+.dlg-body{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.dlg-body label{font-size:11px;color:var(--text-dim);display:flex;flex-direction:column;gap:4px;}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;background:var(--panel);border-top:1px solid var(--border);}
 
-/* START MENU */
-.start-menu {
-  position:fixed; left:8px; bottom:56px; z-index:5000;
-  width:280px; max-height:70vh; overflow:auto;
-  background:var(--win-bg); border:1px solid var(--win-border);
-  border-radius:var(--radius); box-shadow:0 20px 60px rgba(0,0,0,.6);
-  padding:10px; display:none; color:var(--text);
-}
-.start-menu.show { display:block; }
-.start-menu .sm-header {
-  font-size:11px; text-transform:uppercase; letter-spacing:.6px;
-  color:var(--text-dim); padding:6px 10px; margin-top:4px;
-}
-.start-menu button {
-  width:100%; background:transparent; border:0; color:var(--text);
-  padding:9px 12px; font-size:13px; font-family:inherit; text-align:left;
-  cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:10px;
-}
-.start-menu button:hover { background:var(--panel-2); }
-.start-menu button .material-icons { font-size:16px; color:var(--accent); }
-.start-menu hr { border:0; border-top:1px solid var(--border); margin:6px 0; }
+/* Sequencer */
+.seq-wrap{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--panel-radius);padding:14px;}
+.seq-grid{display:grid;grid-template-columns:60px repeat(8,1fr);gap:4px;margin-bottom:12px;}
+.seq-label{font-size:11px;color:var(--text-dim);display:flex;align-items:center;padding-left:4px;height:32px;}
+.seq-cell{height:32px;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:background .1s,box-shadow .05s;position:relative;}
+.seq-cell:hover{border-color:var(--accent);}
+.seq-cell.on{background:var(--accent);border-color:var(--accent);}
+.seq-cell.playhead{box-shadow:inset 0 0 0 2px var(--warning);}
+.seq-cell.beat{background:var(--panel-3);}
+.seq-cell.on.beat{background:var(--accent);filter:brightness(1.1);}
 
-@media (max-width: 700px) {
-  .win { min-width:0; }
-  .track { grid-template-columns:1fr; }
-  .track .num { display:none; }
-  .wallpaper-grid { grid-template-columns:repeat(2,1fr); }
-  .taskbar-clock { min-width:70px; font-size:10px; }
-}
+/* новогоднее */
+.xmas .titlebar::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;background:repeating-linear-gradient(90deg,#ff5e7e 0 12px,#f5c542 12px 24px,#4f8cff 24px 36px,#2f9e44 36px 48px);animation:xmasGlow 2s linear infinite;pointer-events:none;}
+@keyframes xmasGlow{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+.xmas::before{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background-image:radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.9),transparent),radial-gradient(2px 2px at 60% 70%,rgba(255,255,255,.9),transparent),radial-gradient(1px 1px at 80% 20%,rgba(255,255,255,.9),transparent),radial-gradient(2px 2px at 40% 80%,rgba(255,255,255,.9),transparent);background-size:400px 400px;animation:snofall 10s linear infinite;opacity:.5;}
+@keyframes snofall{from{background-position:0 0;}to{background-position:0 400px;}}
+
+@media (max-width:700px){.win{min-width:0;}.wallpaper-grid{grid-template-columns:repeat(2,1fr);}.taskbar-clock{min-width:70px;font-size:10px;}.seq-grid{grid-template-columns:40px repeat(8,1fr);}}
 </style>
 </head>
 <body>
 <div id="wallpaper"></div>
+<video id="wallpaperVideo" autoplay loop muted playsinline></video>
+<div id="desktop"></div>
 
 <div class="win" id="mainWin">
   <div class="titlebar" id="titlebar">
-    <div class="title"><b>QMidApp</b> <span style="color:var(--text-dim);font-size:11px" id="versionLabel">v26-nov-2.4</span></div>
-    <button class="win-btn" id="btnMinimize" title="min"><span class="material-icons">remove</span></button>
-    <button class="win-btn" id="btnMaximize" title="max"><span class="material-icons">crop_square</span></button>
-    <button class="win-btn close" id="btnCloseWin" title="close"><span class="material-icons">close</span></button>
+    <div class="title"><b>QMidApp</b> <span style="color:var(--text-dim);font-size:11px">v26-nov-2.8</span></div>
+    <button class="win-btn" id="btnMinimize"><span class="material-icons">remove</span></button>
+    <button class="win-btn" id="btnMaximize"><span class="material-icons">crop_square</span></button>
+    <button class="win-btn close" id="btnCloseWin"><span class="material-icons">close</span></button>
   </div>
-
   <div class="topbar" id="topbar">
-    <button class="tab" data-tab="file"><span class="material-icons">folder_open</span><span data-i18n="tabFile">Файл</span></button>
+    <button class="tab" data-tab="file"><span class="material-icons">folder</span><span data-i18n="tabFile">Файл</span></button>
+    <button class="tab" data-tab="editor"><span class="material-icons">piano</span><span data-i18n="tabEditor">Редактор</span></button>
+    <button class="tab" data-tab="daw"><span class="material-icons">grid_on</span><span data-i18n="tabDaw">Секвенсор</span></button>
     <button class="tab" data-tab="settings"><span class="material-icons">settings</span><span data-i18n="tabSettings">Настройки</span></button>
     <button class="tab" data-tab="about"><span class="material-icons">info</span><span data-i18n="tabAbout">О программе</span></button>
     <div class="spacer"></div>
-    <button class="file-btn" id="fileBtn"><span class="material-icons">upload_file</span><span data-i18n="openMid">Открыть .mid</span></button>
-    <input type="file" id="file" accept=".mid,.midi,audio/midi" style="display:none">
   </div>
-
   <div class="transport">
     <div class="row">
       <button class="btn primary" id="play" disabled><span class="material-icons">play_arrow</span><span data-i18n="play">Играть</span></button>
@@ -353,29 +289,24 @@ label.field > b { color:var(--text); }
       <span class="badge" id="meta">—</span>
     </div>
     <div class="progress" id="progress"><div id="bar"></div></div>
-    <div class="visualizer"><canvas id="visCanvas" width="800" height="36"></canvas></div>
+    <div class="visualizer" id="vizBox"><canvas id="visCanvas" width="800" height="36"></canvas></div>
     <div class="status" id="status"></div>
   </div>
-
   <div class="content" id="content"></div>
-
-  <div style="position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--border) 50%);z-index:20" class="resize-handle" id="resizeHandle"></div>
+  <div class="resize-handle" id="resizeHandle" style="position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--border) 50%);z-index:20"></div>
 </div>
 
-<!-- TASKBAR -->
-<div class="taskbar" id="taskbar">
-  <button class="start-btn" id="startBtn" title="QMidApp"><span class="material-icons">piano</span></button>
+<div class="taskbar">
+  <button class="start-btn" id="startBtn"><span class="material-icons">piano</span></button>
   <div class="taskbar-icons" id="taskbarIcons"></div>
-  <div class="taskbar-clock" id="taskbarClock">
-    <span class="time" id="clockTime">--:--</span>
-    <span class="date" id="clockDate">--.--.----</span>
-  </div>
+  <div class="taskbar-clock"><span class="time" id="clockTime">--:--</span><span class="date" id="clockDate">--.--.----</span></div>
 </div>
 
-<!-- START MENU -->
 <div class="start-menu" id="startMenu">
   <div class="sm-header" data-i18n="apps">Приложения</div>
-  <button data-open-tab="file"><span class="material-icons">folder_open</span><span data-i18n="tabFile">Файл</span></button>
+  <button data-open-tab="file"><span class="material-icons">folder</span><span data-i18n="tabFile">Файл</span></button>
+  <button data-open-tab="editor"><span class="material-icons">piano</span><span data-i18n="tabEditor">Редактор</span></button>
+  <button data-open-tab="daw"><span class="material-icons">grid_on</span><span data-i18n="tabDaw">Секвенсор</span></button>
   <button data-open-tab="settings"><span class="material-icons">settings</span><span data-i18n="tabSettings">Настройки</span></button>
   <button data-open-tab="about"><span class="material-icons">info</span><span data-i18n="tabAbout">О программе</span></button>
   <hr>
@@ -383,9 +314,8 @@ label.field > b { color:var(--text); }
   <button id="smQuit"><span class="material-icons">power_settings_new</span><span data-i18n="quit">Выход</span></button>
 </div>
 
-<!-- TASK PREVIEW -->
 <div class="task-preview" id="taskPreview">
-  <div class="tp-name"><span class="material-icons">piano</span><span id="tpName">QMidApp</span></div>
+  <div class="tp-name"><span class="material-icons">piano</span>QMidApp</div>
   <div class="tp-actions">
     <button data-tp-action="open"><span class="material-icons">open_in_new</span><span data-i18n="open">Открыть</span></button>
     <button data-tp-action="hide"><span class="material-icons">visibility_off</span><span data-i18n="hide">Скрыть</span></button>
@@ -394,1476 +324,1623 @@ label.field > b { color:var(--text); }
   </div>
 </div>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
-/* ======================================================================
-   0. LOCALSTORAGE STATE
-   ====================================================================== */
-const LS_KEY = 'qmidapp_v24_state';
-const DEFAULTS = {
-  theme:'dark',
-  radius:8,
-  accent:'#4f8cff',
-  wallpaper:'none',
-  wallpaperData:null,
+/* ================= STATE ================= */
+const LS_KEY='qmidapp_v28_state';
+const DEFAULTS={
+  theme:'dark', style:'win10', font:'Segoe UI',
+  radius:8, accent:'#4f8cff',
+  wallpaper:'none', wallpaperData:null, wallpaperVideo:null,
   lang:'ru',
   win:{x:null,y:null,w:1080,h:700,maximized:false},
-  masterVol:0.7,
-  globalWave:'triangle',
-  globalPreset:'piano',
-  outputMode:'webaudio',
-  trackSettings:{},
-  pinnedTask:false
+  masterVol:0.7, globalWave:'triangle', globalPreset:'piano',
+  outputMode:'webaudio', outputDevice:'', trackSettings:{}, pinnedTask:false,
+  shortcuts:[], xmas:false, showVisualizer:true, vizType:'bars',
+  notifSound:true,
+  seq:{steps:Array(4*8).fill(false), tempo:120, wave:'sine'}
 };
-function loadState() {
-  try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(LS_KEY)) || {}); }
-  catch(e) { return {...DEFAULTS}; }
-}
-function saveState() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
-}
-let state = loadState();
+function loadState(){try{return Object.assign({},DEFAULTS,JSON.parse(localStorage.getItem(LS_KEY))||{});}catch(e){return JSON.parse(JSON.stringify(DEFAULTS));}}
+function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
+let state=loadState();
 
-/* ======================================================================
-   1. I18N
-   ====================================================================== */
-const I18N = {
-  ru: {
-    tabFile:'Файл', tabSettings:'Настройки', tabAbout:'О программе',
-    openMid:'Открыть .mid', play:'Играть', pause:'Пауза', stop:'Стоп',
-    apps:'Приложения', restore:'Показать окно', quit:'Выход',
-    open:'Открыть', hide:'Скрыть', pin:'Закрепить', close:'Закрыть',
-    subAppearance:'Внешний вид', subSynth:'Синтез', subOutput:'Вывод',
-    subTracks:'Дорожки', subExport:'Экспорт', subLang:'Язык',
-    theme:'Тема', themeDark:'Тёмная', themeLight:'Светлая',
-    radius:'Скругление окон', accent:'Акцентный цвет',
-    wallpaper:'Обои', wpNone:'Нет', wpUpload:'Загрузить фото',
-    synthWave:'Волна по умолчанию', synthPreset:'Пресет по умолчанию',
-    testTone:'Тестовая нота',
-    outputMode:'Режим', outAudio:'Web Audio (браузер)', outMidi:'Web MIDI (устройство)',
-    midiPort:'MIDI-порт', refresh:'Обновить', testMidi:'Тест MIDI',
-    noMidi:'— нет MIDI-устройств —',
-    instrument:'Инструмент', preset:'Пресет', wave:'Волна',
-    volume:'Громкость', reverb:'Реверб',
-    exportMid:'Скачать .mid', exportJs:'Скачать .js',
-    language:'Язык интерфейса',
-    fileLoaded:'Файл загружен', fileNotLoaded:'Файл не загружен',
-    loadFirst:'Сначала загрузите .mid файл',
-    aboutText:'Загрузите .mid файл через кнопку сверху. Играет через Web Audio или Web MIDI. Все настройки сохраняются автоматически.',
-    dev:'Разработчик', version:'Версия', thanks:'Особая благодарность',
-    thanksDeepSeek:'ИИ DeepSeek за помощь в создании проекта',
-    features:'Возможности', secStatus:'Статус', tracks:'Дорожки',
-    loaded:'Загружено', duration:'Длительность', sec:'с',
-    errTitle:'Ошибка', ok:'OK', errReadMidi:'Не удалось прочитать .mid файл',
-    noTrack:'Загрузите .mid файл — появится список дорожек.',
-    trackName:'Дорожка', notes:'нот', channel:'канал'
+/* ================= I18N (полный словарь) ================= */
+const I18N={
+  ru:{
+    tabFile:'Файл',tabEditor:'Редактор',tabDaw:'Секвенсор',tabSettings:'Настройки',tabAbout:'О программе',
+    play:'Играть',pause:'Пауза',stop:'Стоп',apps:'Приложения',restore:'Показать окно',quit:'Выход',
+    open:'Открыть',hide:'Скрыть',pin:'Закрепить',close:'Закрыть',
+    errTitle:'Ошибка',warnTitle:'Предупреждение',infoTitle:'Информация',ok:'OK',cancel:'Отмена',save:'Сохранить',
+    openMid:'Открыть .mid',saveMid:'Сохранить .mid',saveJs:'Сохранить .js',
+    fileLoaded:'Файл загружен',fileNotLoaded:'Файл не загружен',
+    loadFirst:'Сначала загрузите .mid',tracks:'Дорожки',duration:'Длительность',sec:'с',
+    appearance:'Внешний вид',style:'Стиль',theme:'Тема',themeDark:'Тёмная',themeLight:'Светлая',
+    font:'Шрифт',radius:'Скругление',accent:'Акцент',wallpaper:'Обои',wpNone:'Нет',wpPhoto:'Фото',wpLive:'Живые',
+    output:'Вывод звука',outMode:'Режим',outWebAudio:'Web Audio (браузер)',outWebMidi:'Web MIDI (устройство)',
+    outDev:'Устройство воспроизведения',outDefault:'— по умолчанию —',refreshDev:'Обновить устройства',
+    midiPort:'MIDI-порт',refreshMidi:'Обновить MIDI',testAudio:'Тест Web Audio',testMidi:'Тест MIDI',
+    noMidi:'— нет MIDI —',midiNotSupported:'Web MIDI не поддерживается этим браузером',
+    midiPickPort:'Выберите MIDI-порт',midiTestSent:'Тестовая нота отправлена в порт',
+    viz:'Визуализатор',vizShow:'Показывать',vizYes:'Да',vizNo:'Нет',vizType:'Вид',vizBars:'Столбики',vizWave:'Волна',
+    lang:'Язык',langLabel:'Язык интерфейса',notif:'Уведомления',notifSound:'Звук уведомлений',notifOn:'Вкл',notifOff:'Выкл',
+    shortcuts:'Ярлыки рабочего стола',addShortcut:'Добавить ярлык',noShortcuts:'Нет ярлыков',
+    devTools:'Разработчику',testErr:'Тест ошибки',testWarn:'Тест предупр.',testInfo:'Тест инфо',testToast:'Тест toast',
+    devText:'Текст уведомления',devType:'Тип',devShow:'Показать',newYear:'Новогоднее',
+    dev:'Разработчик',version:'Версия',thanks:'Особая благодарность',thanksText:'за помощь в создании проекта',
+    instrument:'Инструмент',preset:'Пресет',wave:'Волна',volume:'Громкость',reverb:'Реверб',
+    trackName:'Дорожка',channel:'канал',notes:'нот',
+    seq:'Мини-секвенсор',seqPlay:'Старт',seqStop:'Стоп',seqBpm:'BPM',seqWave:'Волна',seqClear:'Очистить',
+    edit:'Редактировать',delete:'Удалить',newShortcut:'Новый ярлык',editShortcut:'Редактировать ярлык',
+    scName:'Название',scIcon:'Иконка',scAction:'Действие',scText:'Текст (для уведомлений)',scType:'Тип уведомления',
+    actFile:'Открыть вкладку «Файл»',actEditor:'Открыть вкладку «Редактор»',actDaw:'Открыть вкладку «Секвенсор»',
+    actSettings:'Открыть вкладку «Настройки»',actAbout:'Открыть вкладку «О программе»',
+    actExportMid:'Экспорт в .mid',actExportJs:'Экспорт в .js',actToggleTheme:'Переключить тему',
+    actErr:'Показать ошибку',actWarn:'Показать предупреждение',actInfo:'Показать информацию',actToast:'Показать уведомление (toast)',
+    loaded:'Загружено',errorReadMidi:'Не удалось прочитать .mid',exportMidDone:'Скачан .mid файл',exportJsDone:'Скачан .js файл',
+    collapsed:'Приложение свёрнуто',devLogTitle:'Dev Log',confirmClose:'Закрыть QMidApp?',confirmQuit:'Выход?',confirmDelShortcut:'Удалить ярлык'
   },
-  en: {
-    tabFile:'File', tabSettings:'Settings', tabAbout:'About',
-    openMid:'Open .mid', play:'Play', pause:'Pause', stop:'Stop',
-    apps:'Apps', restore:'Show window', quit:'Quit',
-    open:'Open', hide:'Hide', pin:'Pin', close:'Close',
-    subAppearance:'Appearance', subSynth:'Synth', subOutput:'Output',
-    subTracks:'Tracks', subExport:'Export', subLang:'Language',
-    theme:'Theme', themeDark:'Dark', themeLight:'Light',
-    radius:'Window rounding', accent:'Accent color',
-    wallpaper:'Wallpaper', wpNone:'None', wpUpload:'Upload image',
-    synthWave:'Default waveform', synthPreset:'Default preset',
-    testTone:'Test tone',
-    outputMode:'Mode', outAudio:'Web Audio (browser)', outMidi:'Web MIDI (device)',
-    midiPort:'MIDI port', refresh:'Refresh', testMidi:'Test MIDI',
-    noMidi:'— no MIDI devices —',
-    instrument:'Instrument', preset:'Preset', wave:'Wave',
-    volume:'Volume', reverb:'Reverb',
-    exportMid:'Download .mid', exportJs:'Download .js',
-    language:'Interface language',
-    fileLoaded:'File loaded', fileNotLoaded:'No file loaded',
-    loadFirst:'Load a .mid file first',
-    aboutText:'Load a .mid file via the top button. Plays through Web Audio or Web MIDI. All settings auto-save.',
-    dev:'Developer', version:'Version', thanks:'Special thanks',
-    thanksDeepSeek:'DeepSeek AI for help with the project',
-    features:'Features', secStatus:'Status', tracks:'Tracks',
-    loaded:'Loaded', duration:'Duration', sec:'s',
-    errTitle:'Error', ok:'OK', errReadMidi:'Failed to read .mid file',
-    noTrack:'Load a .mid file — track list will appear.',
-    trackName:'Track', notes:'notes', channel:'channel'
+  en:{
+    tabFile:'File',tabEditor:'Editor',tabDaw:'Sequencer',tabSettings:'Settings',tabAbout:'About',
+    play:'Play',pause:'Pause',stop:'Stop',apps:'Apps',restore:'Show window',quit:'Quit',
+    open:'Open',hide:'Hide',pin:'Pin',close:'Close',
+    errTitle:'Error',warnTitle:'Warning',infoTitle:'Information',ok:'OK',cancel:'Cancel',save:'Save',
+    openMid:'Open .mid',saveMid:'Save .mid',saveJs:'Save .js',
+    fileLoaded:'File loaded',fileNotLoaded:'No file loaded',
+    loadFirst:'Load a .mid first',tracks:'Tracks',duration:'Duration',sec:'s',
+    appearance:'Appearance',style:'Style',theme:'Theme',themeDark:'Dark',themeLight:'Light',
+    font:'Font',radius:'Rounding',accent:'Accent',wallpaper:'Wallpaper',wpNone:'None',wpPhoto:'Photo',wpLive:'Live',
+    output:'Audio output',outMode:'Mode',outWebAudio:'Web Audio (browser)',outWebMidi:'Web MIDI (device)',
+    outDev:'Output device',outDefault:'— default —',refreshDev:'Refresh devices',
+    midiPort:'MIDI port',refreshMidi:'Refresh MIDI',testAudio:'Test Web Audio',testMidi:'Test MIDI',
+    noMidi:'— no MIDI —',midiNotSupported:'Web MIDI is not supported by this browser',
+    midiPickPort:'Select a MIDI port',midiTestSent:'Test note sent to port',
+    viz:'Visualizer',vizShow:'Show',vizYes:'Yes',vizNo:'No',vizType:'Type',vizBars:'Bars',vizWave:'Wave',
+    lang:'Language',langLabel:'Interface language',notif:'Notifications',notifSound:'Notification sound',notifOn:'On',notifOff:'Off',
+    shortcuts:'Desktop shortcuts',addShortcut:'Add shortcut',noShortcuts:'No shortcuts',
+    devTools:'Developer',testErr:'Test error',testWarn:'Test warning',testInfo:'Test info',testToast:'Test toast',
+    devText:'Notification text',devType:'Type',devShow:'Show',newYear:'New Year',
+    dev:'Developer',version:'Version',thanks:'Special thanks',thanksText:'for help with the project',
+    instrument:'Instrument',preset:'Preset',wave:'Wave',volume:'Volume',reverb:'Reverb',
+    trackName:'Track',channel:'channel',notes:'notes',
+    seq:'Mini-sequencer',seqPlay:'Start',seqStop:'Stop',seqBpm:'BPM',seqWave:'Wave',seqClear:'Clear',
+    edit:'Edit',delete:'Delete',newShortcut:'New shortcut',editShortcut:'Edit shortcut',
+    scName:'Name',scIcon:'Icon',scAction:'Action',scText:'Text (for notifications)',scType:'Notification type',
+    actFile:'Open tab "File"',actEditor:'Open tab "Editor"',actDaw:'Open tab "Sequencer"',
+    actSettings:'Open tab "Settings"',actAbout:'Open tab "About"',
+    actExportMid:'Export to .mid',actExportJs:'Export to .js',actToggleTheme:'Toggle theme',
+    actErr:'Show error',actWarn:'Show warning',actInfo:'Show info',actToast:'Show toast',
+    loaded:'Loaded',errorReadMidi:'Failed to read .mid',exportMidDone:'.mid file downloaded',exportJsDone:'.js file downloaded',
+    collapsed:'App minimized',devLogTitle:'Dev Log',confirmClose:'Close QMidApp?',confirmQuit:'Quit?',confirmDelShortcut:'Delete shortcut'
   },
-  zh: {
-    tabFile:'文件', tabSettings:'设置', tabAbout:'关于',
-    openMid:'打开 .mid', play:'播放', pause:'暂停', stop:'停止',
-    apps:'应用', restore:'显示窗口', quit:'退出',
-    open:'打开', hide:'隐藏', pin:'固定', close:'关闭',
-    subAppearance:'外观', subSynth:'合成', subOutput:'输出',
-    subTracks:'音轨', subExport:'导出', subLang:'语言',
-    theme:'主题', themeDark:'深色', themeLight:'浅色',
-    radius:'窗口圆角', accent:'强调色',
-    wallpaper:'壁纸', wpNone:'无', wpUpload:'上传图片',
-    synthWave:'默认波形', synthPreset:'默认预设',
-    testTone:'测试音',
-    outputMode:'模式', outAudio:'Web Audio（浏览器）', outMidi:'Web MIDI（设备）',
-    midiPort:'MIDI 端口', refresh:'刷新', testMidi:'测试 MIDI',
-    noMidi:'— 无 MIDI 设备 —',
-    instrument:'乐器', preset:'预设', wave:'波形',
-    volume:'音量', reverb:'混响',
-    exportMid:'下载 .mid', exportJs:'下载 .js',
-    language:'界面语言',
-    fileLoaded:'文件已加载', fileNotLoaded:'未加载文件',
-    loadFirst:'请先加载 .mid 文件',
-    aboutText:'通过顶部按钮加载 .mid 文件。通过 Web Audio 或 Web MIDI 播放。所有设置自动保存。',
-    dev:'开发者', version:'版本', thanks:'特别感谢',
-    thanksDeepSeek:'DeepSeek AI 对项目的帮助',
-    features:'功能', secStatus:'状态', tracks:'音轨',
-    loaded:'已加载', duration:'时长', sec:'秒',
-    errTitle:'错误', ok:'确定', errReadMidi:'无法读取 .mid 文件',
-    noTrack:'加载 .mid 文件 — 将显示音轨列表。',
-    trackName:'音轨', notes:'音符', channel:'通道'
+  zh:{
+    tabFile:'文件',tabEditor:'编辑器',tabDaw:'音序器',tabSettings:'设置',tabAbout:'关于',
+    play:'播放',pause:'暂停',stop:'停止',apps:'应用',restore:'显示窗口',quit:'退出',
+    open:'打开',hide:'隐藏',pin:'固定',close:'关闭',
+    errTitle:'错误',warnTitle:'警告',infoTitle:'信息',ok:'确定',cancel:'取消',save:'保存',
+    openMid:'打开 .mid',saveMid:'保存 .mid',saveJs:'保存 .js',
+    fileLoaded:'文件已加载',fileNotLoaded:'未加载文件',
+    loadFirst:'请先加载 .mid',tracks:'音轨',duration:'时长',sec:'秒',
+    appearance:'外观',style:'样式',theme:'主题',themeDark:'深色',themeLight:'浅色',
+    font:'字体',radius:'圆角',accent:'强调色',wallpaper:'壁纸',wpNone:'无',wpPhoto:'照片',wpLive:'动态',
+    output:'音频输出',outMode:'模式',outWebAudio:'Web Audio（浏览器）',outWebMidi:'Web MIDI（设备）',
+    outDev:'输出设备',outDefault:'— 默认 —',refreshDev:'刷新设备',
+    midiPort:'MIDI 端口',refreshMidi:'刷新 MIDI',testAudio:'测试 Web Audio',testMidi:'测试 MIDI',
+    noMidi:'— 无 MIDI —',midiNotSupported:'此浏览器不支持 Web MIDI',
+    midiPickPort:'请选择 MIDI 端口',midiTestSent:'测试音符已发送',
+    viz:'可视化',vizShow:'显示',vizYes:'是',vizNo:'否',vizType:'类型',vizBars:'柱状',vizWave:'波形',
+    lang:'语言',langLabel:'界面语言',notif:'通知',notifSound:'通知音',notifOn:'开',notifOff:'关',
+    shortcuts:'桌面快捷方式',addShortcut:'添加快捷方式',noShortcuts:'无快捷方式',
+    devTools:'开发者',testErr:'测试错误',testWarn:'测试警告',testInfo:'测试信息',testToast:'测试提示',
+    devText:'通知文本',devType:'类型',devShow:'显示',newYear:'新年',
+    dev:'开发者',version:'版本',thanks:'特别感谢',thanksText:'对项目的帮助',
+    instrument:'乐器',preset:'预设',wave:'波形',volume:'音量',reverb:'混响',
+    trackName:'音轨',channel:'通道',notes:'音符',
+    seq:'迷你音序器',seqPlay:'开始',seqStop:'停止',seqBpm:'BPM',seqWave:'波形',seqClear:'清空',
+    edit:'编辑',delete:'删除',newShortcut:'新快捷方式',editShortcut:'编辑快捷方式',
+    scName:'名称',scIcon:'图标',scAction:'操作',scText:'文本（通知）',scType:'通知类型',
+    actFile:'打开"文件"',actEditor:'打开"编辑器"',actDaw:'打开"音序器"',
+    actSettings:'打开"设置"',actAbout:'打开"关于"',
+    actExportMid:'导出为 .mid',actExportJs:'导出为 .js',actToggleTheme:'切换主题',
+    actErr:'显示错误',actWarn:'显示警告',actInfo:'显示信息',actToast:'显示提示',
+    loaded:'已加载',errorReadMidi:'读取 .mid 失败',exportMidDone:'已下载 .mid',exportJsDone:'已下载 .js',
+    collapsed:'应用已最小化',devLogTitle:'开发日志',confirmClose:'关闭 QMidApp?',confirmQuit:'退出?',confirmDelShortcut:'删除快捷方式'
   },
-  ja: {
-    tabFile:'ファイル', tabSettings:'設定', tabAbout:'情報',
-    openMid:'.mid を開く', play:'再生', pause:'一時停止', stop:'停止',
-    apps:'アプリ', restore:'ウィンドウを表示', quit:'終了',
-    open:'開く', hide:'隠す', pin:'ピン留め', close:'閉じる',
-    subAppearance:'外観', subSynth:'シンセ', subOutput:'出力',
-    subTracks:'トラック', subExport:'エクスポート', subLang:'言語',
-    theme:'テーマ', themeDark:'ダーク', themeLight:'ライト',
-    radius:'ウィンドウの角丸', accent:'アクセントカラー',
-    wallpaper:'壁紙', wpNone:'なし', wpUpload:'画像をアップロード',
-    synthWave:'既定の波形', synthPreset:'既定のプリセット',
-    testTone:'テスト音',
-    outputMode:'モード', outAudio:'Web Audio（ブラウザ）', outMidi:'Web MIDI（デバイス）',
-    midiPort:'MIDI ポート', refresh:'更新', testMidi:'MIDI テスト',
-    noMidi:'— MIDI デバイスなし —',
-    instrument:'楽器', preset:'プリセット', wave:'波形',
-    volume:'音量', reverb:'リバーブ',
-    exportMid:'.mid を保存', exportJs:'.js を保存',
-    language:'UI 言語',
-    fileLoaded:'ファイル読み込み済み', fileNotLoaded:'ファイル未読み込み',
-    loadFirst:'先に .mid ファイルを読み込んでください',
-    aboutText:'上部のボタンから .mid ファイルを読み込みます。Web Audio または Web MIDI で再生。設定は自動保存されます。',
-    dev:'開発者', version:'バージョン', thanks:'特別な感謝',
-    thanksDeepSeek:'プロジェクトを支援した DeepSeek AI',
-    features:'機能', secStatus:'状態', tracks:'トラック',
-    loaded:'読み込み済み', duration:'再生時間', sec:'秒',
-    errTitle:'エラー', ok:'OK', errReadMidi:'.mid ファイルの読み込みに失敗',
-    noTrack:'.mid ファイルを読み込むとトラック一覧が表示されます。',
-    trackName:'トラック', notes:'ノート', channel:'チャンネル'
+  ja:{
+    tabFile:'ファイル',tabEditor:'エディタ',tabDaw:'シーケンサー',tabSettings:'設定',tabAbout:'情報',
+    play:'再生',pause:'一時停止',stop:'停止',apps:'アプリ',restore:'ウィンドウを表示',quit:'終了',
+    open:'開く',hide:'隠す',pin:'ピン留め',close:'閉じる',
+    errTitle:'エラー',warnTitle:'警告',infoTitle:'情報',ok:'OK',cancel:'キャンセル',save:'保存',
+    openMid:'.mid を開く',saveMid:'.mid を保存',saveJs:'.js を保存',
+    fileLoaded:'ファイル読み込み済み',fileNotLoaded:'未読み込み',
+    loadFirst:'先に .mid を読み込んでください',tracks:'トラック',duration:'再生時間',sec:'秒',
+    appearance:'外観',style:'スタイル',theme:'テーマ',themeDark:'ダーク',themeLight:'ライト',
+    font:'フォント',radius:'角丸',accent:'アクセント',wallpaper:'壁紙',wpNone:'なし',wpPhoto:'写真',wpLive:'ライブ',
+    output:'音声出力',outMode:'モード',outWebAudio:'Web Audio（ブラウザ）',outWebMidi:'Web MIDI（デバイス）',
+    outDev:'出力デバイス',outDefault:'— 既定 —',refreshDev:'デバイス更新',
+    midiPort:'MIDI ポート',refreshMidi:'MIDI 更新',testAudio:'Web Audio テスト',testMidi:'MIDI テスト',
+    noMidi:'— MIDI なし —',midiNotSupported:'このブラウザは Web MIDI 非対応です',
+    midiPickPort:'MIDI ポートを選択してください',midiTestSent:'テストノートを送信しました',
+    viz:'ビジュアライザ',vizShow:'表示',vizYes:'はい',vizNo:'いいえ',vizType:'種類',vizBars:'バー',vizWave:'波形',
+    lang:'言語',langLabel:'UI 言語',notif:'通知',notifSound:'通知音',notifOn:'オン',notifOff:'オフ',
+    shortcuts:'デスクトップショートカット',addShortcut:'ショートカット追加',noShortcuts:'ショートカットなし',
+    devTools:'開発者向け',testErr:'エラーテスト',testWarn:'警告テスト',testInfo:'情報テスト',testToast:'トーストテスト',
+    devText:'通知テキスト',devType:'タイプ',devShow:'表示',newYear:'新年',
+    dev:'開発者',version:'バージョン',thanks:'特別な感謝',thanksText:'プロジェクトへの支援',
+    instrument:'楽器',preset:'プリセット',wave:'波形',volume:'音量',reverb:'リバーブ',
+    trackName:'トラック',channel:'チャンネル',notes:'ノート',
+    seq:'ミニシーケンサー',seqPlay:'スタート',seqStop:'停止',seqBpm:'BPM',seqWave:'波形',seqClear:'クリア',
+    edit:'編集',delete:'削除',newShortcut:'新規ショートカット',editShortcut:'ショートカット編集',
+    scName:'名前',scIcon:'アイコン',scAction:'アクション',scText:'テキスト（通知）',scType:'通知タイプ',
+    actFile:'「ファイル」を開く',actEditor:'「エディタ」を開く',actDaw:'「シーケンサー」を開く',
+    actSettings:'「設定」を開く',actAbout:'「情報」を開く',
+    actExportMid:'.mid に書き出す',actExportJs:'.js に書き出す',actToggleTheme:'テーマ切替',
+    actErr:'エラー表示',actWarn:'警告表示',actInfo:'情報表示',actToast:'トースト表示',
+    loaded:'読み込み済み',errorReadMidi:'.mid の読み込みに失敗',exportMidDone:'.mid を保存しました',exportJsDone:'.js を保存しました',
+    collapsed:'アプリは最小化されました',devLogTitle:'開発ログ',confirmClose:'QMidAppを閉じますか?',confirmQuit:'終了?',confirmDelShortcut:'ショートカット削除'
   },
-  fr: {
-    tabFile:'Fichier', tabSettings:'Paramètres', tabAbout:'À propos',
-    openMid:'Ouvrir .mid', play:'Lecture', pause:'Pause', stop:'Arrêt',
-    apps:'Applications', restore:'Afficher la fenêtre', quit:'Quitter',
-    open:'Ouvrir', hide:'Masquer', pin:'Épingler', close:'Fermer',
-    subAppearance:'Apparence', subSynth:'Synthèse', subOutput:'Sortie',
-    subTracks:'Pistes', subExport:'Export', subLang:'Langue',
-    theme:'Thème', themeDark:'Sombre', themeLight:'Clair',
-    radius:'Arrondi des fenêtres', accent:'Couleur d’accent',
-    wallpaper:'Fond d’écran', wpNone:'Aucun', wpUpload:'Téléverser image',
-    synthWave:'Forme d’onde par défaut', synthPreset:'Préréglage par défaut',
-    testTone:'Note de test',
-    outputMode:'Mode', outAudio:'Web Audio (navigateur)', outMidi:'Web MIDI (appareil)',
-    midiPort:'Port MIDI', refresh:'Actualiser', testMidi:'Tester MIDI',
-    noMidi:'— aucun appareil MIDI —',
-    instrument:'Instrument', preset:'Préréglage', wave:'Onde',
-    volume:'Volume', reverb:'Réverbération',
-    exportMid:'Télécharger .mid', exportJs:'Télécharger .js',
-    language:'Langue de l’interface',
-    fileLoaded:'Fichier chargé', fileNotLoaded:'Aucun fichier',
-    loadFirst:'Chargez d’abord un fichier .mid',
-    aboutText:'Chargez un fichier .mid via le bouton du haut. Lit via Web Audio ou Web MIDI. Tous les réglages sont sauvegardés.',
-    dev:'Développeur', version:'Version', thanks:'Remerciements',
-    thanksDeepSeek:'à DeepSeek AI pour son aide sur le projet',
-    features:'Fonctionnalités', secStatus:'Statut', tracks:'Pistes',
-    loaded:'Chargé', duration:'Durée', sec:'s',
-    errTitle:'Erreur', ok:'OK', errReadMidi:'Échec de lecture du .mid',
-    noTrack:'Chargez un fichier .mid — la liste des pistes apparaîtra.',
-    trackName:'Piste', notes:'notes', channel:'canal'
+  fr:{
+    tabFile:'Fichier',tabEditor:'Éditeur',tabDaw:'Séquenceur',tabSettings:'Paramètres',tabAbout:'À propos',
+    play:'Lecture',pause:'Pause',stop:'Arrêt',apps:'Applications',restore:'Afficher',quit:'Quitter',
+    open:'Ouvrir',hide:'Masquer',pin:'Épingler',close:'Fermer',
+    errTitle:'Erreur',warnTitle:'Avertissement',infoTitle:'Information',ok:'OK',cancel:'Annuler',save:'Enregistrer',
+    openMid:'Ouvrir .mid',saveMid:'Enregistrer .mid',saveJs:'Enregistrer .js',
+    fileLoaded:'Fichier chargé',fileNotLoaded:'Aucun fichier',
+    loadFirst:'Chargez d’abord un .mid',tracks:'Pistes',duration:'Durée',sec:'s',
+    appearance:'Apparence',style:'Style',theme:'Thème',themeDark:'Sombre',themeLight:'Clair',
+    font:'Police',radius:'Arrondi',accent:'Accent',wallpaper:'Fond',wpNone:'Aucun',wpPhoto:'Photo',wpLive:'Live',
+    output:'Sortie audio',outMode:'Mode',outWebAudio:'Web Audio (navigateur)',outWebMidi:'Web MIDI (appareil)',
+    outDev:'Périphérique de sortie',outDefault:'— par défaut —',refreshDev:'Actualiser les périphériques',
+    midiPort:'Port MIDI',refreshMidi:'Actualiser MIDI',testAudio:'Tester Web Audio',testMidi:'Tester MIDI',
+    noMidi:'— aucun MIDI —',midiNotSupported:'Web MIDI non supporté par ce navigateur',
+    midiPickPort:'Choisissez un port MIDI',midiTestSent:'Note test envoyée au port',
+    viz:'Visualiseur',vizShow:'Afficher',vizYes:'Oui',vizNo:'Non',vizType:'Type',vizBars:'Barres',vizWave:'Onde',
+    lang:'Langue',langLabel:'Langue de l’interface',notif:'Notifications',notifSound:'Son des notifications',notifOn:'On',notifOff:'Off',
+    shortcuts:'Raccourcis du bureau',addShortcut:'Ajouter un raccourci',noShortcuts:'Aucun raccourci',
+    devTools:'Développeur',testErr:'Tester erreur',testWarn:'Tester avertissement',testInfo:'Tester info',testToast:'Tester toast',
+    devText:'Texte de notification',devType:'Type',devShow:'Afficher',newYear:'Nouvel An',
+    dev:'Développeur',version:'Version',thanks:'Remerciements',thanksText:'pour l’aide au projet',
+    instrument:'Instrument',preset:'Préréglage',wave:'Onde',volume:'Volume',reverb:'Réverbération',
+    trackName:'Piste',channel:'canal',notes:'notes',
+    seq:'Mini-séquenceur',seqPlay:'Démarrer',seqStop:'Arrêter',seqBpm:'BPM',seqWave:'Onde',seqClear:'Effacer',
+    edit:'Modifier',delete:'Supprimer',newShortcut:'Nouveau raccourci',editShortcut:'Modifier le raccourci',
+    scName:'Nom',scIcon:'Icône',scAction:'Action',scText:'Texte (notifications)',scType:'Type de notification',
+    actFile:'Ouvrir l’onglet « Fichier »',actEditor:'Ouvrir l’onglet « Éditeur »',actDaw:'Ouvrir l’onglet « Séquenceur »',
+    actSettings:'Ouvrir l’onglet « Paramètres »',actAbout:'Ouvrir l’onglet « À propos »',
+    actExportMid:'Exporter .mid',actExportJs:'Exporter .js',actToggleTheme:'Changer de thème',
+    actErr:'Afficher une erreur',actWarn:'Afficher un avertissement',actInfo:'Afficher une info',actToast:'Afficher un toast',
+    loaded:'Chargé',errorReadMidi:'Échec de lecture .mid',exportMidDone:'.mid téléchargé',exportJsDone:'.js téléchargé',
+    collapsed:'Application réduite',devLogTitle:'Journal Dev',confirmClose:'Fermer QMidApp ?',confirmQuit:'Quitter ?',confirmDelShortcut:'Supprimer le raccourci'
   },
-  it: {
-    tabFile:'File', tabSettings:'Impostazioni', tabAbout:'Informazioni',
-    openMid:'Apri .mid', play:'Riproduci', pause:'Pausa', stop:'Stop',
-    apps:'App', restore:'Mostra finestra', quit:'Esci',
-    open:'Apri', hide:'Nascondi', pin:'Fissa', close:'Chiudi',
-    subAppearance:'Aspetto', subSynth:'Sintesi', subOutput:'Uscita',
-    subTracks:'Tracce', subExport:'Esporta', subLang:'Lingua',
-    theme:'Tema', themeDark:'Scuro', themeLight:'Chiaro',
-    radius:'Arrotondamento finestre', accent:'Colore d’accento',
-    wallpaper:'Sfondo', wpNone:'Nessuno', wpUpload:'Carica immagine',
-    synthWave:'Forma d’onda predefinita', synthPreset:'Preset predefinito',
-    testTone:'Nota di test',
-    outputMode:'Modalità', outAudio:'Web Audio (browser)', outMidi:'Web MIDI (dispositivo)',
-    midiPort:'Porta MIDI', refresh:'Aggiorna', testMidi:'Test MIDI',
-    noMidi:'— nessun dispositivo MIDI —',
-    instrument:'Strumento', preset:'Preset', wave:'Onda',
-    volume:'Volume', reverb:'Riverbero',
-    exportMid:'Scarica .mid', exportJs:'Scarica .js',
-    language:'Lingua interfaccia',
-    fileLoaded:'File caricato', fileNotLoaded:'Nessun file',
-    loadFirst:'Carica prima un file .mid',
-    aboutText:'Carica un file .mid dal pulsante in alto. Riproduce con Web Audio o Web MIDI. Tutte le impostazioni si salvano.',
-    dev:'Sviluppatore', version:'Versione', thanks:'Ringraziamenti speciali',
-    thanksDeepSeek:'a DeepSeek AI per il supporto al progetto',
-    features:'Funzionalità', secStatus:'Stato', tracks:'Tracce',
-    loaded:'Caricato', duration:'Durata', sec:'s',
-    errTitle:'Errore', ok:'OK', errReadMidi:'Impossibile leggere .mid',
-    noTrack:'Carica un file .mid — apparirà la lista delle tracce.',
-    trackName:'Traccia', notes:'note', channel:'canale'
+  it:{
+    tabFile:'File',tabEditor:'Editor',tabDaw:'Sequencer',tabSettings:'Impostazioni',tabAbout:'Informazioni',
+    play:'Riproduci',pause:'Pausa',stop:'Stop',apps:'App',restore:'Mostra finestra',quit:'Esci',
+    open:'Apri',hide:'Nascondi',pin:'Fissa',close:'Chiudi',
+    errTitle:'Errore',warnTitle:'Avviso',infoTitle:'Informazione',ok:'OK',cancel:'Annulla',save:'Salva',
+    openMid:'Apri .mid',saveMid:'Salva .mid',saveJs:'Salva .js',
+    fileLoaded:'File caricato',fileNotLoaded:'Nessun file',
+    loadFirst:'Carica prima un .mid',tracks:'Tracce',duration:'Durata',sec:'s',
+    appearance:'Aspetto',style:'Stile',theme:'Tema',themeDark:'Scuro',themeLight:'Chiaro',
+    font:'Font',radius:'Arrotondamento',accent:'Accento',wallpaper:'Sfondo',wpNone:'Nessuno',wpPhoto:'Foto',wpLive:'Live',
+    output:'Uscita audio',outMode:'Modalità',outWebAudio:'Web Audio (browser)',outWebMidi:'Web MIDI (dispositivo)',
+    outDev:'Dispositivo di uscita',outDefault:'— predefinito —',refreshDev:'Aggiorna dispositivi',
+    midiPort:'Porta MIDI',refreshMidi:'Aggiorna MIDI',testAudio:'Test Web Audio',testMidi:'Test MIDI',
+    noMidi:'— nessun MIDI —',midiNotSupported:'Web MIDI non supportato dal browser',
+    midiPickPort:'Seleziona una porta MIDI',midiTestSent:'Nota di test inviata alla porta',
+    viz:'Visualizzatore',vizShow:'Mostra',vizYes:'Sì',vizNo:'No',vizType:'Tipo',vizBars:'Barre',vizWave:'Onda',
+    lang:'Lingua',langLabel:'Lingua interfaccia',notif:'Notifiche',notifSound:'Suono notifiche',notifOn:'On',notifOff:'Off',
+    shortcuts:'Scorciatoie desktop',addShortcut:'Aggiungi scorciatoia',noShortcuts:'Nessuna scorciatoia',
+    devTools:'Sviluppatore',testErr:'Test errore',testWarn:'Test avviso',testInfo:'Test info',testToast:'Test toast',
+    devText:'Testo notifica',devType:'Tipo',devShow:'Mostra',newYear:'Capodanno',
+    dev:'Sviluppatore',version:'Versione',thanks:'Ringraziamenti speciali',thanksText:'per il supporto al progetto',
+    instrument:'Strumento',preset:'Preset',wave:'Onda',volume:'Volume',reverb:'Riverbero',
+    trackName:'Traccia',channel:'canale',notes:'note',
+    seq:'Mini-sequencer',seqPlay:'Avvia',seqStop:'Ferma',seqBpm:'BPM',seqWave:'Onda',seqClear:'Pulisci',
+    edit:'Modifica',delete:'Elimina',newShortcut:'Nuova scorciatoia',editShortcut:'Modifica scorciatoia',
+    scName:'Nome',scIcon:'Icona',scAction:'Azione',scText:'Testo (notifiche)',scType:'Tipo di notifica',
+    actFile:'Apri scheda «File»',actEditor:'Apri scheda «Editor»',actDaw:'Apri scheda «Sequencer»',
+    actSettings:'Apri scheda «Impostazioni»',actAbout:'Apri scheda «Informazioni»',
+    actExportMid:'Esporta .mid',actExportJs:'Esporta .js',actToggleTheme:'Cambia tema',
+    actErr:'Mostra errore',actWarn:'Mostra avviso',actInfo:'Mostra info',actToast:'Mostra toast',
+    loaded:'Caricato',errorReadMidi:'Lettura .mid fallita',exportMidDone:'.mid scaricato',exportJsDone:'.js scaricato',
+    collapsed:'Applicazione ridotta',devLogTitle:'Log Dev',confirmClose:'Chiudere QMidApp?',confirmQuit:'Uscire?',confirmDelShortcut:'Eliminare la scorciatoia'
   }
 };
-function t(key) {
-  const dict = I18N[state.lang] || I18N.en;
-  return dict[key] || I18N.en[key] || key;
-}
-function applyI18n() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const k = el.getAttribute('data-i18n');
-    el.textContent = t(k);
-  });
+function t(k){const d=I18N[state.lang]||I18N.en;return d[k]||I18N.en[k]||k;}
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.getAttribute('data-i18n'));});
+  // Обновим titlebar кнопки tooltips
+  const tb=$('btnMinimize'); if(tb) tb.title=t('hide');
+  const tc=$('btnCloseWin'); if(tc) tc.title=t('close');
 }
 
-/* ======================================================================
-   2. ОБОИ / ТЕМА / АКЦЕНТ / РАДИУС
-   ====================================================================== */
-const WALLPAPERS = {
-  none: null,
-  dark1: 'linear-gradient(135deg,#0f2027,#203a43,#2c5364)',
-  dark2: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)',
-  purple: 'linear-gradient(135deg,#2d1b69,#4a2b8c,#6d4cb0)',
-  sunset: 'linear-gradient(135deg,#ff6e7f,#bfe9ff)',
-  forest: 'linear-gradient(135deg,#134e5e,#71b280)',
-  night: 'radial-gradient(ellipse at top,#1a1a1a,#000)',
-  orange: 'linear-gradient(135deg,#f12711,#f5af19)'
-};
-function applyWallpaper(key, data) {
-  state.wallpaper = key;
-  state.wallpaperData = data || null;
-  const el = document.getElementById('wallpaper');
-  if (key === 'custom' && data) {
-    el.style.backgroundImage = `url("${data}")`;
-  } else if (WALLPAPERS[key]) {
-    el.style.backgroundImage = WALLPAPERS[key];
-  } else {
-    el.style.backgroundImage = 'none';
-    el.style.background = 'var(--win-bg)';
+/* ================= SOUND ================= */
+const notifSound={
+  ctx:null,
+  ensure(){if(!this.ctx)this.ctx=new (window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();return this.ctx;},
+  play(type){
+    if(!state.notifSound)return;
+    try{
+      const ctx=this.ensure();const now=ctx.currentTime;
+      const notesByType={error:[660,550,440,330],warning:[523,494,440],info:[523,659,784],success:[523,659,784,1047]};
+      const notes=notesByType[type]||notesByType.info;
+      notes.forEach((freq,i)=>{
+        const osc=ctx.createOscillator();const g=ctx.createGain();
+        osc.type='sine';osc.frequency.value=freq;
+        const t0=now+i*0.06;
+        g.gain.setValueAtTime(0.0001,t0);
+        g.gain.linearRampToValueAtTime(0.08,t0+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,t0+0.35);
+        osc.connect(g).connect(ctx.destination);osc.start(t0);osc.stop(t0+0.4);
+      });
+    }catch(e){}
   }
-  saveState();
-}
-function applyTheme(th) {
-  state.theme = th;
-  document.documentElement.dataset.theme = th;
-  saveState();
-}
-function applyRadius(r) {
-  state.radius = r;
-  document.documentElement.style.setProperty('--radius', r + 'px');
-  saveState();
-}
-function applyAccent(c) {
-  state.accent = c;
-  const darker = shade(c, -15);
-  document.documentElement.style.setProperty('--accent', c);
-  document.documentElement.style.setProperty('--accent-hover', darker);
-  saveState();
-}
-function shade(hex, percent) {
-  const n = parseInt(hex.replace('#',''), 16);
-  let r = (n>>16)+Math.round(2.55*percent);
-  let g = ((n>>8)&0xff)+Math.round(2.55*percent);
-  let b = (n&0xff)+Math.round(2.55*percent);
-  r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
-  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
-}
+};
 
-/* ======================================================================
-   3. ERROR WINDOWS
-   ====================================================================== */
-function showError(title, msg, x, y) {
-  const win = document.createElement('div');
-  win.className = 'err-window';
-  const px = x != null ? x : (window.innerWidth/2 - 200);
-  const py = y != null ? y : (window.innerHeight/2 - 100);
-  win.style.left = px + 'px';
-  win.style.top  = py + 'px';
-  win.innerHTML = `
-    <div class="err-titlebar">
-      <div class="etitle"><span class="material-icons" style="font-size:16px">error_outline</span>${title}</div>
+/* ================= NOTIFICATIONS ================= */
+function showNotification(type,title,msg,options={}){
+  notifSound.play(type);
+  if(options.style==='toast'){
+    const c=document.getElementById('toastContainer');
+    const el=document.createElement('div');
+    el.className='toast '+type;
+    const icons={error:'error',warning:'warning',info:'info',success:'check_circle'};
+    el.innerHTML=`<span class="material-icons">${icons[type]||'info'}</span>
+      <div class="toast-body"><div class="toast-title">${escapeHtml(title)}</div><div>${escapeHtml(msg)}</div></div>
+      <button class="toast-close"><span class="material-icons" style="font-size:16px">close</span></button>`;
+    c.appendChild(el);
+    const close=()=>{el.style.animation='toastOut .25s ease-in';setTimeout(()=>el.remove(),250);};
+    el.querySelector('.toast-close').onclick=close;
+    setTimeout(close,options.duration||4500);
+    return;
+  }
+  const win=document.createElement('div');
+  win.className='notif-modal';
+  win.style.left=(options.x??(window.innerWidth/2-200))+'px';
+  win.style.top=(options.y??(window.innerHeight/2-100))+'px';
+  const icons={error:'error',warning:'warning',info:'info'};
+  const titles={error:t('errTitle'),warning:t('warnTitle'),info:t('infoTitle')};
+  win.innerHTML=`
+    <div class="notif-titlebar">
+      <div class="etitle"><span class="material-icons" style="font-size:16px">${icons[type]||'info'}</span>${escapeHtml(title||titles[type])}</div>
       <button class="win-btn close"><span class="material-icons" style="font-size:14px">close</span></button>
     </div>
-    <div class="err-body">
+    <div class="notif-body">
       <div style="display:flex;gap:12px;align-items:flex-start">
-        <span class="material-icons err-icon">error</span>
-        <div class="err-msg">${msg}</div>
+        <span class="material-icons notif-icon ${type}">${icons[type]||'info'}</span>
+        <div class="notif-msg">${escapeHtml(msg)}</div>
       </div>
-      <div class="err-actions"><button class="btn primary err-ok">${t('ok')}</button></div>
+      <div class="notif-actions"><button class="btn primary notif-ok">${t('ok')}</button></div>
     </div>`;
   document.body.appendChild(win);
-  win.querySelector('.err-ok').onclick = () => win.remove();
-  win.querySelector('.win-btn.close').onclick = () => win.remove();
-  // drag
-  const tb = win.querySelector('.err-titlebar');
-  let dragging=false, sx=0, sy=0, ox=0, oy=0;
-  tb.addEventListener('pointerdown', e => {
-    if (e.target.closest('.win-btn')) return;
-    dragging=true; sx=e.clientX; sy=e.clientY;
-    ox=win.offsetLeft; oy=win.offsetTop;
-    try { tb.setPointerCapture(e.pointerId); } catch(_){}
+  win.querySelector('.notif-ok').onclick=()=>win.remove();
+  win.querySelector('.win-btn.close').onclick=()=>win.remove();
+  const tb=win.querySelector('.notif-titlebar');
+  let d=false,sx=0,sy=0,ox=0,oy=0,pid=null;
+  tb.style.touchAction='none';
+  tb.addEventListener('pointerdown',e=>{if(e.target.closest('.win-btn'))return;d=true;pid=e.pointerId;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;try{tb.setPointerCapture(pid);}catch(_){}});
+  tb.addEventListener('pointermove',e=>{if(!d||e.pointerId!==pid)return;e.preventDefault();win.style.left=(ox+e.clientX-sx)+'px';win.style.top=(oy+e.clientY-sy)+'px';});
+  tb.addEventListener('pointerup',()=>{d=false;pid=null;});
+  tb.addEventListener('pointercancel',()=>{d=false;pid=null;});
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+const errors=[];
+window.qmid={
+  state,get player(){return player;},errors,
+  error(text,title){showNotification('error',title||t('errTitle'),String(text));errors.push({t:Date.now(),text});},
+  warn(text,title){showNotification('warning',title||t('warnTitle'),String(text));},
+  info(text,title){showNotification('info',title||t('infoTitle'),String(text));},
+  toast(text,type='info'){showNotification(type||'info','Notification',String(text),{style:'toast'});},
+  log(...a){console.log('[QMidApp]',...a);}
+};
+
+/* ================= DIALOG ================= */
+function openDialog(opts){
+  return new Promise(resolve=>{
+    const back=document.createElement('div');back.className='dlg-backdrop';
+    const dlg=document.createElement('div');dlg.className='dlg';
+    dlg.innerHTML=`
+      <div class="dlg-tb"><span class="material-icons">${opts.icon||'edit'}</span>${escapeHtml(opts.title||'')}</div>
+      <div class="dlg-body" id="dlgBody"></div>
+      <div class="dlg-actions">
+        <button class="btn" id="dlgCancel">${opts.cancelText||t('cancel')}</button>
+        <button class="btn primary" id="dlgOk">${opts.okText||t('ok')}</button>
+      </div>`;
+    back.appendChild(dlg);document.body.appendChild(back);
+    const body=dlg.querySelector('#dlgBody');const inputs={};
+    (opts.fields||[]).forEach(f=>{
+      const lbl=document.createElement('label');lbl.textContent=f.label;
+      let inp;
+      if(f.type==='select'){
+        inp=document.createElement('select');
+        (f.options||[]).forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;inp.appendChild(op);});
+        if(f.value!=null)inp.value=f.value;
+      } else if(f.type==='textarea'){
+        inp=document.createElement('textarea');inp.rows=3;
+        inp.style.background='var(--input-bg)';inp.style.color='var(--text)';inp.style.border='1px solid var(--border)';
+        inp.style.borderRadius='4px';inp.style.padding='6px';inp.style.fontFamily='inherit';inp.style.fontSize='13px';
+        if(f.value!=null)inp.value=f.value;
+      } else {
+        inp=document.createElement('input');inp.type=f.type||'text';
+        if(f.value!=null)inp.value=f.value;if(f.placeholder)inp.placeholder=f.placeholder;
+      }
+      lbl.appendChild(inp);body.appendChild(lbl);inputs[f.name]=inp;
+    });
+    if(opts.onMount)opts.onMount(body,inputs);
+    dlg.querySelector('#dlgCancel').onclick=()=>{back.remove();resolve(null);};
+    dlg.querySelector('#dlgOk').onclick=()=>{
+      const result={};for(const k in inputs)result[k]=inputs[k].value;
+      back.remove();resolve(result);
+    };
   });
-  tb.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    win.style.left = (ox + e.clientX - sx) + 'px';
-    win.style.top  = (oy + e.clientY - sy) + 'px';
-  });
-  tb.addEventListener('pointerup', () => dragging=false);
-  tb.addEventListener('pointercancel', () => dragging=false);
 }
 
-/* ======================================================================
-   4. MIDI ПАРСЕР
-   ====================================================================== */
-class MidiParser {
-  constructor(buf) {
-    this.dv = new DataView(buf);
-    this.pos = 0; this.tracks = [];
-    this.format = 0; this.division = 480; this.tempoMap = [];
+/* ================= STYLE / THEME ================= */
+function applyTheme(th){state.theme=th;document.documentElement.dataset.theme=th;saveState();}
+function applyStyle(s){state.style=s;document.documentElement.dataset.style=s;saveState();}
+function applyFont(f){
+  state.font=f;
+  const isSystem=['Segoe UI','Arial','Tahoma','MS Sans Serif','-apple-system'].includes(f);
+  document.documentElement.style.setProperty('--font',isSystem?`${f},system-ui,sans-serif`:`'${f}',system-ui,sans-serif`);
+  saveState();
+}
+function applyRadius(r){state.radius=r;document.documentElement.style.setProperty('--radius',r+'px');saveState();}
+function applyAccent(c){
+  state.accent=c;
+  document.documentElement.style.setProperty('--accent',c);
+  document.documentElement.style.setProperty('--accent-hover',shade(c,-15));
+  saveState();
+}
+function shade(hex,p){const n=parseInt(hex.replace('#',''),16);let r=(n>>16)+Math.round(2.55*p),g=((n>>8)&0xff)+Math.round(2.55*p),b=(n&0xff)+Math.round(2.55*p);r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+
+const WALLPAPERS={
+  none:null,
+  dark1:'linear-gradient(135deg,#0f2027,#203a43,#2c5364)',
+  dark2:'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)',
+  purple:'linear-gradient(135deg,#2d1b69,#4a2b8c,#6d4cb0)',
+  sunset:'linear-gradient(135deg,#ff6e7f,#bfe9ff)',
+  forest:'linear-gradient(135deg,#134e5e,#71b280)',
+  night:'radial-gradient(ellipse at top,#1a1a1a,#000)',
+  orange:'linear-gradient(135deg,#f12711,#f5af19)',
+  ocean:'linear-gradient(135deg,#0f4c75,#3282b8)',
+  cherry:'linear-gradient(135deg,#eb3349,#f45c43)',
+  mint:'linear-gradient(135deg,#00b4db,#0083b0)',
+  space:'radial-gradient(ellipse at bottom,#1b2735,#090a0f)'
+};
+function applyWallpaper(key,data,videoData){
+  state.wallpaper=key;state.wallpaperData=data||null;state.wallpaperVideo=videoData||null;
+  const el=document.getElementById('wallpaper');const vid=document.getElementById('wallpaperVideo');
+  vid.style.display='none';vid.pause();vid.removeAttribute('src');
+  el.style.backgroundImage='none';
+  if(key==='custom'&&data){el.style.backgroundImage=`url("${data}")`;}
+  else if(key==='customVideo'&&videoData){vid.src=videoData;vid.style.display='block';vid.play().catch(()=>{});}
+  else if(WALLPAPERS[key]){el.style.backgroundImage=WALLPAPERS[key];}
+  else{el.style.background='var(--win-bg)';}
+  saveState();
+}
+
+/* ================= MIDI PARSER ================= */
+class MidiParser{
+  constructor(buf){this.dv=new DataView(buf);this.pos=0;this.tracks=[];this.format=0;this.division=480;this.tempoMap=[];}
+  u8(){return this.dv.getUint8(this.pos++);}
+  u16(){const v=this.dv.getUint16(this.pos);this.pos+=2;return v;}
+  u32(){const v=this.dv.getUint32(this.pos);this.pos+=4;return v;}
+  str(n){let s='';for(let i=0;i<n;i++)s+=String.fromCharCode(this.u8());return s;}
+  varlen(){let v=0,b;do{b=this.u8();v=(v<<7)|(b&0x7f);}while(b&0x80);return v;}
+  parse(){
+    if(this.str(4)!=='MThd')throw new Error('Not MIDI');
+    const hlen=this.u32();this.format=this.u16();const ntrks=this.u16();this.division=this.u16();
+    this.pos+=hlen-6;
+    for(let i=0;i<ntrks;i++)this.parseTrack(i);
+    return {format:this.format,division:this.division,tracks:this.tracks,tempoMap:this.tempoMap.sort((a,b)=>a.tick-b.tick)};
   }
-  u8(){ return this.dv.getUint8(this.pos++); }
-  u16(){ const v=this.dv.getUint16(this.pos); this.pos+=2; return v; }
-  u32(){ const v=this.dv.getUint32(this.pos); this.pos+=4; return v; }
-  str(n){ let s=''; for(let i=0;i<n;i++) s+=String.fromCharCode(this.u8()); return s; }
-  varlen(){ let v=0,b; do{ b=this.u8(); v=(v<<7)|(b&0x7f);}while(b&0x80); return v; }
-  parse() {
-    if (this.str(4)!=='MThd') throw new Error('Not MIDI');
-    const hlen=this.u32();
-    this.format=this.u16();
-    const ntrks=this.u16();
-    this.division=this.u16();
-    this.pos += hlen-6;
-    for (let i=0;i<ntrks;i++) this.parseTrack(i);
-    return { format:this.format, division:this.division, tracks:this.tracks,
-             tempoMap:this.tempoMap.sort((a,b)=>a.tick-b.tick) };
-  }
-  parseTrack(index) {
-    if (this.str(4)!=='MTrk') { const len=this.u32(); this.pos+=len; return; }
-    const len=this.u32(); const end=this.pos+len;
-    const track={index, notes:[], name:'', channel:0, program:0};
-    let tick=0, running=0;
-    while (this.pos<end) {
-      tick += this.varlen();
+  parseTrack(index){
+    if(this.str(4)!=='MTrk'){const len=this.u32();this.pos+=len;return;}
+    const len=this.u32();const end=this.pos+len;
+    const track={index,notes:[],name:'',channel:0,program:0};
+    let tick=0,running=0;
+    while(this.pos<end){
+      tick+=this.varlen();
       let status=this.dv.getUint8(this.pos);
-      if (status<0x80) { status=running; }
-      else { this.pos++; if (status<0xF0) running=status; }
-      const type=status&0xF0, ch=status&0x0F;
-      if (type===0x90 || type===0x80) {
-        const note=this.u8(), vel=this.u8();
-        if (type===0x90 && vel>0) track.notes.push({tick,note,vel,ch,dur:0});
-        else for (let j=track.notes.length-1;j>=0;j--) {
-          const n=track.notes[j];
-          if (n.note===note && n.ch===ch && n.dur===0) { n.dur=Math.max(tick-n.tick,1); break; }
-        }
-      } else if (type===0xA0||type===0xB0||type===0xE0) { this.pos+=2; }
-      else if (type===0xC0) { track.program=this.u8(); track.channel=ch; }
-      else if (type===0xD0) { this.pos+=1; }
-      else if (status===0xFF) {
-        const mt=this.u8(), ml=this.varlen();
-        if (mt===0x03) { let s=''; for(let i=0;i<ml;i++) s+=String.fromCharCode(this.u8()); track.name=s; }
-        else if (mt===0x51) { const us=(this.u8()<<16)|(this.u8()<<8)|this.u8(); this.tempoMap.push({tick,usPerQuarter:us}); }
+      if(status<0x80)status=running;
+      else{this.pos++;if(status<0xF0)running=status;}
+      const type=status&0xF0,ch=status&0x0F;
+      if(type===0x90||type===0x80){
+        const note=this.u8(),vel=this.u8();
+        if(type===0x90&&vel>0)track.notes.push({tick,note,vel,ch,dur:0});
+        else for(let j=track.notes.length-1;j>=0;j--){const n=track.notes[j];if(n.note===note&&n.ch===ch&&n.dur===0){n.dur=Math.max(tick-n.tick,1);break;}}
+      }else if(type===0xA0||type===0xB0||type===0xE0){this.pos+=2;}
+      else if(type===0xC0){track.program=this.u8();track.channel=ch;}
+      else if(type===0xD0){this.pos+=1;}
+      else if(status===0xFF){
+        const mt=this.u8(),ml=this.varlen();
+        if(mt===0x03){let s='';for(let i=0;i<ml;i++)s+=String.fromCharCode(this.u8());track.name=s;}
+        else if(mt===0x51){const us=(this.u8()<<16)|(this.u8()<<8)|this.u8();this.tempoMap.push({tick,usPerQuarter:us});}
         else this.pos+=ml;
-      } else if (status===0xF0||status===0xF7) { this.pos+=this.varlen(); }
+      }else if(status===0xF0||status===0xF7){this.pos+=this.varlen();}
       else break;
     }
     track.notes.sort((a,b)=>a.tick-b.tick);
-    if (track.notes.length) this.tracks.push(track);
+    if(track.notes.length)this.tracks.push(track);
   }
 }
-function ticksToSeconds(tick, division, tempoMap) {
-  let sec=0, prev=0, us=500000;
-  for (const tt of tempoMap) {
-    if (tt.tick>=tick) break;
-    sec += (tt.tick-prev)*us/division/1e6;
-    prev=tt.tick; us=tt.usPerQuarter;
-  }
-  sec += (tick-prev)*us/division/1e6;
-  return sec;
+function ticksToSeconds(tick,division,tempoMap){
+  let sec=0,prev=0,us=500000;
+  for(const tt of tempoMap){if(tt.tick>=tick)break;sec+=(tt.tick-prev)*us/division/1e6;prev=tt.tick;us=tt.usPerQuarter;}
+  sec+=(tick-prev)*us/division/1e6;return sec;
 }
 
-/* ======================================================================
-   5. GM / ПРЕСЕТЫ
-   ====================================================================== */
-const GM_NAMES = ['Acoustic Grand Piano','Bright Acoustic Piano','Electric Grand Piano','Honky-tonk Piano',
-'Electric Piano 1','Electric Piano 2','Harpsichord','Clavi','Celesta','Glockenspiel','Music Box','Vibraphone',
-'Marimba','Xylophone','Tubular Bells','Dulcimer','Drawbar Organ','Percussive Organ','Rock Organ','Church Organ',
-'Reed Organ','Accordion','Harmonica','Tango Accordion','Acoustic Guitar (nylon)','Acoustic Guitar (steel)',
-'Electric Guitar (jazz)','Electric Guitar (clean)','Electric Guitar (muted)','Overdriven Guitar',
-'Distortion Guitar','Guitar Harmonics','Acoustic Bass','Electric Bass (finger)','Electric Bass (pick)',
-'Fretless Bass','Slap Bass 1','Slap Bass 2','Synth Bass 1','Synth Bass 2','Violin','Viola','Cello','Contrabass',
-'Tremolo Strings','Pizzicato Strings','Orchestral Harp','Timpani','String Ensemble 1','String Ensemble 2',
-'Synth Strings 1','Synth Strings 2','Choir Aahs','Voice Oohs','Synth Voice','Orchestra Hit','Trumpet','Trombone',
-'Tuba','Muted Trumpet','French Horn','Brass Section','Synth Brass 1','Synth Brass 2','Soprano Sax','Alto Sax',
-'Tenor Sax','Baritone Sax','Oboe','English Horn','Bassoon','Clarinet','Piccolo','Flute','Recorder','Pan Flute',
-'Blown Bottle','Shakuhachi','Whistle','Ocarina','Lead 1 (square)','Lead 2 (sawtooth)','Lead 3 (calliope)',
-'Lead 4 (chiff)','Lead 5 (charang)','Lead 6 (voice)','Lead 7 (fifths)','Lead 8 (bass+lead)','Pad 1 (new age)',
-'Pad 2 (warm)','Pad 3 (polysynth)','Pad 4 (choir)','Pad 5 (bowed)','Pad 6 (metallic)','Pad 7 (halo)',
-'Pad 8 (sweep)','FX 1 (rain)','FX 2 (soundtrack)','FX 3 (crystal)','FX 4 (atmosphere)','FX 5 (brightness)',
-'FX 6 (goblins)','FX 7 (echoes)','FX 8 (sci-fi)','Sitar','Banjo','Shamisen','Koto','Kalimba','Bagpipe','Fiddle',
-'Shanai','Tinkle Bell','Agogo','Steel Drums','Woodblock','Taiko Drum','Melodic Tom','Synth Drum','Reverse Cymbal',
-'Guitar Fret Noise','Breath Noise','Seashore','Bird Tweet','Telephone Ring','Helicopter','Applause','Gunshot'];
-
-const PRESETS = {
-  piano:   { wave:'triangle', attack:0.005, decay:0.35, sustain:0.15, release:0.35, gain:0.9 },
-  organ:   { wave:'square',   attack:0.02,  decay:0.1,  sustain:0.8,  release:0.2,  gain:0.5 },
-  strings: { wave:'sawtooth', attack:0.12,  decay:0.2,  sustain:0.7,  release:0.5,  gain:0.45 },
-  bass:    { wave:'sine',     attack:0.005, decay:0.2,  sustain:0.4,  release:0.25, gain:1.0 },
-  pluck:   { wave:'sawtooth', attack:0.001, decay:0.08, sustain:0.0,  release:0.15, gain:0.8 }
+/* ================= GM / PRESETS ================= */
+const GM_NAMES=['Acoustic Grand','Bright Piano','Electric Grand','Honky-tonk','E.Piano 1','E.Piano 2','Harpsichord','Clavi','Celesta','Glockenspiel','Music Box','Vibraphone','Marimba','Xylophone','Tubular Bells','Dulcimer','Drawbar Organ','Percussive Organ','Rock Organ','Church Organ','Reed Organ','Accordion','Harmonica','Tango Accordion','Nylon Guitar','Steel Guitar','Jazz Guitar','Clean Guitar','Muted Guitar','Overdriven','Distortion','Harmonics','Acoustic Bass','Finger Bass','Pick Bass','Fretless Bass','Slap 1','Slap 2','Synth Bass 1','Synth Bass 2','Violin','Viola','Cello','Contrabass','Tremolo Strings','Pizzicato','Harp','Timpani','String Ens.1','String Ens.2','Synth Str.1','Synth Str.2','Choir Aahs','Voice Oohs','Synth Voice','Orchestra Hit','Trumpet','Trombone','Tuba','Muted Trumpet','French Horn','Brass Section','Synth Brass 1','Synth Brass 2','Soprano Sax','Alto Sax','Tenor Sax','Baritone Sax','Oboe','English Horn','Bassoon','Clarinet','Piccolo','Flute','Recorder','Pan Flute','Blown Bottle','Shakuhachi','Whistle','Ocarina','Lead 1','Lead 2','Lead 3','Lead 4','Lead 5','Lead 6','Lead 7','Lead 8','Pad 1','Pad 2','Pad 3','Pad 4','Pad 5','Pad 6','Pad 7','Pad 8','FX 1','FX 2','FX 3','FX 4','FX 5','FX 6','FX 7','FX 8','Sitar','Banjo','Shamisen','Koto','Kalimba','Bagpipe','Fiddle','Shanai','Tinkle Bell','Agogo','Steel Drums','Woodblock','Taiko','Melodic Tom','Synth Drum','Reverse Cymbal','Fret Noise','Breath','Seashore','Bird','Telephone','Helicopter','Applause','Gunshot'];
+const PRESETS={
+  piano:{wave:'triangle',attack:0.005,decay:0.35,sustain:0.15,release:0.35,gain:0.9},
+  organ:{wave:'square',attack:0.02,decay:0.1,sustain:0.8,release:0.2,gain:0.5},
+  strings:{wave:'sawtooth',attack:0.12,decay:0.2,sustain:0.7,release:0.5,gain:0.45},
+  bass:{wave:'sine',attack:0.005,decay:0.2,sustain:0.4,release:0.25,gain:1.0},
+  pluck:{wave:'sawtooth',attack:0.001,decay:0.08,sustain:0.0,release:0.15,gain:0.8}
 };
-function presetFromGM(program) {
-  if (program < 8) return 'piano';
-  if (program >= 16 && program < 24) return 'organ';
-  if (program >= 40 && program < 56) return 'strings';
-  if (program >= 32 && program < 40) return 'bass';
-  if (program >= 24 && program < 32) return 'pluck';
-  return 'piano';
+function presetFromGM(p){
+  if(p<8)return 'piano';if(p<16)return 'pluck';if(p<24)return 'organ';if(p<32)return 'pluck';
+  if(p<40)return 'bass';if(p<56)return 'strings';if(p<64)return 'organ';if(p<72)return 'strings';
+  if(p<80)return 'organ';if(p<96)return 'strings';if(p<104)return 'pluck';return 'piano';
 }
 
-/* ======================================================================
-   6. AUDIO PLAYER
-   ====================================================================== */
-const player = {
-  ctx:null, master:null, analyser:null,
-  dryGain:null, wetGain:null, convolver:null,
-  playing:false, paused:false,
-  startTime:0, pauseAt:0,
-  nodes:[], schedule:[], duration:0,
-  volume:0.7, outputMode:'webaudio',
-  midiOut:null, midiTimers:[],
-  trackSettings:{},
-  globalWave:'triangle', globalPreset:'piano',
-  trackGains:{},
+/* ================= PLAYER ================= */
+const player={
+  ctx:null,master:null,analyser:null,dryGain:null,wetGain:null,convolver:null,
+  playing:false,paused:false,startTime:0,pauseAt:0,
+  nodes:[],schedule:[],duration:0,
+  volume:0.7,outputMode:'webaudio',outputDevice:'',
+  midiOut:null,midiTimers:[],
+  trackSettings:{},trackGains:{},
+  globalWave:'triangle',globalPreset:'piano',
 
-  async ensureCtx() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      this.master = this.ctx.createGain();
-      this.master.gain.value = this.volume;
-
-      this.analyser = this.ctx.createAnalyser();
-      this.analyser.fftSize = 256;
-      this.analyser.smoothingTimeConstant = 0.7;
-
+  async ensureCtx(){
+    if(!this.ctx){
+      this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+      this.master=this.ctx.createGain();
+      this.master.gain.value=this.volume;
+      this.analyser=this.ctx.createAnalyser();
+      this.analyser.fftSize=256;this.analyser.smoothingTimeConstant=0.75;
       this.master.connect(this.analyser);
       this.analyser.connect(this.ctx.destination);
-
-      this.convolver = this.ctx.createConvolver();
-      this.convolver.buffer = this.makeImpulse(2.0, 2.0);
-      this.dryGain = this.ctx.createGain(); this.dryGain.gain.value = 1;
-      this.wetGain = this.ctx.createGain(); this.wetGain.gain.value = 0;
+      this.convolver=this.ctx.createConvolver();
+      this.convolver.buffer=this.makeImpulse(1.8,2.2);
+      this.dryGain=this.ctx.createGain();this.dryGain.gain.value=1;
+      this.wetGain=this.ctx.createGain();this.wetGain.gain.value=0;
       this.dryGain.connect(this.master);
       this.convolver.connect(this.wetGain).connect(this.master);
     }
-    if (this.ctx.state === 'suspended') await this.ctx.resume();
+    if(this.ctx.state==='suspended'){try{await this.ctx.resume();}catch(e){console.warn('resume',e);}}
+    if(this.outputDevice && this.master.setSinkId){try{await this.master.setSinkId(this.outputDevice);}catch(e){}}
     return this.ctx;
   },
-
-  makeImpulse(duration, decay) {
-    const rate = this.ctx.sampleRate;
-    const len = Math.max(1, Math.floor(rate * duration));
-    const buf = this.ctx.createBuffer(2, len, rate);
-    for (let c=0;c<2;c++){
-      const d = buf.getChannelData(c);
-      for (let i=0;i<len;i++){
-        d[i] = (Math.random()*2-1) * Math.pow(1-i/len, decay);
-      }
-    }
+  async listOutputDevices(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices)return [];
+    try{
+      await navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>{});
+      const devices=await navigator.mediaDevices.enumerateDevices();
+      return devices.filter(d=>d.kind==='audiooutput');
+    }catch(e){return [];}
+  },
+  makeImpulse(duration,decay){
+    const rate=this.ctx.sampleRate;const len=Math.max(1,Math.floor(rate*duration));
+    const buf=this.ctx.createBuffer(2,len,rate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
     return buf;
   },
+  midiFreq(n){return 440*Math.pow(2,(n-69)/12);},
+  setVolume(v){this.volume=v;if(this.master)this.master.gain.setTargetAtTime(v,this.ctx.currentTime,0.02);},
+  setTrackVolume(idx,v){if(this.trackGains[idx])this.trackGains[idx].gain.setTargetAtTime(v,this.ctx.currentTime,0.02);},
+  setReverb(a){if(this.wetGain)this.wetGain.gain.setTargetAtTime(a,this.ctx.currentTime,0.05);},
 
-  midiFreq(n){ return 440*Math.pow(2,(n-69)/12); },
-  setVolume(v){ this.volume=v; if (this.master) this.master.gain.setTargetAtTime(v,this.ctx.currentTime,0.02); },
-  setTrackVolume(idx, v) { if (this.trackGains[idx]) this.trackGains[idx].gain.setTargetAtTime(v, this.ctx.currentTime, 0.02); },
-  setReverb(amount) { if (this.wetGain) this.wetGain.gain.setTargetAtTime(amount, this.ctx.currentTime, 0.05); },
-
-  buildSchedule(parsed) {
-    const { tracks, division, tempoMap } = parsed;
-    const events=[]; let maxEnd=0;
-    const anySolo = Object.values(this.trackSettings).some(s => s.solo);
-
-    tracks.forEach(track => {
-      const s = this.trackSettings[track.index] || {};
-      if (track.channel === 9) return;
-      if (s.mute) return;
-      if (anySolo && !s.solo) return;
-
-      const presetName = s.preset || presetFromGM(track.program);
-      const preset = PRESETS[presetName] || PRESETS.piano;
-      const wave = s.wave || this.globalWave || preset.wave;
-      const trGain = s.gain != null ? s.gain : 1;
-
-      track.notes.forEach(n => {
-        const t0 = ticksToSeconds(n.tick, division, tempoMap);
-        const t1 = ticksToSeconds(n.tick+n.dur, division, tempoMap);
-        events.push({
-          time:t0, end:t1, note:n.note, ch:n.ch, program:track.program|0,
-          vel:n.vel/127, wave, preset, gain:trGain, track:track.index
-        });
-        if (t1>maxEnd) maxEnd=t1;
+  buildSchedule(parsed){
+    const {tracks,division,tempoMap}=parsed;
+    const events=[];let maxEnd=0;
+    const anySolo=Object.values(this.trackSettings).some(s=>s.solo);
+    tracks.forEach(track=>{
+      const s=this.trackSettings[track.index]||{};
+      if(track.channel===9)return;
+      if(s.mute)return;
+      if(anySolo&&!s.solo)return;
+      const presetName=s.preset||presetFromGM(track.program);
+      const preset=PRESETS[presetName]||PRESETS.piano;
+      const wave=s.wave||this.globalWave||preset.wave;
+      const trGain=s.gain!=null?s.gain:1;
+      track.notes.forEach(n=>{
+        const t0=ticksToSeconds(n.tick,division,tempoMap);
+        const t1=ticksToSeconds(n.tick+n.dur,division,tempoMap);
+        events.push({time:t0,end:t1,note:n.note,ch:n.ch,program:track.program|0,vel:n.vel/127,wave,preset,gain:trGain,track:track.index});
+        if(t1>maxEnd)maxEnd=t1;
       });
     });
     events.sort((a,b)=>a.time-b.time);
-    this.schedule=events;
-    this.duration=maxEnd;
+    this.schedule=events;this.duration=maxEnd;
   },
 
-  async play(offset=0) {
-    if (this.outputMode === 'webmidi') return this.playMidi(offset);
-    const ctx = await this.ensureCtx();
-
+  async play(offset=0){
+    if(this.outputMode==='webmidi')return this.playMidi(offset);
+    const ctx=await this.ensureCtx();
+    if(!this.schedule.length){console.warn('[QMidApp] пустой schedule');return;}
     this.stopNodes();
-    this.playing=true; this.paused=false;
-    const now = ctx.currentTime + 0.15;
-    this.startTime = now - offset;
-
-    // Пересоздать trackGains
-    this.trackGains = {};
-    const trackIds = new Set(this.schedule.map(ev => ev.track));
-    for (const trId of trackIds) {
-      const tg = ctx.createGain();
-      const s = this.trackSettings[trId] || {};
-      tg.gain.value = s.gain != null ? s.gain : 1;
-      tg.connect(this.dryGain);
-      tg.connect(this.convolver);
-      this.trackGains[trId] = tg;
-    }
-
-    // Реверб — по среднему
-    const avgRev = trackIds.size
-      ? [...trackIds].reduce((a,id)=>a+(this.trackSettings[id]?.reverb||0),0) / trackIds.size
-      : 0;
-    this.setReverb(avgRev);
-
-    for (const ev of this.schedule) {
-      if (ev.end < offset) continue;
-      this.scheduleNote(ev, now, offset);
-    }
-  },
-
-  scheduleNote(ev, now, offset) {
-    const startRel = Math.max(ev.time - offset, 0);
-    const start = now + startRel;
-    const stopAt = now + Math.max(ev.end - offset, startRel + 0.02);
-    const p = ev.preset;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = ev.wave;
-    osc.frequency.value = this.midiFreq(ev.note);
-
-    const peak = Math.max(0.0001, ev.vel * p.gain * 0.5);
-    const sustain = peak * p.sustain;
-
-    gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.linearRampToValueAtTime(peak, start + p.attack);
-    gain.gain.linearRampToValueAtTime(sustain, start + p.attack + p.decay);
-    const relStart = Math.max(stopAt, start + p.attack + p.decay);
-    gain.gain.setValueAtTime(gain.gain.value, relStart);
-    gain.gain.linearRampToValueAtTime(0.0001, relStart + p.release);
-
-    const dest = this.trackGains[ev.track] || this.master;
-    osc.connect(gain).connect(dest);
-    osc.start(start);
-    osc.stop(relStart + p.release + 0.05);
-    this.nodes.push({ osc, gain, end: relStart+p.release+0.05 });
-    if (this.nodes.length > 4000) this.cleanNodes();
-  },
-
-  playMidi(offset=0) {
-    if (!this.midiOut) { showError(t('errTitle'), 'No MIDI output selected'); return; }
-    this.stopMidiTimers();
-    this.playing=true; this.paused=false;
-    const now = performance.now();
-    this.startTime = now/1000 - offset;
-
-    const chProg = {};
-    for (const trId in this.trackSettings) {
-      const s = this.trackSettings[trId]; const ch = s._ch;
-      if (ch == null || ch === 9) continue;
-      if (s.mute) { try { this.midiOut.send([0xB0|ch, 7, 0]); } catch(e){} continue; }
-      const g = Math.max(0, Math.min(127, Math.round((s.gain != null ? s.gain : 1) * 127)));
-      const r = Math.max(0, Math.min(127, Math.round((s.reverb || 0) * 127)));
-      try {
-        this.midiOut.send([0xB0|ch, 7, g]);
-        this.midiOut.send([0xB0|ch, 91, r]);
-        const prog = s.presetIndex != null ? s.presetIndex : 0;
-        this.midiOut.send([0xC0|ch, prog & 0x7f]);
-        chProg[ch] = prog;
-      } catch(e){}
-    }
-
-    for (const ev of this.schedule) {
-      if (ev.end < offset) continue;
-      const onDelay  = Math.max(0, (ev.time - offset)*1000);
-      const offDelay = Math.max(0, (ev.end  - offset)*1000);
-      const ch = ev.ch & 0xF;
-      const vel = Math.max(1, Math.round(ev.vel*127));
-      this.midiTimers.push(setTimeout(() => {
-        try { this.midiOut.send([0x90|ch, ev.note&0x7f, vel]); } catch(e){}
-      }, onDelay));
-      this.midiTimers.push(setTimeout(() => {
-        try { this.midiOut.send([0x80|ch, ev.note&0x7f, 0]); } catch(e){}
-      }, offDelay));
-    }
-  },
-
-  stopMidiTimers() {
-    for (const id of this.midiTimers) clearTimeout(id);
-    this.midiTimers = [];
-    if (this.midiOut) for (let ch=0; ch<16; ch++) {
-      try { this.midiOut.send([0xB0|ch, 123, 0]); this.midiOut.send([0xB0|ch, 120, 0]); } catch(e){}
-    }
-  },
-  cleanNodes() { const tt=this.ctx.currentTime; this.nodes = this.nodes.filter(n=>n.end>tt); },
-  stopNodes() {
-    for (const n of this.nodes) {
-      try { n.osc.stop(); } catch(e){}
-      try { n.osc.disconnect(); n.gain.disconnect(); } catch(e){}
-    }
-    this.nodes=[];
-    // отключаем track gains
-    for (const k in this.trackGains) {
-      try { this.trackGains[k].disconnect(); } catch(e){}
-    }
+    this.playing=true;this.paused=false;
+    const now=ctx.currentTime+0.15;
+    this.startTime=now-offset;
     this.trackGains={};
+    const trackIds=new Set(this.schedule.map(ev=>ev.track));
+    for(const trId of trackIds){
+      const tg=ctx.createGain();
+      const s=this.trackSettings[trId]||{};
+      tg.gain.value=s.gain!=null?s.gain:1;
+      tg.connect(this.dryGain);tg.connect(this.convolver);
+      this.trackGains[trId]=tg;
+    }
+    const avgRev=trackIds.size?[...trackIds].reduce((a,id)=>a+(this.trackSettings[id]?.reverb||0),0)/trackIds.size:0;
+    this.setReverb(avgRev);
+    for(const ev of this.schedule){
+      if(ev.end<offset)continue;
+      try{this.scheduleNote(ev,now,offset);}catch(err){console.error('[QMidApp] scheduleNote error:',err);}
+    }
+    console.log('[QMidApp] play:',this.schedule.length,'events, nodes:',this.nodes.length);
   },
-  stop() { this.playing=false; this.paused=false; this.pauseAt=0; this.stopNodes(); this.stopMidiTimers(); },
-  pause() {
-    if (!this.playing) return;
-    this.pauseAt = this.outputMode==='webmidi' ? (performance.now()/1000 - this.startTime) : (this.ctx.currentTime - this.startTime);
-    this.playing=false; this.paused=true; this.stopNodes(); this.stopMidiTimers();
+
+  scheduleNote(ev,now,offset){
+    const startRel=Math.max(ev.time-offset,0);
+    const start=now+startRel;
+    const stopAt=now+Math.max(ev.end-offset,startRel+0.02);
+    const p=ev.preset;
+    const osc=this.ctx.createOscillator();
+    const gain=this.ctx.createGain();
+    osc.type=ev.wave;osc.frequency.value=this.midiFreq(ev.note);
+    const peak=Math.max(0.0001,ev.vel*p.gain*0.5);
+    const sustain=peak*p.sustain;
+    const aEnd=start+p.attack;
+    const dEnd=aEnd+p.decay;
+    const relStart=Math.max(stopAt,dEnd+0.01);
+    gain.gain.setValueAtTime(0.0001,start);
+    gain.gain.linearRampToValueAtTime(peak,aEnd);
+    gain.gain.linearRampToValueAtTime(sustain,dEnd);
+    gain.gain.setValueAtTime(sustain,relStart);
+    gain.gain.linearRampToValueAtTime(0.0001,relStart+p.release);
+    const dest=this.trackGains[ev.track]||this.master;
+    osc.connect(gain).connect(dest);
+    osc.start(start);osc.stop(relStart+p.release+0.06);
+    this.nodes.push({osc,gain,end:relStart+p.release+0.06});
+    if(this.nodes.length>4000)this.cleanNodes();
   },
-  resume() { if (!this.paused) return; const at=this.pauseAt; this.paused=false; this.play(at); },
-  seek(to) {
-    if (!this.schedule.length) return;
-    const wasPlaying = this.playing;
+
+  async rebuildPreset(){
+    if(!this.playing&&!this.paused)return;
+    const at=this.currentTime();
     this.stop();
-    if (wasPlaying) this.play(to);
-    else { this.paused=true; this.pauseAt=to; }
+    if(parsed){this.buildSchedule(parsed);await this.play(at);}
   },
-  currentTime() {
-    if (this.paused) return this.pauseAt;
-    if (!this.playing) return 0;
-    const tt = this.outputMode==='webmidi' ? (performance.now()/1000 - this.startTime) : (this.ctx.currentTime - this.startTime);
-    return Math.min(tt, this.duration);
-  }
+
+  playMidi(offset=0){
+    if(!this.midiOut){showNotification('error',t('errTitle'),t('midiPickPort'));return;}
+    this.stopMidiTimers();
+    this.playing=true;this.paused=false;
+    const now=performance.now();
+    this.startTime=now/1000-offset;
+    // Отправляем настройки для каждого канала
+    for(const trId in this.trackSettings){
+      const s=this.trackSettings[trId];const ch=s._ch;
+      if(ch==null||ch===9)continue;
+      if(s.mute){try{this.midiOut.send([0xB0|ch,7,0]);}catch(e){}continue;}
+      const g=Math.max(0,Math.min(127,Math.round((s.gain!=null?s.gain:1)*127)));
+      const r=Math.max(0,Math.min(127,Math.round((s.reverb||0)*127)));
+      try{
+        this.midiOut.send([0xB0|ch,7,g]);
+        this.midiOut.send([0xB0|ch,91,r]);
+        const prog=s.presetIndex!=null?s.presetIndex:0;
+        this.midiOut.send([0xC0|ch,prog&0x7f]);
+      }catch(e){console.warn('[MIDI] setup err',e);}
+    }
+    for(const ev of this.schedule){
+      if(ev.end<offset)continue;
+      const onDelay=Math.max(0,(ev.time-offset)*1000);
+      const offDelay=Math.max(0,(ev.end-offset)*1000);
+      const ch=ev.ch&0xF;const vel=Math.max(1,Math.round(ev.vel*127));
+      this.midiTimers.push(setTimeout(()=>{try{this.midiOut.send([0x90|ch,ev.note&0x7f,vel]);}catch(e){}},onDelay));
+      this.midiTimers.push(setTimeout(()=>{try{this.midiOut.send([0x80|ch,ev.note&0x7f,0]);}catch(e){}},offDelay));
+    }
+  },
+
+  stopMidiTimers(){for(const id of this.midiTimers)clearTimeout(id);this.midiTimers=[];if(this.midiOut)for(let ch=0;ch<16;ch++){try{this.midiOut.send([0xB0|ch,123,0]);this.midiOut.send([0xB0|ch,120,0]);}catch(e){}}},
+  cleanNodes(){const tt=this.ctx.currentTime;this.nodes=this.nodes.filter(n=>n.end>tt);},
+  stopNodes(){for(const n of this.nodes){try{n.osc.stop();}catch(e){}try{n.osc.disconnect();n.gain.disconnect();}catch(e){}}this.nodes=[];for(const k in this.trackGains){try{this.trackGains[k].disconnect();}catch(e){}}this.trackGains={};},
+  stop(){this.playing=false;this.paused=false;this.pauseAt=0;this.stopNodes();this.stopMidiTimers();},
+  pause(){if(!this.playing)return;this.pauseAt=this.outputMode==='webmidi'?(performance.now()/1000-this.startTime):(this.ctx.currentTime-this.startTime);this.playing=false;this.paused=true;this.stopNodes();this.stopMidiTimers();},
+  resume(){if(!this.paused)return;const at=this.pauseAt;this.paused=false;this.play(at);},
+  seek(to){if(!this.schedule.length)return;const was=this.playing;this.stop();if(was)this.play(to);else{this.paused=true;this.pauseAt=to;}},
+  currentTime(){if(this.paused)return this.pauseAt;if(!this.playing)return 0;const tt=this.outputMode==='webmidi'?(performance.now()/1000-this.startTime):(this.ctx.currentTime-this.startTime);return Math.min(tt,this.duration);}
 };
 
-/* ======================================================================
-   7. WEB MIDI
-   ====================================================================== */
-let midiAccess = null;
-async function initMIDI() {
-  if (midiAccess) return midiAccess;
-  if (!navigator.requestMIDIAccess) { showError(t('errTitle'), 'Web MIDI not supported'); return null; }
-  try {
-    midiAccess = await navigator.requestMIDIAccess({ sysex:false });
-    midiAccess.onstatechange = () => refreshMidiPorts();
+/* ================= WEB MIDI ================= */
+let midiAccess=null;
+async function initMIDI(){
+  if(midiAccess)return midiAccess;
+  if(!navigator.requestMIDIAccess){showNotification('error',t('errTitle'),t('midiNotSupported'));return null;}
+  try{
+    midiAccess=await navigator.requestMIDIAccess({sysex:false});
+    midiAccess.onstatechange=e=>{
+      console.log('[MIDI] state:',e.port?.name,e.port?.state);
+      refreshMidiPorts();
+    };
     return midiAccess;
-  } catch(e) { showError(t('errTitle'), 'MIDI access denied'); return null; }
-}
-function refreshMidiPorts() {
-  const sel = document.getElementById('midiPortSel');
-  if (!sel) return;
-  const prev = sel.value;
-  sel.innerHTML = '';
-  const outs = midiAccess ? [...midiAccess.outputs.values()] : [];
-  if (!outs.length) {
-    const o = document.createElement('option'); o.value=''; o.textContent = t('noMidi'); sel.appendChild(o);
-    player.midiOut = null; return;
+  }catch(e){
+    showNotification('error',t('errTitle'),'MIDI access denied: '+e.message);
+    return null;
   }
-  for (const out of outs) {
-    const o = document.createElement('option'); o.value=out.id;
-    o.textContent = out.name + (out.state==='connected'?'':' (offline)');
+}
+function refreshMidiPorts(){
+  const sel=document.getElementById('midiPortSel');if(!sel)return;
+  const prev=sel.value;sel.innerHTML='';
+  const outs=midiAccess?[...midiAccess.outputs.values()]:[];
+  if(!outs.length){const o=document.createElement('option');o.value='';o.textContent=t('noMidi');sel.appendChild(o);player.midiOut=null;return;}
+  for(const out of outs){
+    const o=document.createElement('option');
+    o.value=out.id;
+    o.textContent=out.name+(out.state==='connected'?'':' (offline)');
     sel.appendChild(o);
   }
-  const pick = outs.find(o=>o.id===prev) || outs.find(o=>o.state==='connected') || outs[0];
-  sel.value = pick.id; player.midiOut = pick;
+  const pick=outs.find(o=>o.id===prev)||outs.find(o=>o.state==='connected')||outs[0];
+  sel.value=pick.id;
+  player.midiOut=pick;
+  console.log('[MIDI] selected:',pick.name);
 }
 
-/* ======================================================================
-   8. ГЛАВНОЕ ОКНО И UI
-   ====================================================================== */
-const $ = id => document.getElementById(id);
-let parsed = null;
-const winEl = $('mainWin');
-const state_win = { dragging:false };
+/* ================= UI ================= */
+const $=id=>document.getElementById(id);
+let parsed=null;
+const winEl=$('mainWin');
 
-/* apply window geometry */
-function applyWindowGeom() {
-  const g = state.win;
-  if (g.maximized) {
-    winEl.classList.add('maximized');
-  } else {
+function applyWindowGeom(){
+  const g=state.win;
+  if(g.maximized)winEl.classList.add('maximized');
+  else{
     winEl.classList.remove('maximized');
-    const w = g.w || Math.min(window.innerWidth*0.94, 1080);
-    const h = g.h || Math.min(window.innerHeight*0.85, 700);
-    const x = g.x != null ? g.x : (window.innerWidth-w)/2;
-    const y = g.y != null ? g.y : (window.innerHeight-h-56)/2;
-    winEl.style.left = x+'px';
-    winEl.style.top = y+'px';
-    winEl.style.width = w+'px';
-    winEl.style.height = h+'px';
+    const w=g.w||Math.min(window.innerWidth*0.94,1080);
+    const h=g.h||Math.min(window.innerHeight*0.85,700);
+    const x=g.x!=null?g.x:(window.innerWidth-w)/2;
+    const y=g.y!=null?g.y:(window.innerHeight-h-56)/2;
+    winEl.style.left=x+'px';winEl.style.top=y+'px';
+    winEl.style.width=w+'px';winEl.style.height=h+'px';
   }
-  const icon = $('btnMaximize').querySelector('.material-icons');
-  icon.textContent = g.maximized ? 'filter_none' : 'crop_square';
+  $('btnMaximize').querySelector('.material-icons').textContent=g.maximized?'filter_none':'crop_square';
 }
-
-$('btnMinimize').onclick = () => {
-  winEl.classList.add('minimized');
-  updateTaskbar();
-};
-$('btnMaximize').onclick = () => {
-  state.win.maximized = !state.win.maximized;
-  applyWindowGeom(); saveState();
-};
-$('btnCloseWin').onclick = () => {
-  if (confirm('Закрыть QMidApp?')) {
-    window.close();
-    winEl.classList.add('minimized');
-    updateTaskbar();
+$('btnMinimize').onclick=()=>{winEl.classList.add('minimized');updateTaskbar();};
+$('btnMaximize').onclick=()=>{state.win.maximized=!state.win.maximized;applyWindowGeom();saveState();};
+$('btnCloseWin').onclick=()=>{
+  if(confirm(t('confirmClose'))){
+    window.open('','_self').close();
+    setTimeout(()=>{
+      winEl.classList.add('minimized');updateTaskbar();
+      showNotification('info','QMidApp',t('collapsed'),{style:'toast'});
+    },50);
   }
 };
 
-/* window drag — pointer events, без дёрганья */
-(() => {
-  const tb = $('titlebar');
-  let dragging=false, sx=0, sy=0, ox=0, oy=0, pid=null;
-  tb.style.touchAction = 'none';
-  tb.addEventListener('pointerdown', e => {
-    if (e.target.closest('.win-btn')) return;
-    if (state.win.maximized) return;
-    dragging=true; pid=e.pointerId; sx=e.clientX; sy=e.clientY;
-    ox = parseFloat(winEl.style.left)||0; oy = parseFloat(winEl.style.top)||0;
-    try { tb.setPointerCapture(pid); } catch(_){}
-  });
-  tb.addEventListener('pointermove', e => {
-    if (!dragging || e.pointerId !== pid) return;
-    e.preventDefault();
-    let nx = ox + (e.clientX - sx);
-    let ny = oy + (e.clientY - sy);
-    nx = Math.max(-winEl.offsetWidth+120, Math.min(window.innerWidth-120, nx));
-    ny = Math.max(0, Math.min(window.innerHeight-48-40, ny));
-    winEl.style.left = nx+'px'; winEl.style.top = ny+'px';
-    state.win.x = nx; state.win.y = ny;
-  });
-  const end = e => {
-    if (!dragging || (pid != null && e.pointerId !== pid)) return;
-    dragging=false; pid=null;
-    try { tb.releasePointerCapture(e.pointerId); } catch(_){}
-    saveState();
-  };
-  tb.addEventListener('pointerup', end);
-  tb.addEventListener('pointercancel', end);
+/* drag/resize */
+(()=>{const tb=$('titlebar');let d=false,sx=0,sy=0,ox=0,oy=0,pid=null;tb.style.touchAction='none';
+  tb.addEventListener('pointerdown',e=>{if(e.target.closest('.win-btn'))return;if(state.win.maximized)return;d=true;pid=e.pointerId;sx=e.clientX;sy=e.clientY;ox=parseFloat(winEl.style.left)||0;oy=parseFloat(winEl.style.top)||0;try{tb.setPointerCapture(pid);}catch(_){}});
+  tb.addEventListener('pointermove',e=>{if(!d||e.pointerId!==pid)return;e.preventDefault();let nx=ox+e.clientX-sx,ny=oy+e.clientY-sy;nx=Math.max(-winEl.offsetWidth+120,Math.min(window.innerWidth-120,nx));ny=Math.max(0,Math.min(window.innerHeight-48-40,ny));winEl.style.left=nx+'px';winEl.style.top=ny+'px';state.win.x=nx;state.win.y=ny;});
+  const end=()=>{if(!d)return;d=false;pid=null;saveState();};tb.addEventListener('pointerup',end);tb.addEventListener('pointercancel',end);
+})();
+(()=>{const rh=$('resizeHandle');if(!rh)return;let r=false,sx=0,sy=0,ow=0,oh=0,pid=null;rh.style.touchAction='none';
+  rh.addEventListener('pointerdown',e=>{if(state.win.maximized)return;r=true;pid=e.pointerId;sx=e.clientX;sy=e.clientY;ow=winEl.offsetWidth;oh=winEl.offsetHeight;try{rh.setPointerCapture(pid);}catch(_){}});
+  rh.addEventListener('pointermove',e=>{if(!r||e.pointerId!==pid)return;e.preventDefault();const nw=Math.max(520,ow+e.clientX-sx);const nh=Math.max(360,oh+e.clientY-sy);winEl.style.width=nw+'px';winEl.style.height=nh+'px';state.win.w=nw;state.win.h=nh;});
+  const end=()=>{if(r){r=false;pid=null;saveState();}};rh.addEventListener('pointerup',end);rh.addEventListener('pointercancel',end);
 })();
 
-/* resize */
-(() => {
-  const rh = $('resizeHandle');
-  let resizing=false, sx=0, sy=0, ow=0, oh=0, pid=null;
-  rh.style.touchAction = 'none';
-  rh.addEventListener('pointerdown', e => {
-    if (state.win.maximized) return;
-    resizing=true; pid=e.pointerId; sx=e.clientX; sy=e.clientY;
-    ow=winEl.offsetWidth; oh=winEl.offsetHeight;
-    try { rh.setPointerCapture(pid); } catch(_){}
-  });
-  rh.addEventListener('pointermove', e => {
-    if (!resizing || e.pointerId !== pid) return;
-    e.preventDefault();
-    const nw = Math.max(520, ow + (e.clientX - sx));
-    const nh = Math.max(360, oh + (e.clientY - sy));
-    winEl.style.width = nw+'px'; winEl.style.height = nh+'px';
-    state.win.w = nw; state.win.h = nh;
-  });
-  const end = e => { if (resizing) { resizing=false; pid=null; saveState(); } };
-  rh.addEventListener('pointerup', end);
-  rh.addEventListener('pointercancel', end);
-})();
-
-/* верхние вкладки */
-let activeTab = 'file';
-document.querySelectorAll('.topbar .tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    activeTab = btn.dataset.tab;
-    document.querySelectorAll('.topbar .tab').forEach(b => b.classList.toggle('active', b===btn));
-    renderTab();
-  });
+/* tabs */
+let activeTab='file';
+document.querySelectorAll('.topbar .tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{activeTab=btn.dataset.tab;document.querySelectorAll('.topbar .tab').forEach(b=>b.classList.toggle('active',b===btn));renderTab();});
 });
-function renderTab() {
-  const content = $('content'); content.innerHTML = '';
-  if (activeTab === 'file') buildFileTab(content);
-  else if (activeTab === 'settings') buildSettingsTab(content);
-  else if (activeTab === 'about') buildAboutTab(content);
+function renderTab(){
+  const c=$('content');c.innerHTML='';
+  if(activeTab==='file')buildFileTab(c);
+  else if(activeTab==='editor')buildEditorTab(c);
+  else if(activeTab==='daw')buildDawTab(c);
+  else if(activeTab==='settings')buildSettingsTab(c);
+  else if(activeTab==='about')buildAboutTab(c);
+  applyI18n();
 }
 
-/* ======================================================================
-   9. ВКЛАДКА «ФАЙЛ»
-   ====================================================================== */
-function buildFileTab(content) {
-  const sec = document.createElement('div');
-  sec.className = 'section';
-  sec.innerHTML = `
-    <div class="section-title"><span class="material-icons">folder_open</span>${t('tabFile')}</div>
+/* ФАЙЛ */
+function buildFileTab(content){
+  const sec=document.createElement('div');sec.className='section';
+  sec.innerHTML=`
+    <div class="section-title"><span class="material-icons">folder</span>${t('tabFile')}</div>
     <div class="row">
-      <span class="badge">${parsed ? (state.fileName||t('fileLoaded')) : t('fileNotLoaded')}</span>
-      ${parsed ? `<span class="badge">${parsed.tracks.length} ${t('tracks').toLowerCase()}</span>` : ''}
+      <button class="btn primary" id="btnOpenMid"><span class="material-icons">upload_file</span>${t('openMid')}</button>
+      <button class="btn" id="btnSaveMid"><span class="material-icons">save</span>${t('saveMid')}</button>
+      <button class="btn" id="btnSaveJs"><span class="material-icons">code</span>${t('saveJs')}</button>
+    </div>
+    <input type="file" id="file" accept=".mid,.midi,audio/midi" style="display:none">
+    <div class="status" id="fileStatus" style="margin-top:10px">${parsed?`${t('loaded')}: ${parsed.tracks.length} ${t('tracks').toLowerCase()}`:t('fileNotLoaded')}</div>`;
+  content.appendChild(sec);
+
+  sec.querySelector('#btnOpenMid').onclick=()=>sec.querySelector('#file').click();
+  sec.querySelector('#file').onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{
+      const buf=await f.arrayBuffer();
+      parsed=new MidiParser(buf).parse();
+      $('meta').textContent=`${f.name} • fmt${parsed.format} • ${parsed.tracks.length}`;
+      const totalTicks=Math.max(...parsed.tracks.flatMap(tt=>tt.notes.map(n=>n.tick+n.dur)),0);
+      const dur=ticksToSeconds(totalTicks,parsed.division,parsed.tempoMap);
+      $('status').textContent=`${t('loaded')}. ${t('duration')} ≈ ${dur.toFixed(1)} ${t('sec')}.`;
+      player.trackSettings={};
+      for(const tr of parsed.tracks){
+        const saved=state.trackSettings[tr.index]||{};
+        player.trackSettings[tr.index]={
+          _ch:tr.channel,
+          gain:saved.gain!=null?saved.gain:1,
+          reverb:saved.reverb!=null?saved.reverb:0,
+          mute:saved.mute||false,solo:saved.solo||false,
+          preset:saved.preset||presetFromGM(tr.program),
+          wave:saved.wave||null,
+          presetIndex:saved.presetIndex!=null?saved.presetIndex:tr.program
+        };
+      }
+      ['play','stop'].forEach(id=>$(id).disabled=false);
+      $('pause').disabled=true;
+      showNotification('success','QMidApp',`${t('loaded')}: ${parsed.tracks.length}`,{style:'toast'});
+      renderTab();
+    }catch(err){
+      showNotification('error',t('errTitle'),t('errorReadMidi')+': '+err.message);
+    }
+  };
+
+  sec.querySelector('#btnSaveMid').onclick=()=>{
+    if(!parsed){showNotification('error',t('errTitle'),t('loadFirst'));return;}
+    player.buildSchedule(parsed);
+    const data=exportMidiBin(player.schedule,parsed.division||480,player.trackSettings);
+    downloadBlob(new Blob([data],{type:'audio/midi'}),'qmidapp-export.mid','audio/midi');
+    showNotification('success',t('ok'),t('exportMidDone'),{style:'toast'});
+  };
+  sec.querySelector('#btnSaveJs').onclick=()=>{
+    if(!parsed){showNotification('error',t('errTitle'),t('loadFirst'));return;}
+    player.buildSchedule(parsed);
+    const js=generateJsModule(player.schedule,parsed);
+    downloadBlob(js,'qmidapp-melody.js','application/javascript');
+    showNotification('success',t('ok'),t('exportJsDone'),{style:'toast'});
+  };
+}
+
+/* РЕДАКТОР */
+function buildEditorTab(content){
+  if(!parsed){
+    content.innerHTML=`<div class="section"><div class="section-title"><span class="material-icons">piano</span>${t('tabEditor')}</div>
+      <p style="color:var(--text-dim);font-size:12px">${t('loadFirst')}</p></div>`;
+    return;
+  }
+  const sec=document.createElement('div');sec.className='section';
+  sec.innerHTML=`<div class="section-title"><span class="material-icons">piano</span>${t('tracks')} — ${parsed.tracks.length}</div>`;
+  const box=document.createElement('div');sec.appendChild(box);content.appendChild(sec);
+
+  parsed.tracks.forEach((tr,i)=>{
+    const idx=tr.index;
+    const s=player.trackSettings[idx]=player.trackSettings[idx]||{};
+    s._ch=tr.channel;
+    if(s.gain==null)s.gain=1;
+    if(s.reverb==null)s.reverb=0;
+    if(!s.preset)s.preset=presetFromGM(tr.program);
+    if(s.presetIndex==null)s.presetIndex=tr.program;
+
+    const el=document.createElement('div');el.className='fl-track';
+    el.innerHTML=`
+      <div class="fl-track-header">
+        <span class="num">#${idx}</span>
+        <span class="name">${tr.name||(t('trackName')+' '+(i+1))}</span>
+        <span class="ch">${t('channel')} ${tr.channel+1}</span>
+        <div class="mini-btns">
+          <button data-role="mute" data-idx="${idx}"><span class="material-icons">volume_off</span></button>
+          <button data-role="solo" data-idx="${idx}"><span class="material-icons">headphones</span></button>
+        </div>
+      </div>
+      <div class="fl-track-body">
+        <div class="fl-pianoroll"><canvas data-pianoroll="${idx}" width="900" height="70"></canvas></div>
+        <div class="fl-track-controls">
+          <label>${t('instrument')}
+            <select data-role="presetIndex" data-idx="${idx}">
+              ${GM_NAMES.map((n,pi)=>`<option value="${pi}" ${pi===s.presetIndex?'selected':''}>${pi}: ${n}</option>`).join('')}
+            </select>
+          </label>
+          <label>${t('preset')}
+            <select data-role="preset" data-idx="${idx}">
+              <option value="piano" ${s.preset==='piano'?'selected':''}>piano</option>
+              <option value="organ" ${s.preset==='organ'?'selected':''}>organ</option>
+              <option value="strings" ${s.preset==='strings'?'selected':''}>strings</option>
+              <option value="bass" ${s.preset==='bass'?'selected':''}>bass</option>
+              <option value="pluck" ${s.preset==='pluck'?'selected':''}>pluck</option>
+            </select>
+          </label>
+          <label>${t('wave')}
+            <select data-role="wave" data-idx="${idx}">
+              <option value="" ${!s.wave?'selected':''}>auto</option>
+              <option value="sine" ${s.wave==='sine'?'selected':''}>sine</option>
+              <option value="triangle" ${s.wave==='triangle'?'selected':''}>triangle</option>
+              <option value="square" ${s.wave==='square'?'selected':''}>square</option>
+              <option value="sawtooth" ${s.wave==='sawtooth'?'selected':''}>sawtooth</option>
+            </select>
+          </label>
+        </div>
+        <div class="fl-track-controls" style="margin-top:8px">
+          <label>${t('volume')} <b>${Math.round(s.gain*100)}%</b>
+            <input type="range" data-role="gain" data-idx="${idx}" min="0" max="150" value="${Math.round(s.gain*100)}">
+          </label>
+          <label>${t('reverb')} <b>${Math.round(s.reverb*100)}%</b>
+            <input type="range" data-role="reverb" data-idx="${idx}" min="0" max="100" value="${Math.round(s.reverb*100)}">
+          </label>
+        </div>
+      </div>`;
+    box.appendChild(el);
+    if(s.mute)el.querySelector('[data-role="mute"]').classList.add('active');
+    if(s.solo)el.querySelector('[data-role="solo"]').classList.add('active');
+
+    el.querySelectorAll('[data-role]').forEach(inp=>{
+      const role=inp.dataset.role;
+      if(inp.tagName==='BUTTON'){
+        inp.addEventListener('click',()=>{
+          const st=player.trackSettings[idx];
+          st[role]=!st[role];
+          inp.classList.toggle('active',st[role]);
+          saveTrackSettings();
+          if(parsed){player.buildSchedule(parsed);player.rebuildPreset();}
+        });
+      } else if(role==='gain'){
+        inp.addEventListener('input',()=>{
+          const v=+inp.value/100;
+          player.trackSettings[idx].gain=v;
+          inp.parentElement.querySelector('b').textContent=Math.round(v*100)+'%';
+          player.setTrackVolume(idx,v);
+          saveTrackSettings();
+        });
+      } else if(role==='reverb'){
+        inp.addEventListener('input',()=>{
+          const v=+inp.value/100;
+          player.trackSettings[idx].reverb=v;
+          inp.parentElement.querySelector('b').textContent=Math.round(v*100)+'%';
+          saveTrackSettings();
+        });
+      } else if(role==='presetIndex'){
+        inp.addEventListener('change',()=>{
+          player.trackSettings[idx].presetIndex=+inp.value;
+          player.trackSettings[idx].preset=presetFromGM(+inp.value);
+          saveTrackSettings();
+          if(parsed){player.buildSchedule(parsed);player.rebuildPreset();}
+        });
+      } else {
+        inp.addEventListener('change',()=>{
+          if(inp.value)player.trackSettings[idx][role]=inp.value;
+          else delete player.trackSettings[idx][role];
+          saveTrackSettings();
+          if(parsed){player.buildSchedule(parsed);player.rebuildPreset();}
+        });
+      }
+    });
+  });
+  drawAllPianorolls();
+}
+function saveTrackSettings(){
+  const clean={};
+  for(const k in player.trackSettings){const {_ch,...rest}=player.trackSettings[k];clean[k]=rest;}
+  state.trackSettings=clean;saveState();
+}
+function drawPianoroll(canvas,track){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#4f8cff';
+  const isLight=document.documentElement.dataset.theme==='light'||document.documentElement.dataset.style==='mac';
+  ctx.strokeStyle=isLight?'#d0d4dc':'#1f242e';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  if(!track.notes.length)return;
+  const lo=Math.min(...track.notes.map(n=>n.note));
+  const hi=Math.max(...track.notes.map(n=>n.note));
+  const span=Math.max(1,hi-lo);
+  const totalTicks=Math.max(...track.notes.map(n=>n.tick+n.dur),1);
+  track.notes.forEach(n=>{
+    const x=(n.tick/totalTicks)*W;
+    const w=Math.max(2,(n.dur/totalTicks)*W);
+    const y=H-((n.note-lo)/span)*(H-6)-5;
+    const grad=ctx.createLinearGradient(0,y,0,y+4);
+    grad.addColorStop(0,accent);grad.addColorStop(1,shade(accent,-25));
+    ctx.fillStyle=grad;ctx.fillRect(x,y,w,4);
+  });
+}
+function drawAllPianorolls(){
+  document.querySelectorAll('canvas[data-pianoroll]').forEach(c=>{
+    const idx=+c.dataset.pianoroll;
+    const track=parsed.tracks.find(t=>t.index===idx);
+    if(track)drawPianoroll(c,track);
+  });
+}
+function drawPlayhead(){
+  if(!parsed||!player.schedule.length){requestAnimationFrame(drawPlayhead);return;}
+  const ratio=player.duration?player.currentTime()/player.duration:0;
+  document.querySelectorAll('canvas[data-pianoroll]').forEach(c=>{
+    const ctx=c.getContext('2d');
+    const W=c.width,H=c.height;
+    if(player.playing||player.paused){
+      const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#4f8cff';
+      ctx.fillStyle=accent;ctx.fillRect(W*ratio-1,0,2,H);
+    }
+  });
+  requestAnimationFrame(drawPlayhead);
+}
+
+/* СЕКВЕНСОР — ИСПРАВЛЕН */
+let seqTimer=null,seqStep=0,seqNextTime=0,seqCtx=null;
+function buildDawTab(content){
+  const sec=document.createElement('div');sec.className='section';
+  sec.innerHTML=`
+    <div class="section-title"><span class="material-icons">grid_on</span>${t('seq')}</div>
+    <div class="seq-wrap">
+      <div class="seq-grid" id="seqGrid"></div>
+      <div class="row">
+        <button class="btn primary" id="seqPlay"><span class="material-icons">play_arrow</span>${t('seqPlay')}</button>
+        <button class="btn" id="seqStop"><span class="material-icons">stop</span>${t('seqStop')}</button>
+        <label class="field" style="flex:1">${t('seqBpm')}
+          <input type="number" id="seqTempo" min="40" max="240" value="${state.seq.tempo}">
+        </label>
+        <label class="field" style="flex:1">${t('seqWave')}
+          <select id="seqWaveSel">
+            <option value="sine" ${state.seq.wave==='sine'?'selected':''}>sine</option>
+            <option value="triangle" ${state.seq.wave==='triangle'?'selected':''}>triangle</option>
+            <option value="square" ${state.seq.wave==='square'?'selected':''}>square</option>
+            <option value="sawtooth" ${state.seq.wave==='sawtooth'?'selected':''}>sawtooth</option>
+          </select>
+        </label>
+        <button class="btn" id="seqClear">${t('seqClear')}</button>
+      </div>
     </div>`;
   content.appendChild(sec);
+  const grid=sec.querySelector('#seqGrid');
+  const notes=[60,64,67,72];
+  const noteLabels=['C4','E4','G4','C5'];
+  for(let row=0;row<4;row++){
+    const lbl=document.createElement('div');lbl.className='seq-label';lbl.textContent=noteLabels[row];
+    grid.appendChild(lbl);
+    for(let col=0;col<8;col++){
+      const idx=row*8+col;
+      const cell=document.createElement('div');
+      cell.className='seq-cell'+(state.seq.steps[idx]?' on':'')+(col%4===0?' beat':'');
+      cell.dataset.idx=idx;
+      cell.onclick=()=>{
+        state.seq.steps[idx]=!state.seq.steps[idx];
+        cell.classList.toggle('on',state.seq.steps[idx]);
+        saveState();
+      };
+      grid.appendChild(cell);
+    }
+  }
 
-  // hero
-  const hero = document.createElement('div');
-  hero.className = 'section';
-  hero.style.background = 'linear-gradient(135deg, var(--panel-2), var(--panel))';
-  hero.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
-    <span class="material-icons" style="font-size:36px;color:var(--accent)">piano</span>
-    <div>
-      <div style="font-size:17px;font-weight:600">QMidApp</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${t('aboutText')}</div>
-    </div>
-  </div>`;
-  content.appendChild(hero);
-
-  if (parsed && parsed.tracks.length) {
-    const trSec = document.createElement('div');
-    trSec.className = 'section';
-    trSec.innerHTML = `<div class="section-title"><span class="material-icons">queue_music</span>${t('tracks')} — ${parsed.tracks.length}</div>`;
-    const box = document.createElement('div');
-    trSec.appendChild(box);
-    content.appendChild(trSec);
-    parsed.tracks.forEach((tr, i) => {
-      const s = player.trackSettings[tr.index] = player.trackSettings[tr.index] || {};
-      s._ch = tr.channel;
-      if (s.gain == null) s.gain = 1;
-      if (s.reverb == null) s.reverb = 0;
-      const progName = GM_NAMES[tr.program] || ('Program '+tr.program);
-      const el = document.createElement('div');
-      el.className = 'track';
-      el.innerHTML = `
-        <div class="num">#${tr.index}</div>
-        <div>
-          <div>${tr.name || (t('trackName')+' '+(i+1))} <span class="badge">${t('channel')} ${tr.channel+1}</span></div>
-          <div class="meta">${tr.notes.length} ${t('notes')} • ${progName}</div>
-          <div class="track-vis"><canvas width="800" height="22"></canvas></div>
-          <div class="row" style="margin-top:8px;gap:10px">
-            <label class="field" style="flex:1;min-width:160px">${t('instrument')}
-              <select data-role="presetIndex" data-idx="${tr.index}">
-                ${GM_NAMES.map((n,pi)=>`<option value="${pi}" ${pi===tr.program?'selected':''}>${pi}: ${n}</option>`).join('')}
-              </select>
-            </label>
-            <label class="field" style="flex:1;min-width:110px">${t('preset')}
-              <select data-role="preset" data-idx="${tr.index}">
-                <option value="">auto</option>
-                <option value="piano">piano</option>
-                <option value="organ">organ</option>
-                <option value="strings">strings</option>
-                <option value="bass">bass</option>
-                <option value="pluck">pluck</option>
-              </select>
-            </label>
-            <label class="field" style="flex:0 0 90px">${t('wave')}
-              <select data-role="wave" data-idx="${tr.index}">
-                <option value="">auto</option>
-                <option value="sine">sine</option>
-                <option value="triangle">triangle</option>
-                <option value="square">square</option>
-                <option value="sawtooth">sawtooth</option>
-              </select>
-            </label>
-          </div>
-          <div class="row" style="margin-top:8px;gap:10px">
-            <label class="field" style="flex:1;min-width:100px">${t('volume')}
-              <input type="range" data-role="gain" data-idx="${tr.index}" min="0" max="150" value="${Math.round(s.gain*100)}">
-            </label>
-            <label class="field" style="flex:1;min-width:100px">${t('reverb')}
-              <input type="range" data-role="reverb" data-idx="${tr.index}" min="0" max="100" value="${Math.round(s.reverb*100)}">
-            </label>
-          </div>
-        </div>
-        <div class="controls">
-          <button class="btn" data-role="mute" data-idx="${tr.index}"><span class="material-icons">volume_off</span></button>
-          <button class="btn" data-role="solo" data-idx="${tr.index}"><span class="material-icons">headphones</span></button>
-        </div>`;
-      box.appendChild(el);
-
-      if (s.preset) el.querySelector('select[data-role="preset"]').value = s.preset;
-      if (s.wave) el.querySelector('select[data-role="wave"]').value = s.wave;
-      if (s.mute) el.querySelector('[data-role="mute"]').classList.add('active');
-      if (s.solo) el.querySelector('[data-role="solo"]').classList.add('active');
-      if (s.presetIndex != null) el.querySelector('select[data-role="presetIndex"]').value = s.presetIndex;
-
-      drawTrackVis(el.querySelector('canvas'), tr);
-
-      el.querySelectorAll('[data-role]').forEach(inp => {
-        const role = inp.dataset.role;
-        if (inp.tagName === 'BUTTON') {
-          inp.addEventListener('click', () => {
-            const st = player.trackSettings[tr.index];
-            st[role] = !st[role];
-            inp.classList.toggle('active', st[role]);
-            saveTrackSettings();
-          });
-        } else if (role === 'gain') {
-          inp.addEventListener('input', () => {
-            const v = +inp.value / 100;
-            player.trackSettings[tr.index].gain = v;
-            player.setTrackVolume(tr.index, v);
-            saveTrackSettings();
-          });
-        } else if (role === 'reverb') {
-          inp.addEventListener('input', () => {
-            const v = +inp.value / 100;
-            player.trackSettings[tr.index].reverb = v;
-            saveTrackSettings();
-          });
-        } else if (role === 'presetIndex') {
-          inp.addEventListener('change', () => {
-            player.trackSettings[tr.index].presetIndex = +inp.value;
-            saveTrackSettings();
-          });
-        } else {
-          inp.addEventListener('change', () => {
-            if (inp.value) player.trackSettings[tr.index][role] = inp.value;
-            else delete player.trackSettings[tr.index][role];
-            saveTrackSettings();
-          });
+  const startSeq=async()=>{
+    stopSeq();
+    seqCtx=await player.ensureCtx();
+    const bpm=+sec.querySelector('#seqTempo').value||120;
+    const interval=(60/bpm/2)*1000;
+    const wave=sec.querySelector('#seqWaveSel').value;
+    seqStep=0;
+    seqNextTime=performance.now();
+    const tick=()=>{
+      const now=performance.now();
+      const col=seqStep%8;
+      document.querySelectorAll('.seq-cell').forEach(c=>c.classList.remove('playhead'));
+      for(let row=0;row<4;row++){
+        const idx=row*8+col;
+        const cell=grid.querySelector(`.seq-cell[data-idx="${idx}"]`);
+        if(cell)cell.classList.add('playhead');
+        if(state.seq.steps[idx]){
+          const freq=440*Math.pow(2,(notes[row]-69)/12);
+          const osc=seqCtx.createOscillator(),g=seqCtx.createGain();
+          osc.type=wave;osc.frequency.value=freq;
+          const t0=seqCtx.currentTime;
+          g.gain.setValueAtTime(0.0001,t0);
+          g.gain.linearRampToValueAtTime(0.25,t0+0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001,t0+0.25);
+          osc.connect(g).connect(player.master||seqCtx.destination);
+          osc.start(t0);osc.stop(t0+0.3);
         }
-      });
-    });
-  }
-}
-function saveTrackSettings() {
-  const clean = {};
-  for (const k in player.trackSettings) {
-    const { _ch, ...rest } = player.trackSettings[k];
-    clean[k] = rest;
-  }
-  state.trackSettings = clean;
-  saveState();
-}
-function drawTrackVis(canvas, track) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0,0,W,H);
-  if (!track.notes.length) return;
-  const lo = Math.min(...track.notes.map(n=>n.note));
-  const hi = Math.max(...track.notes.map(n=>n.note));
-  const span = Math.max(1, hi-lo);
-  const totalTicks = Math.max(...track.notes.map(n=>n.tick+n.dur), 1);
-  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4f8cff';
-  ctx.fillStyle = accent;
-  track.notes.forEach(n => {
-    const x = (n.tick/totalTicks)*W;
-    const w = Math.max(1,(n.dur/totalTicks)*W);
-    const y = H - ((n.note-lo)/span)*(H-3)-2;
-    ctx.fillRect(x, y, w, 1.5);
-  });
+      }
+      seqStep++;
+      seqNextTime+=interval;
+      const drift=seqNextTime-now;
+      seqTimer=setTimeout(tick,Math.max(0,drift));
+    };
+    tick();
+  };
+  const stopSeq=()=>{
+    if(seqTimer){clearTimeout(seqTimer);seqTimer=null;}
+    document.querySelectorAll('.seq-cell').forEach(c=>c.classList.remove('playhead'));
+    seqStep=0;
+  };
+  sec.querySelector('#seqPlay').onclick=startSeq;
+  sec.querySelector('#seqStop').onclick=stopSeq;
+  sec.querySelector('#seqTempo').onchange=e=>{state.seq.tempo=+e.target.value;saveState();};
+  sec.querySelector('#seqWaveSel').onchange=e=>{state.seq.wave=e.target.value;saveState();};
+  sec.querySelector('#seqClear').onclick=()=>{
+    state.seq.steps=Array(32).fill(false);saveState();
+    document.querySelectorAll('.seq-cell').forEach(c=>c.classList.remove('on'));
+  };
 }
 
-/* ======================================================================
-   10. ВКЛАДКА «НАСТРОЙКИ» — с подвкладками
-   ====================================================================== */
-const SUBTABS = [
-  { id:'appearance', icon:'palette', key:'subAppearance' },
-  { id:'synth',      icon:'tune',    key:'subSynth' },
-  { id:'output',     icon:'speaker', key:'subOutput' },
-  { id:'lang',       icon:'translate', key:'subLang' }
-];
-let activeSub = 'appearance';
-function buildSettingsTab(content) {
-  const sec = document.createElement('div');
-  sec.className = 'section';
-
-  const bar = document.createElement('div');
-  bar.className = 'subtabs';
-  SUBTABS.forEach(st => {
-    const b = document.createElement('button');
-    b.className = 'subtab' + (st.id===activeSub?' active':'');
-    b.innerHTML = `<span class="material-icons">${st.icon}</span>${t(st.key)}`;
-    b.onclick = () => { activeSub = st.id; renderTab(); };
-    bar.appendChild(b);
-  });
-  sec.appendChild(bar);
-
-  const inner = document.createElement('div');
-  sec.appendChild(inner);
-  content.appendChild(sec);
-
-  if (activeSub === 'appearance') buildSubAppearance(inner);
-  else if (activeSub === 'synth') buildSubSynth(inner);
-  else if (activeSub === 'output') buildSubOutput(inner);
-  else if (activeSub === 'lang') buildSubLang(inner);
-}
-
-function buildSubAppearance(box) {
-  box.innerHTML = `
-    <label class="field">${t('theme')}
-      <select id="setTheme">
-        <option value="dark">${t('themeDark')}</option>
-        <option value="light">${t('themeLight')}</option>
+/* НАСТРОЙКИ */
+function buildSettingsTab(content){
+  /* Внешний вид */
+  const sec=document.createElement('div');sec.className='section';
+  sec.innerHTML=`
+    <div class="section-title"><span class="material-icons">palette</span>${t('appearance')}</div>
+    <label class="field">${t('style')}
+      <select id="setStyle">
+        <option value="win10">Windows 10</option>
+        <option value="xp">Windows XP</option>
+        <option value="98">Windows 98</option>
+        <option value="mac">macOS</option>
       </select>
     </label>
-    <label class="field" style="margin-top:12px">${t('radius')} (0–24)
+    <label class="field" style="margin-top:10px">${t('theme')}
+      <select id="setTheme"><option value="dark">${t('themeDark')}</option><option value="light">${t('themeLight')}</option></select>
+    </label>
+    <label class="field" style="margin-top:10px">${t('font')}
+      <select id="setFont">
+        <option value="Segoe UI">Segoe UI</option><option value="Arial">Arial</option>
+        <option value="Tahoma">Tahoma</option><option value="MS Sans Serif">MS Sans Serif</option>
+        <option value="Inter">Inter</option><option value="Roboto">Roboto</option>
+        <option value="Open Sans">Open Sans</option><option value="Montserrat">Montserrat</option>
+        <option value="Pacifico">Pacifico</option><option value="Press Start 2P">Press Start 2P</option>
+      </select>
+    </label>
+    <label class="field" style="margin-top:10px">${t('radius')} (0–24)
       <input type="range" id="setRadius" min="0" max="24" value="${state.radius}">
       <b id="radiusVal">${state.radius}px</b>
     </label>
-    <div class="field" style="margin-top:12px">${t('accent')}
+    <div class="field" style="margin-top:14px">${t('accent')}
       <div class="accent-grid" id="accentGrid"></div>
     </div>
-    <div class="field" style="margin-top:16px">${t('wallpaper')}
+    <div class="field" style="margin-top:14px">${t('wallpaper')}
       <div class="wallpaper-grid" id="wpGrid"></div>
-      <div style="margin-top:8px">
-        <label class="btn" style="cursor:pointer;display:inline-flex">
-          <span class="material-icons">upload</span>${t('wpUpload')}
-          <input type="file" id="wpUploadInput" accept="image/*" style="display:none">
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+        <label class="btn" style="cursor:pointer"><span class="material-icons">image</span>${t('wpPhoto')}
+          <input type="file" id="wpImg" accept="image/*" style="display:none">
+        </label>
+        <label class="btn" style="cursor:pointer"><span class="material-icons">movie</span>${t('wpLive')}
+          <input type="file" id="wpVid" accept="image/gif,video/mp4,video/webm" style="display:none">
         </label>
       </div>
     </div>`;
+  content.appendChild(sec);
 
-  const tSel = box.querySelector('#setTheme');
-  tSel.value = state.theme;
-  tSel.onchange = () => applyTheme(tSel.value);
+  const styleSel=sec.querySelector('#setStyle');styleSel.value=state.style;
+  styleSel.onchange=()=>applyStyle(styleSel.value);
+  const tSel=sec.querySelector('#setTheme');tSel.value=state.theme;
+  tSel.onchange=()=>applyTheme(tSel.value);
+  const fSel=sec.querySelector('#setFont');fSel.value=state.font;
+  fSel.onchange=()=>applyFont(fSel.value);
+  const rInp=sec.querySelector('#setRadius');
+  rInp.oninput=()=>{applyRadius(+rInp.value);sec.querySelector('#radiusVal').textContent=rInp.value+'px';};
 
-  const rInp = box.querySelector('#setRadius');
-  rInp.oninput = () => {
-    applyRadius(+rInp.value);
-    box.querySelector('#radiusVal').textContent = rInp.value + 'px';
-  };
-
-  const ACCENTS = ['#4f8cff','#e5484d','#2f9e44','#f59f00','#9c36b5','#e64980','#12b886','#fab005'];
-  const ag = box.querySelector('#accentGrid');
-  ACCENTS.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'accent-dot' + (state.accent===c?' active':'');
-    d.style.background = c;
-    d.onclick = () => { applyAccent(c); ag.querySelectorAll('.accent-dot').forEach(x=>x.classList.remove('active')); d.classList.add('active'); };
+  const ACCENTS=['#4f8cff','#e5484d','#2f9e44','#f59f00','#9c36b5','#e64980','#12b886','#fab005','#007aff','#000080'];
+  const ag=sec.querySelector('#accentGrid');
+  ACCENTS.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='accent-dot'+(state.accent===c?' active':'');
+    d.style.background=c;
+    d.onclick=()=>{applyAccent(c);ag.querySelectorAll('.accent-dot').forEach(x=>x.classList.remove('active'));d.classList.add('active');};
     ag.appendChild(d);
   });
 
-  const grid = box.querySelector('#wpGrid');
-  const wpList = [
-    ['none', t('wpNone')],
-    ['dark1','dark1'],['dark2','dark2'],['purple','purple'],
-    ['sunset','sunset'],['forest','forest'],['night','night'],['orange','orange']
-  ];
-  wpList.forEach(([key,label]) => {
-    const d = document.createElement('div');
-    d.className = 'wp-thumb' + (state.wallpaper===key ? ' active':'');
-    d.title = label;
-    if (key === 'none') {
-      d.style.background = 'var(--panel-3)';
-      d.style.display = 'flex'; d.style.alignItems='center'; d.style.justifyContent='center';
-      d.style.color = 'var(--text-dim)'; d.style.fontSize='12px';
-      d.textContent = label;
-    } else {
-      d.style.backgroundImage = WALLPAPERS[key];
-    }
-    d.onclick = () => {
-      grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));
-      d.classList.add('active');
-      applyWallpaper(key);
-    };
+  const grid=sec.querySelector('#wpGrid');
+  const wpList=[['none',t('wpNone')],['dark1','dark1'],['dark2','dark2'],['purple','purple'],['sunset','sunset'],['forest','forest'],['night','night'],['orange','orange'],['ocean','ocean'],['cherry','cherry'],['mint','mint'],['space','space']];
+  wpList.forEach(([key,label])=>{
+    const d=document.createElement('div');
+    d.className='wp-thumb'+(state.wallpaper===key?' active':'');
+    if(key==='none'){d.style.background='var(--panel-3)';d.textContent=label;d.style.display='flex';d.style.alignItems='center';d.style.justifyContent='center';d.style.color='var(--text-dim)';d.style.fontSize='12px';}
+    else d.style.backgroundImage=WALLPAPERS[key];
+    d.onclick=()=>{grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));d.classList.add('active');applyWallpaper(key);};
     grid.appendChild(d);
   });
-
-  box.querySelector('#wpUploadInput').onchange = e => {
-    const f = e.target.files[0];
-    if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      applyWallpaper('custom', reader.result);
-      grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));
-    };
-    reader.readAsDataURL(f);
+  sec.querySelector('#wpImg').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=()=>{applyWallpaper('custom',r.result);grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));};r.readAsDataURL(f);
   };
-}
-
-function buildSubSynth(box) {
-  box.innerHTML = `
-    <label class="field">${t('synthWave')}
-      <select id="setWave">
-        <option value="sine">Sine</option>
-        <option value="triangle">Triangle</option>
-        <option value="square">Square</option>
-        <option value="sawtooth">Sawtooth</option>
-      </select>
-    </label>
-    <label class="field" style="margin-top:10px">${t('synthPreset')}
-      <select id="setPreset">
-        <option value="piano">Piano</option>
-        <option value="organ">Organ</option>
-        <option value="strings">Strings</option>
-        <option value="bass">Bass</option>
-        <option value="pluck">Pluck</option>
-      </select>
-    </label>
-    <button class="btn" id="testTone" style="margin-top:12px"><span class="material-icons">notifications_active</span>${t('testTone')}</button>`;
-  const wSel = box.querySelector('#setWave');
-  wSel.value = state.globalWave;
-  wSel.onchange = () => { state.globalWave = wSel.value; player.globalWave = wSel.value; saveState(); };
-  const pSel = box.querySelector('#setPreset');
-  pSel.value = state.globalPreset;
-  pSel.onchange = () => { state.globalPreset = pSel.value; player.globalPreset = pSel.value; saveState(); };
-  box.querySelector('#testTone').onclick = async () => {
-    const ctx = await player.ensureCtx();
-    const osc = ctx.createOscillator(), g = ctx.createGain();
-    osc.type = 'sine'; osc.frequency.value = 440;
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
-    g.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-    osc.connect(g).connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 0.65);
+  sec.querySelector('#wpVid').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=()=>{applyWallpaper('customVideo',null,r.result);grid.querySelectorAll('.wp-thumb').forEach(x=>x.classList.remove('active'));};r.readAsDataURL(f);
   };
-}
 
-function buildSubOutput(box) {
-  box.innerHTML = `
-    <label class="field">${t('outputMode')}
+  /* ВЫВОД */
+  const out=document.createElement('div');out.className='section';
+  out.innerHTML=`
+    <div class="section-title"><span class="material-icons">speaker</span>${t('output')}</div>
+    <label class="field">${t('outMode')}
       <select id="outModeSel">
-        <option value="webaudio">${t('outAudio')}</option>
-        <option value="webmidi">${t('outMidi')}</option>
+        <option value="webaudio">${t('outWebAudio')}</option>
+        <option value="webmidi">${t('outWebMidi')}</option>
       </select>
     </label>
+    <label class="field" style="margin-top:10px">${t('outDev')}
+      <select id="outDevSel"><option value="">${t('outDefault')}</option></select>
+    </label>
+    <button class="btn" id="btnRefreshDev" style="margin-top:6px"><span class="material-icons">refresh</span>${t('refreshDev')}</button>
     <label class="field" style="margin-top:10px">${t('midiPort')}
       <select id="midiPortSel"><option>—</option></select>
     </label>
-    <div class="row" style="margin-top:12px">
-      <button class="btn" id="btnRefreshMidi"><span class="material-icons">refresh</span>${t('refresh')}</button>
+    <button class="btn" id="btnRefreshMidi" style="margin-top:6px"><span class="material-icons">refresh</span>${t('refreshMidi')}</button>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="btnTestTone"><span class="material-icons">notifications_active</span>${t('testAudio')}</button>
       <button class="btn" id="btnTestMidi"><span class="material-icons">notifications_active</span>${t('testMidi')}</button>
     </div>`;
-  const modeSel = box.querySelector('#outModeSel');
-  modeSel.value = state.outputMode;
-  modeSel.onchange = async () => {
-    state.outputMode = modeSel.value; player.outputMode = modeSel.value; saveState();
-    if (modeSel.value === 'webmidi') { await initMIDI(); refreshMidiPorts(); }
-  };
-  const portSel = box.querySelector('#midiPortSel');
-  portSel.onchange = () => { if (midiAccess) player.midiOut = midiAccess.outputs.get(portSel.value) || null; };
-  box.querySelector('#btnRefreshMidi').onclick = async () => { await initMIDI(); refreshMidiPorts(); };
-  box.querySelector('#btnTestMidi').onclick = () => {
-    if (!player.midiOut) { showError(t('errTitle'), 'No MIDI port selected'); return; }
-    player.midiOut.send([0xC0,0]); player.midiOut.send([0x90,60,100]);
-    setTimeout(() => player.midiOut.send([0x80,60,0]), 500);
-  };
-  if (midiAccess) refreshMidiPorts();
-}
+  content.appendChild(out);
 
-function buildSubLang(box) {
-  box.innerHTML = `
-    <label class="field">${t('language')}
-      <select id="langSel">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
-        <option value="zh">中文</option>
-        <option value="ja">日本語</option>
-        <option value="fr">Français</option>
-        <option value="it">Italiano</option>
+  const modeSel=out.querySelector('#outModeSel');modeSel.value=state.outputMode;
+  modeSel.onchange=()=>{state.outputMode=modeSel.value;player.outputMode=modeSel.value;saveState();};
+
+  const devSel=out.querySelector('#outDevSel');
+  const refreshDev=async()=>{
+    devSel.innerHTML=`<option value="">${t('outDefault')}</option>`;
+    const devices=await player.listOutputDevices();
+    devices.forEach((d,i)=>{
+      const o=document.createElement('option');
+      o.value=d.deviceId;
+      o.textContent=d.label||('Устройство '+(i+1));
+      devSel.appendChild(o);
+    });
+    if(state.outputDevice)devSel.value=state.outputDevice;
+  };
+  out.querySelector('#btnRefreshDev').onclick=async()=>{await refreshDev();showNotification('info',t('refreshDev'),'OK',{style:'toast'});};
+  refreshDev();
+  devSel.onchange=()=>{state.outputDevice=devSel.value;saveState();if(player.master&&player.master.setSinkId){player.master.setSinkId(devSel.value).catch(()=>{});}};
+
+  const portSel=out.querySelector('#midiPortSel');
+  portSel.onchange=()=>{if(midiAccess){player.midiOut=midiAccess.outputs.get(portSel.value)||null;console.log('[MIDI] manual select:',player.midiOut?.name);}};
+  out.querySelector('#btnRefreshMidi').onclick=async()=>{
+    await initMIDI();
+    refreshMidiPorts();
+    if(!midiAccess){showNotification('error',t('errTitle'),t('midiNotSupported'));}
+  };
+
+  out.querySelector('#btnTestTone').onclick=async()=>{
+    const ctx=await player.ensureCtx();
+    const osc=ctx.createOscillator(),g=ctx.createGain();
+    osc.type='sine';osc.frequency.value=440;
+    g.gain.setValueAtTime(0.0001,ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.6);
+    osc.connect(g).connect(ctx.destination);
+    osc.start();osc.stop(ctx.currentTime+0.65);
+    showNotification('info',t('testAudio'),'440 Hz',{style:'toast'});
+  };
+  out.querySelector('#btnTestMidi').onclick=async()=>{
+    if(!midiAccess){await initMIDI();refreshMidiPorts();}
+    if(!player.midiOut){showNotification('error',t('errTitle'),t('midiPickPort'));return;}
+    try{
+      player.midiOut.send([0xC0,0]);player.midiOut.send([0x90,60,100]);
+      setTimeout(()=>{try{player.midiOut.send([0x80,60,0]);}catch(e){}},500);
+      showNotification('info',t('testMidi'),t('midiTestSent')+': '+player.midiOut.name,{style:'toast'});
+    }catch(e){showNotification('error',t('errTitle'),'MIDI send failed: '+e.message);}
+  };
+
+  /* Прочее */
+  const misc=document.createElement('div');misc.className='section';
+  misc.innerHTML=`
+    <div class="section-title"><span class="material-icons">graphic_eq</span>${t('viz')}</div>
+    <label class="field">${t('vizShow')}
+      <select id="setVizShow"><option value="1">${t('vizYes')}</option><option value="0">${t('vizNo')}</option></select>
+    </label>
+    <label class="field" style="margin-top:10px">${t('vizType')}
+      <select id="setVizType"><option value="bars">${t('vizBars')}</option><option value="wave">${t('vizWave')}</option></select>
+    </label>
+    <div class="section-title" style="margin-top:16px"><span class="material-icons">translate</span>${t('lang')}</div>
+    <label class="field">${t('langLabel')}
+      <select id="setLang">
+        <option value="ru">Русский</option><option value="en">English</option>
+        <option value="zh">中文</option><option value="ja">日本語</option>
+        <option value="fr">Français</option><option value="it">Italiano</option>
       </select>
+    </label>
+    <div class="section-title" style="margin-top:16px"><span class="material-icons">notifications</span>${t('notif')}</div>
+    <label class="field">${t('notifSound')}
+      <select id="setNotifSound"><option value="1">${t('notifOn')}</option><option value="0">${t('notifOff')}</option></select>
     </label>`;
-  const lSel = box.querySelector('#langSel');
-  lSel.value = state.lang;
-  lSel.onchange = () => {
-    state.lang = lSel.value;
+  content.appendChild(misc);
+
+  const vShow=misc.querySelector('#setVizShow');vShow.value=state.showVisualizer?'1':'0';
+  vShow.onchange=()=>{state.showVisualizer=vShow.value==='1';$('vizBox').classList.toggle('hidden',!state.showVisualizer);saveState();};
+  const vType=misc.querySelector('#setVizType');vType.value=state.vizType;
+  vType.onchange=()=>{state.vizType=vType.value;saveState();};
+  const langSel=misc.querySelector('#setLang');langSel.value=state.lang;
+  langSel.onchange=()=>{state.lang=langSel.value;saveState();applyI18n();renderTab();};
+  const nSound=misc.querySelector('#setNotifSound');nSound.value=state.notifSound?'1':'0';
+  nSound.onchange=()=>{state.notifSound=nSound.value==='1';saveState();};
+
+  /* Ярлыки */
+  const scSec=document.createElement('div');scSec.className='section';
+  scSec.innerHTML=`
+    <div class="section-title"><span class="material-icons">apps</span>${t('shortcuts')}</div>
+    <div id="shortcutList" style="margin-bottom:10px"></div>
+    <button class="btn primary" id="btnAddShortcut"><span class="material-icons">add</span>${t('addShortcut')}</button>`;
+  content.appendChild(scSec);
+  renderShortcutList(scSec.querySelector('#shortcutList'));
+  scSec.querySelector('#btnAddShortcut').onclick=()=>openShortcutDialog();
+
+  /* Dev */
+  const devSec=document.createElement('div');devSec.className='section';
+  devSec.innerHTML=`
+    <div class="section-title"><span class="material-icons">bug_report</span>${t('devTools')}</div>
+    <div class="row">
+      <button class="btn" id="btnXmas">🎄 ${t('newYear')}</button>
+      <button class="btn" id="btnTestErr">${t('testErr')}</button>
+      <button class="btn" id="btnTestWarn">${t('testWarn')}</button>
+      <button class="btn" id="btnTestInfo">${t('testInfo')}</button>
+      <button class="btn" id="btnTestToast">${t('testToast')}</button>
+    </div>
+    <div class="field" style="margin-top:10px">${t('devText')}
+      <input type="text" id="devText" placeholder="..." style="margin-top:4px">
+    </div>
+    <label class="field" style="margin-top:8px">${t('devType')}
+      <select id="devType">
+        <option value="error">${t('errTitle')}</option>
+        <option value="warning">${t('warnTitle')}</option>
+        <option value="info">${t('infoTitle')}</option>
+        <option value="toast">Toast</option>
+      </select>
+    </label>
+    <button class="btn primary" id="btnDevShow" style="margin-top:8px">${t('devShow')}</button>`;
+  content.appendChild(devSec);
+  devSec.querySelector('#btnXmas').onclick=()=>{
+    state.xmas=!state.xmas;
+    document.body.classList.toggle('xmas',state.xmas);
+    document.querySelector('.win').classList.toggle('xmas',state.xmas);
     saveState();
-    applyI18n();
-    renderTab();
-    updateTaskbar();
+  };
+  devSec.querySelector('#btnTestErr').onclick=()=>showNotification('error',t('errTitle'),t('testErr'));
+  devSec.querySelector('#btnTestWarn').onclick=()=>showNotification('warning',t('warnTitle'),t('testWarn'));
+  devSec.querySelector('#btnTestInfo').onclick=()=>showNotification('info',t('infoTitle'),t('testInfo'));
+  devSec.querySelector('#btnTestToast').onclick=()=>showNotification('info',t('testToast'),t('testToast'),{style:'toast'});
+  devSec.querySelector('#btnDevShow').onclick=()=>{
+    const txt=devSec.querySelector('#devText').value||'...';
+    const type=devSec.querySelector('#devType').value;
+    if(type==='toast')showNotification('info',t('infoTitle'),txt,{style:'toast'});
+    else showNotification(type,type==='error'?t('errTitle'):type==='warning'?t('warnTitle'):t('infoTitle'),txt);
   };
 }
 
-/* ======================================================================
-   11. ВКЛАДКА «О ПРОГРАММЕ»
-   ====================================================================== */
-function buildAboutTab(content) {
-  const sec = document.createElement('div');
-  sec.className = 'section';
-  sec.innerHTML = `
-    <div class="section-title"><span class="material-icons">info</span>${t('tabAbout')}</div>
+/* ЯРЛЫКИ */
+async function openShortcutDialog(existing=null,existingIdx=-1){
+  const iconOptions=[
+    {value:'piano',label:'🎹 Piano'},{value:'folder',label:'📁'},{value:'save',label:'💾'},
+    {value:'code',label:'</>'},{value:'settings',label:'⚙'},{value:'info',label:'ℹ'},
+    {value:'star',label:'⭐'},{value:'home',label:'🏠'},{value:'play_arrow',label:'▶'},
+    {value:'warning',label:'⚠'},{value:'notifications',label:'🔔'},{value:'bug_report',label:'🐛'}
+  ];
+  const actionOptions=[
+    {value:'file',label:t('actFile')},{value:'editor',label:t('actEditor')},{value:'daw',label:t('actDaw')},
+    {value:'settings',label:t('actSettings')},{value:'about',label:t('actAbout')},
+    {value:'export-mid',label:t('actExportMid')},{value:'export-js',label:t('actExportJs')},
+    {value:'toggle-theme',label:t('actToggleTheme')},
+    {value:'show-error',label:t('actErr')},{value:'show-warning',label:t('actWarn')},
+    {value:'show-info',label:t('actInfo')},{value:'show-toast',label:t('actToast')}
+  ];
+  const res=await openDialog({
+    title:existing?t('editShortcut'):t('newShortcut'),
+    icon:'apps',
+    fields:[
+      {name:'name',label:t('scName'),value:existing?existing.name:'Ярлык'},
+      {name:'icon',label:t('scIcon'),type:'select',value:existing?existing.icon:'apps',options:iconOptions},
+      {name:'action',label:t('scAction'),type:'select',value:existing?existing.action:'file',options:actionOptions},
+      {name:'text',label:t('scText'),value:existing?(existing.text||''):''},
+      {name:'type',label:t('scType'),type:'select',value:existing?(existing.type||'info'):'info',options:[
+        {value:'info',label:t('infoTitle')},
+        {value:'warning',label:t('warnTitle')},
+        {value:'error',label:t('errTitle')},
+        {value:'toast',label:'Toast'}
+      ]}
+    ]
+  });
+  if(!res)return;
+  const sc={name:res.name||'Ярлык',icon:res.icon,action:res.action,text:res.text,type:res.type,
+    x:existing?existing.x:(20+(state.shortcuts.length%6)*90),
+    y:existing?existing.y:(20+Math.floor(state.shortcuts.length/6)*100)};
+  if(existingIdx>=0)state.shortcuts[existingIdx]=sc;
+  else state.shortcuts.push(sc);
+  saveState();renderShortcuts();renderTab();
+}
+
+function renderShortcutList(box){
+  box.innerHTML='';
+  state.shortcuts.forEach((sc,i)=>{
+    const row=document.createElement('div');
+    row.style.display='flex';row.style.alignItems='center';row.style.gap='8px';
+    row.style.padding='6px 8px';row.style.background='var(--panel-2)';
+    row.style.borderRadius='4px';row.style.marginBottom='4px';
+    row.innerHTML=`<span class="material-icons" style="color:var(--accent)">${sc.icon||'apps'}</span>
+      <span style="flex:1;font-size:12px">${escapeHtml(sc.name)} → ${escapeHtml(sc.action)}</span>
+      <button class="btn" style="padding:2px 8px;font-size:11px">✎</button>
+      <button class="btn" style="padding:2px 8px;font-size:11px">🗑</button>`;
+    row.querySelectorAll('button')[0].onclick=()=>openShortcutDialog(sc,i);
+    row.querySelectorAll('button')[1].onclick=()=>{state.shortcuts.splice(i,1);saveState();renderShortcuts();renderShortcutList(box);renderTab();};
+    box.appendChild(row);
+  });
+  if(!state.shortcuts.length)box.innerHTML=`<div style="font-size:11px;color:var(--text-dim)">${t('noShortcuts')}</div>`;
+}
+
+/* О ПРОГРАММЕ */
+function buildAboutTab(content){
+  const sec=document.createElement('div');sec.className='section';
+  sec.innerHTML=`
     <div style="text-align:center;padding:16px 0">
       <span class="material-icons" style="font-size:56px;color:var(--accent)">piano</span>
       <div style="font-size:22px;font-weight:600;margin-top:8px">QMidApp</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${t('version')} 26-nov-2.4</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">v26-nov-2.8</div>
       <div style="font-size:12px;color:var(--text-dim);margin-top:10px">
         ${t('dev')}: <b>Quantum ACD</b><br>
-        <a href="https://github.com/q-acd" target="_blank" style="color:var(--accent);text-decoration:none">github.com/q-acd</a>
+        <a href="https://github.com/q-acd" target="_blank" style="color:var(--accent)">github.com/q-acd</a>
       </div>
       <div style="margin-top:16px;padding:12px;background:var(--panel-2);border-radius:6px;border:1px solid var(--border)">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:4px">${t('thanks')}</div>
-        <div style="font-size:14px;font-weight:600;color:var(--accent)">DeepSeek AI</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t('thanksDeepSeek')}</div>
+        <div style="font-size:11px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px">${t('thanks')}</div>
+        <div style="font-size:16px;font-weight:600;color:var(--accent)">DeepSeek AI</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t('thanksText')}</div>
       </div>
-    </div>
-    <div style="font-size:12px;line-height:1.7;color:var(--text-dim);margin-top:8px">
-      <b>${t('features')}:</b>
-      <ul style="margin:6px 0;padding-left:20px">
-        <li>MIDI parser (format 0/1)</li>
-        <li>Web Audio synth + reverb</li>
-        <li>Web MIDI (program change, CC7, CC91)</li>
-        <li>Per-track instrument / gain / mute / solo / reverb</li>
-        <li>Export .mid (with params) and .js</li>
-        <li>Track visualization</li>
-        <li>Dark/light theme, radius, accent, wallpaper</li>
-        <li>6 languages: EN / RU / ZH / JA / FR / IT</li>
-        <li>Windows-style taskbar with preview</li>
-      </ul>
     </div>`;
   content.appendChild(sec);
 }
 
-/* ======================================================================
-   12. ФАЙЛ / ТРАНСПОРТ / SEEK
-   ====================================================================== */
-function setStatus(m) { $('status').textContent = m; }
-$('fileBtn').onclick = () => $('file').click();
-$('file').addEventListener('change', async e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  try {
-    const buf = await f.arrayBuffer();
-    parsed = new MidiParser(buf).parse();
-    state.fileName = f.name; saveState();
-    $('meta').textContent = `${f.name} • fmt${parsed.format} • ${parsed.tracks.length}`;
-    const totalTicks = Math.max(...parsed.tracks.flatMap(tt => tt.notes.map(n => n.tick+n.dur)), 0);
-    const dur = ticksToSeconds(totalTicks, parsed.division, parsed.tempoMap);
-    setStatus(`${t('loaded')}. ${t('duration')} ≈ ${dur.toFixed(1)} ${t('sec')}.`);
-    player.trackSettings = {};
-    for (const idx in state.trackSettings) {
-      if (parsed.tracks.find(tt=>tt.index==idx)) player.trackSettings[idx] = {...state.trackSettings[idx]};
-    }
-    ['play','stop'].forEach(id => $(id).disabled = false);
-    $('pause').disabled = true;
+/* SHORTCUTS */
+function renderShortcuts(){
+  const d=$('desktop');d.innerHTML='';
+  state.shortcuts.forEach((sc,i)=>{
+    const el=document.createElement('div');
+    el.className='shortcut';
+    el.style.left=sc.x+'px';el.style.top=sc.y+'px';
+    el.innerHTML=`<div class="sc-icon"><span class="material-icons">${sc.icon||'apps'}</span></div><div class="sc-label">${escapeHtml(sc.name)}</div>`;
+    el.onclick=()=>runShortcut(sc);
+    el.oncontextmenu=e=>{e.preventDefault();openShortcutDialog(sc,i);};
+    d.appendChild(el);
+  });
+}
+function runShortcut(sc){
+  winEl.classList.remove('minimized');updateTaskbar();
+  const a=sc.action;
+  if(a==='file'||a==='editor'||a==='daw'||a==='settings'||a==='about'){
+    activeTab=a;
+    document.querySelectorAll('.topbar .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===a));
     renderTab();
-  } catch(err) {
-    console.error(err);
-    showError(t('errTitle'), t('errReadMidi') + ': ' + err.message);
-  }
-});
-
-$('masterVol').addEventListener('input', e => {
-  const v = +e.target.value / 100;
-  state.masterVol = v; player.setVolume(v); saveState();
-});
-
-$('play').addEventListener('click', async () => {
-  if (!parsed) return;
-  if (player.paused) player.resume();
-  else {
-    player.outputMode = state.outputMode;
-    player.globalWave = state.globalWave;
-    player.globalPreset = state.globalPreset;
+  } else if(a==='export-mid'){
+    if(!parsed){showNotification('warning',t('warnTitle'),t('loadFirst'));return;}
     player.buildSchedule(parsed);
-    await player.play(0);
+    downloadBlob(new Blob([exportMidiBin(player.schedule,parsed.division||480,player.trackSettings)],{type:'audio/midi'}),'export.mid','audio/midi');
+  } else if(a==='export-js'){
+    if(!parsed){showNotification('warning',t('warnTitle'),t('loadFirst'));return;}
+    player.buildSchedule(parsed);
+    downloadBlob(generateJsModule(player.schedule,parsed),'melody.js','application/javascript');
+  } else if(a==='toggle-theme'){
+    applyTheme(state.theme==='dark'?'light':'dark');
+  } else if(a==='show-error'){
+    showNotification('error',t('errTitle'),sc.text||t('testErr'));
+  } else if(a==='show-warning'){
+    showNotification('warning',t('warnTitle'),sc.text||t('testWarn'));
+  } else if(a==='show-info'){
+    showNotification('info',t('infoTitle'),sc.text||t('testInfo'));
+  } else if(a==='show-toast'){
+    showNotification(sc.type||'info',t('infoTitle'),sc.text||t('testToast'),{style:'toast'});
   }
-  $('pause').disabled = false;
-  animateProgress();
-});
-$('pause').addEventListener('click', () => { player.pause(); $('pause').disabled = true; });
-$('stop').addEventListener('click', () => { player.stop(); $('bar').style.width='0%'; $('pause').disabled = true; });
-
-/* SEEK — клик по прогресс-бару */
-$('progress').addEventListener('click', e => {
-  if (!player.duration) return;
-  const rect = $('progress').getBoundingClientRect();
-  const rel = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  const to = rel * player.duration;
-  player.seek(to);
-  $('bar').style.width = (rel*100)+'%';
-  if (player.playing) { $('pause').disabled = false; animateProgress(); }
-});
-$('progress').addEventListener('touchstart', e => {
-  if (!player.duration) return;
-  const t = e.touches[0];
-  const rect = $('progress').getBoundingClientRect();
-  const rel = Math.max(0, Math.min(1, (t.clientX - rect.left) / rect.width));
-  const to = rel * player.duration;
-  player.seek(to);
-  $('bar').style.width = (rel*100)+'%';
-  if (player.playing) { $('pause').disabled = false; animateProgress(); }
-}, {passive:true});
-
-function animateProgress() {
-  if (!player.playing && !player.paused) return;
-  const tt = player.currentTime(), d = player.duration||1;
-  $('bar').style.width = Math.min(100,(tt/d)*100)+'%';
-  if (tt >= d) { player.stop(); $('bar').style.width='0%'; return; }
-  requestAnimationFrame(animateProgress);
 }
 
-/* визуализатор */
-function drawVisualizer() {
-  const c = $('visCanvas');
-  if (!c) { requestAnimationFrame(drawVisualizer); return; }
-  const ctx = c.getContext('2d');
-  const W = c.width, H = c.height;
+/* VISUALIZER */
+function drawVisualizer(){
+  const c=$('visCanvas');if(!c){requestAnimationFrame(drawVisualizer);return;}
+  const ctx=c.getContext('2d');const W=c.width,H=c.height;
   ctx.clearRect(0,0,W,H);
-  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4f8cff';
-  ctx.fillStyle = accent;
-  if (player.analyser) {
-    const data = new Uint8Array(player.analyser.frequencyBinCount);
-    player.analyser.getByteFrequencyData(data);
-    const bars = 64;
-    const step = Math.floor(data.length / bars);
-    const bw = W / bars;
-    for (let i=0;i<bars;i++) {
-      let v = 0;
-      for (let j=0;j<step;j++) v = Math.max(v, data[i*step+j]);
-      const h = (v/255) * H;
-      ctx.fillRect(i*bw, H-h, bw-1, h);
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#4f8cff';
+  if(player.analyser&&state.showVisualizer){
+    if(state.vizType==='wave'){
+      const data=new Uint8Array(player.analyser.fftSize);
+      player.analyser.getByteTimeDomainData(data);
+      ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();
+      for(let i=0;i<data.length;i++){const x=(i/data.length)*W;const y=(data[i]/255)*H;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+      ctx.stroke();
+    } else {
+      const data=new Uint8Array(player.analyser.frequencyBinCount);
+      player.analyser.getByteFrequencyData(data);
+      ctx.fillStyle=accent;const bars=64,step=Math.floor(data.length/bars),bw=W/bars;
+      for(let i=0;i<bars;i++){let v=0;for(let j=0;j<step;j++)v=Math.max(v,data[i*step+j]);const h=(v/255)*H;ctx.fillRect(i*bw,H-h,bw-1,h);}
     }
   }
   requestAnimationFrame(drawVisualizer);
 }
 
-/* ======================================================================
-   13. ЧАСЫ
-   ====================================================================== */
-function updateClock() {
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  $('clockTime').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  $('clockDate').textContent = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ======================================================================
-   14. TASKBAR + START MENU + PREVIEW
-   ====================================================================== */
-function updateTaskbar() {
-  const box = $('taskbarIcons');
-  box.innerHTML = '';
-  const isMin = winEl.classList.contains('minimized');
-  const el = document.createElement('div');
-  el.className = 'task-icon' + (isMin?'':' active') + (state.pinnedTask?' pinned':'');
-  el.innerHTML = `<span class="material-icons">piano</span><span>QMidApp</span>`;
-  el.dataset.task = 'main';
-
-  let longPressTimer = null;
-  let longPressTriggered = false;
-
-  const showPreview = (ev) => {
-    const pr = $('taskPreview');
-    const rect = el.getBoundingClientRect();
-    pr.style.left = Math.min(window.innerWidth-260, rect.left)+'px';
-    pr.style.top  = (rect.top - 130)+'px';
+/* TASKBAR */
+function updateTaskbar(){
+  const box=$('taskbarIcons');box.innerHTML='';
+  const isMin=winEl.classList.contains('minimized');
+  const el=document.createElement('div');
+  el.className='task-icon'+(isMin?'':' active')+(state.pinnedTask?' pinned':'');
+  el.innerHTML=`<span class="material-icons">piano</span><span>QMidApp</span>`;
+  let lpTimer=null,lpTrig=false;
+  el.addEventListener('pointerdown',()=>{lpTrig=false;lpTimer=setTimeout(()=>{lpTrig=true;
+    const pr=$('taskPreview');const r=el.getBoundingClientRect();
+    pr.style.left=Math.min(window.innerWidth-260,r.left)+'px';
+    pr.style.top=(r.top-130)+'px';
     pr.classList.add('show');
-    $('tpName').textContent = 'QMidApp';
-  };
-  const hidePreview = () => $('taskPreview').classList.remove('show');
-
-  const onDown = (ev) => {
-    longPressTriggered = false;
-    longPressTimer = setTimeout(() => {
-      longPressTriggered = true;
-      showPreview(ev);
-    }, 500);
-  };
-  const onUp = (ev) => {
-    clearTimeout(longPressTimer);
-    if (longPressTriggered) return;
-    // обычный клик — открыть/свернуть
-    if (winEl.classList.contains('minimized')) winEl.classList.remove('minimized');
+  },500);});
+  el.addEventListener('pointerup',()=>{
+    clearTimeout(lpTimer);
+    if(lpTrig)return;
+    if(winEl.classList.contains('minimized'))winEl.classList.remove('minimized');
     else winEl.classList.add('minimized');
     updateTaskbar();
-  };
-  el.addEventListener('pointerdown', onDown);
-  el.addEventListener('pointerup', onUp);
-  el.addEventListener('pointerleave', () => clearTimeout(longPressTimer));
-  el.addEventListener('contextmenu', e => { e.preventDefault(); showPreview(e); });
-
-  box.appendChild(el);
-
-  document.querySelectorAll('[data-tp-action]').forEach(btn => {
-    btn.onclick = () => {
-      const a = btn.dataset.tpAction;
-      if (a === 'open') { winEl.classList.remove('minimized'); }
-      else if (a === 'hide') { winEl.classList.add('minimized'); }
-      else if (a === 'pin') { state.pinnedTask = !state.pinnedTask; saveState(); }
-      else if (a === 'close') { winEl.classList.add('minimized'); }
-      hidePreview();
-      updateTaskbar();
-    };
   });
-  document.addEventListener('pointerdown', e => {
-    if (!e.target.closest('#taskPreview') && !e.target.closest('.task-icon')) {
-      $('taskPreview').classList.remove('show');
-    }
-  }, {capture:true});
+  el.addEventListener('pointerleave',()=>clearTimeout(lpTimer));
+  box.appendChild(el);
+}
+document.querySelectorAll('[data-tp-action]').forEach(btn=>{
+  btn.onclick=()=>{
+    const a=btn.dataset.tpAction;
+    if(a==='open')winEl.classList.remove('minimized');
+    else if(a==='hide')winEl.classList.add('minimized');
+    else if(a==='pin'){state.pinnedTask=!state.pinnedTask;saveState();}
+    else if(a==='close')winEl.classList.add('minimized');
+    $('taskPreview').classList.remove('show');
+    updateTaskbar();
+  };
+});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#taskPreview')&&!e.target.closest('.task-icon'))$('taskPreview').classList.remove('show');},{capture:true});
+
+$('startBtn').onclick=e=>{e.stopPropagation();$('startMenu').classList.toggle('show');};
+document.querySelectorAll('[data-open-tab]').forEach(b=>{
+  b.onclick=()=>{
+    const tab=b.dataset.openTab;
+    activeTab=tab;
+    document.querySelectorAll('.topbar .tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
+    renderTab();winEl.classList.remove('minimized');
+    $('startMenu').classList.remove('show');updateTaskbar();
+  };
+});
+$('smRestoreWin').onclick=()=>{winEl.classList.remove('minimized');$('startMenu').classList.remove('show');updateTaskbar();};
+$('smQuit').onclick=()=>{$('startMenu').classList.remove('show');
+  if(confirm(t('confirmQuit'))){window.open('','_self').close();setTimeout(()=>{winEl.classList.add('minimized');updateTaskbar();},50);}
+};
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#startMenu')&&!e.target.closest('#startBtn'))$('startMenu').classList.remove('show');});
+
+/* TRANSPORT */
+$('masterVol').addEventListener('input',e=>{const v=+e.target.value/100;state.masterVol=v;player.setVolume(v);saveState();});
+$('play').addEventListener('click',async()=>{
+  if(!parsed)return;
+  if(player.paused)player.resume();
+  else{
+    player.outputMode=state.outputMode;
+    player.globalWave=state.globalWave;
+    player.globalPreset=state.globalPreset;
+    player.buildSchedule(parsed);
+    await player.play(0);
+  }
+  $('pause').disabled=false;
+  animateProgress();
+});
+$('pause').addEventListener('click',()=>{player.pause();$('pause').disabled=true;});
+$('stop').addEventListener('click',()=>{player.stop();$('bar').style.width='0%';$('pause').disabled=true;});
+$('progress').addEventListener('click',e=>{
+  if(!player.duration)return;
+  const r=$('progress').getBoundingClientRect();
+  const rel=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  player.seek(rel*player.duration);
+  $('bar').style.width=(rel*100)+'%';
+  if(player.playing){$('pause').disabled=false;animateProgress();}
+});
+function animateProgress(){
+  if(!player.playing&&!player.paused)return;
+  const tt=player.currentTime(),d=player.duration||1;
+  $('bar').style.width=Math.min(100,(tt/d)*100)+'%';
+  if(tt>=d){player.stop();$('bar').style.width='0%';return;}
+  requestAnimationFrame(animateProgress);
 }
 
-/* START MENU */
-$('startBtn').onclick = e => {
-  e.stopPropagation();
-  $('startMenu').classList.toggle('show');
-};
-document.querySelectorAll('[data-open-tab]').forEach(b => {
-  b.onclick = () => {
-    const tab = b.dataset.openTab;
-    activeTab = tab;
-    document.querySelectorAll('.topbar .tab').forEach(x => x.classList.toggle('active', x.dataset.tab === tab));
-    renderTab();
-    winEl.classList.remove('minimized');
-    $('startMenu').classList.remove('show');
-  };
-});
-$('smRestoreWin').onclick = () => { winEl.classList.remove('minimized'); $('startMenu').classList.remove('show'); updateTaskbar(); };
-$('smQuit').onclick = () => {
-  $('startMenu').classList.remove('show');
-  if (confirm('Quit QMidApp?')) {
-    window.close();
-    winEl.classList.add('minimized');
-    updateTaskbar();
+/* EXPORT */
+function downloadBlob(data,filename,mime){
+  const blob=data instanceof Blob?data:new Blob([data],{type:mime||'application/octet-stream'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.style.display='none';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},1500);
+}
+function writeVarLen(n){const b=[];b.unshift(n&0x7f);while((n>>=7))b.unshift((n&0x7f)|0x80);return b;}
+function exportMidiBin(schedule,division,trackSettings){
+  const bytes=[];const str=s=>[...s].map(c=>c.charCodeAt(0));
+  const u32=n=>[n>>24&255,n>>16&255,n>>8&255,n&255];const u16=n=>[n>>8&255,n&255];
+  bytes.push(...str('MThd'),...u32(6),...u16(0),...u16(1),...u16(division));
+  const usPerQuarter=500000,tps=division*1e6/usPerQuarter;
+  const events=[];const seen=new Set();
+  for(const ev of schedule){
+    const ch=ev.ch&0xF,ts=trackSettings[ev.track]||{};
+    let prog=ev.program;if(ts.presetIndex!=null)prog=ts.presetIndex;
+    if(!seen.has(ch)){
+      seen.add(ch);
+      events.push({t:0,bytes:[0xC0|ch,prog&0x7f]});
+      const vol=Math.max(0,Math.min(127,Math.round((ts.gain!=null?ts.gain:1)*127)));
+      events.push({t:0,bytes:[0xB0|ch,7,vol]});
+      const rev=Math.max(0,Math.min(127,Math.round((ts.reverb||0)*127)));
+      events.push({t:0,bytes:[0xB0|ch,91,rev]});
+    }
+    const v=Math.max(1,Math.min(127,Math.round(ev.vel*127*(ts.gain!=null?ts.gain:1))));
+    events.push({t:Math.round(ev.time*tps),bytes:[0x90|ch,ev.note&0x7f,v]});
+    events.push({t:Math.round(ev.end*tps),bytes:[0x80|ch,ev.note&0x7f,0]});
   }
-};
-document.addEventListener('pointerdown', e => {
-  if (!e.target.closest('#startMenu') && !e.target.closest('#startBtn')) {
-    $('startMenu').classList.remove('show');
-  }
-});
+  events.sort((a,b)=>a.t-b.t);
+  const track=[];track.push(0,0xFF,0x51,0x03,usPerQuarter>>16&255,usPerQuarter>>8&255,usPerQuarter&255);
+  let last=0;
+  for(const e of events){track.push(...writeVarLen(e.t-last));track.push(...e.bytes);last=e.t;}
+  track.push(0,0xFF,0x2F,0x00);
+  bytes.push(...str('MTrk'),...u32(track.length),...track);
+  return new Uint8Array(bytes);
+}
+function generateJsModule(schedule,parsed){
+  const events=schedule.map(ev=>({t:+ev.time.toFixed(4),d:+Math.max(0.02,ev.end-ev.time).toFixed(4),n:ev.note,v:Math.round(ev.vel*127),ch:ev.ch,p:ev.program}));
+  const payload=JSON.stringify({meta:{division:parsed.division,format:parsed.format,tracks:parsed.tracks.length},events},null,2);
+  return `/* QMidApp v26-nov-2.8 — Quantum ACD × DeepSeek */
+const QMidApp=(()=>{const DATA=${payload};
+const midiToFreq=n=>440*Math.pow(2,(n-69)/12);
+function play(ctx,offset=0){if(ctx.state==='suspended')ctx.resume();const now=ctx.currentTime+0.1;let maxEnd=0;
+for(const ev of DATA.events){if(ev.t+ev.d<offset)continue;const startRel=Math.max(ev.t-offset,0);const stopRel=Math.max(ev.t+ev.d-offset,startRel+0.05);
+const start=now+startRel,stop=now+stopRel;
+const osc=ctx.createOscillator(),g=ctx.createGain();osc.type='triangle';osc.frequency.value=midiToFreq(ev.n);
+const peak=Math.max(0.001,ev.v/127*0.5);g.gain.setValueAtTime(0.0001,start);g.gain.linearRampToValueAtTime(peak,start+0.005);g.gain.linearRampToValueAtTime(peak*0.4,start+0.2);g.gain.setValueAtTime(peak*0.4,stop);g.gain.linearRampToValueAtTime(0.0001,stop+0.25);
+osc.connect(g).connect(ctx.destination);osc.start(start);osc.stop(stop+0.3);if(stop>maxEnd)maxEnd=stop;}return maxEnd-now;}
+function playMidi(outPort,offset=0){if(!outPort)throw new Error('No MIDI');const t0=performance.now();
+for(const ev of DATA.events){if(ev.t+ev.d<offset)continue;const tOn=t0+Math.max(0,(ev.t-offset)*1000),tOff=t0+Math.max(0,(ev.t+ev.d-offset)*1000);
+setTimeout(()=>outPort.send([0x90|(ev.ch&0xF),ev.n&0x7f,ev.v&0x7f]),tOn-t0);setTimeout(()=>outPort.send([0x80|(ev.ch&0xF),ev.n&0x7f,0]),tOff-t0);}}
+return{DATA,play,playMidi};})();`;
+}
 
-/* ======================================================================
-   15. INIT
-   ====================================================================== */
+/* CLOCK */
+function updateClock(){
+  const now=new Date();const pad=n=>String(n).padStart(2,'0');
+  $('clockTime').textContent=pad(now.getHours())+':'+pad(now.getMinutes());
+  $('clockDate').textContent=pad(now.getDate())+'.'+pad(now.getMonth()+1)+'.'+now.getFullYear();
+}
+setInterval(updateClock,1000);updateClock();
+
+/* INIT */
 applyTheme(state.theme);
+applyStyle(state.style);
+applyFont(state.font);
 applyRadius(state.radius);
 applyAccent(state.accent);
-if (state.wallpaper === 'custom' && state.wallpaperData) applyWallpaper('custom', state.wallpaperData);
+if(state.wallpaper==='custom'&&state.wallpaperData)applyWallpaper('custom',state.wallpaperData);
+else if(state.wallpaper==='customVideo'&&state.wallpaperVideo)applyWallpaper('customVideo',null,state.wallpaperVideo);
 else applyWallpaper(state.wallpaper);
-player.volume = state.masterVol;
-player.outputMode = state.outputMode;
-player.globalWave = state.globalWave;
-player.globalPreset = state.globalPreset;
-$('masterVol').value = Math.round(state.masterVol*100);
+
+player.volume=state.masterVol;
+player.outputMode=state.outputMode;
+player.outputDevice=state.outputDevice||'';
+player.globalWave=state.globalWave;
+player.globalPreset=state.globalPreset;
+$('masterVol').value=Math.round(state.masterVol*100);
+$('vizBox').classList.toggle('hidden',!state.showVisualizer);
+if(state.xmas){document.body.classList.add('xmas');document.querySelector('.win').classList.add('xmas');}
+
 applyWindowGeom();
-applyI18n();
 document.querySelector('.topbar .tab[data-tab="file"]').classList.add('active');
 renderTab();
+renderShortcuts();
 updateTaskbar();
 drawVisualizer();
+drawPlayhead();
+applyI18n();
 
-window.addEventListener('resize', () => {
-  if (!state.win.maximized) {
-    const x = Math.max(0, Math.min(parseFloat(winEl.style.left)||0, window.innerWidth - 200));
-    const y = Math.max(0, Math.min(parseFloat(winEl.style.top)||0, window.innerHeight - 100));
-    winEl.style.left = x+'px';
-    winEl.style.top  = y+'px';
+window.addEventListener('resize',()=>{
+  if(!state.win.maximized){
+    const x=Math.max(0,Math.min(parseFloat(winEl.style.left)||0,window.innerWidth-200));
+    const y=Math.max(0,Math.min(parseFloat(winEl.style.top)||0,window.innerHeight-100));
+    winEl.style.left=x+'px';winEl.style.top=y+'px';
   }
 });
-
-/* ======================================================================
-   16. RESIZE / EXPORT HELPERS
-   ====================================================================== */
-function downloadBlob(data, filename, mime) {
-  const blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
 </script>
 </body>
 </html>
