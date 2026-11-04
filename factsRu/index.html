@@ -3,182 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>25 фактов о России · Интерактивная презентация</title>
+    <title>Факты о России</title>
     <style>
-        /* ----- RESET & GLOBAL ----- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
             font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
             background: #0a0f1e;
             background-image: radial-gradient(circle at 20% 20%, #1a2a4a 0%, #0a0f1e 70%);
-            min-height: 100vh;
+            color: #eef2ff;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
-            color: #eef2ff;
-            overflow-x: hidden;
         }
 
-        /* ----- ЗАГОЛОВОК / ШАПКА ----- */
-        .app-header {
-            text-align: center;
-            margin-bottom: 1.8rem;
-            animation: fadeSlideDown 1s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .app-header h1 {
-            font-size: clamp(1.8rem, 6vw, 3.2rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 0%, #a0c4ff 45%, #d0bfff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
-            text-shadow: 0 0 40px rgba(100, 150, 255, 0.3);
-        }
-
-        .app-header .subtitle {
-            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
-            color: #8ea4c8;
-            margin-top: 0.4rem;
-            font-weight: 400;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .counter-badge {
-            display: inline-block;
-            margin-top: 0.75rem;
-            padding: 0.25rem 1.4rem;
-            border-radius: 40px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(8px);
-            font-size: 0.85rem;
-            color: #b8ceff;
-            letter-spacing: 0.08em;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        /* ----- КАРТОЧКА ФАКТА ----- */
-        .card-container {
-            width: 100%;
-            max-width: 880px;
-            perspective: 1200px;
-            margin-bottom: 1.5rem;
-        }
-
+        /* ============================================
+           ОСНОВНАЯ КАРТОЧКА
+           ============================================ */
         .fact-card {
             position: relative;
-            background: rgba(18, 30, 55, 0.75);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border-radius: 2rem;
-            padding: clamp(1.8rem, 6vw, 3.2rem) clamp(1.5rem, 5vw, 3rem);
-            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8),
-                        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-                        0 0 80px -20px rgba(100, 150, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
-            will-change: transform;
-            min-height: 220px;
+            width: 100%;
+            height: 100%;
+            background: rgba(12, 20, 38, 0.82);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            overflow: hidden;
+            display: flex;
+        }
+
+        .fact-left {
+            flex: 1 1 52%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: clamp(2rem, 5vw, 4.5rem);
+            position: relative;
+            min-width: 0;
+            z-index: 3;
+        }
+
+        .fact-content {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transform-style: preserve-3d;
-            animation: cardAppear 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
         }
 
-        .fact-card:hover {
-            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9),
-                        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-                        0 0 100px -20px rgba(130, 170, 255, 0.25);
-            transform: translateY(-4px) scale(1.002);
+        .fact-content::-webkit-scrollbar { width: 4px; }
+        .fact-content::-webkit-scrollbar-thumb {
+            background: rgba(160, 195, 255, 0.2);
+            border-radius: 4px;
         }
 
         .fact-number {
-            position: absolute;
-            top: 1.2rem;
-            left: 1.8rem;
-            font-size: clamp(3.5rem, 12vw, 5.5rem);
+            font-size: clamp(4rem, 10vw, 8rem);
             font-weight: 800;
             line-height: 1;
-            color: rgba(180, 210, 255, 0.09);
-            letter-spacing: -0.05em;
+            color: rgba(180, 210, 255, 0.12);
+            letter-spacing: -0.06em;
             user-select: none;
-            transition: color 0.4s, transform 0.4s;
             font-family: 'Inter', system-ui, sans-serif;
-            z-index: 0;
+            margin-bottom: 0.2rem;
+            transition: color 0.4s, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .fact-card:hover .fact-number {
-            color: rgba(180, 210, 255, 0.16);
-            transform: scale(1.02) translateX(4px);
+            color: rgba(180, 210, 255, 0.2);
+            transform: translateX(6px);
         }
 
         .fact-text {
-            position: relative;
-            z-index: 2;
-            font-size: clamp(1.15rem, 3.2vw, 1.7rem);
+            font-size: clamp(1.15rem, 2vw, 1.85rem);
             line-height: 1.55;
             font-weight: 450;
             color: #f0f5ff;
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
             letter-spacing: -0.01em;
-            padding-left: clamp(0rem, 3vw, 2.5rem);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             word-break: break-word;
+            max-width: 700px;
         }
 
-        /* Акцент в тексте (числа и т.п. — не меняем, просто стиль) */
-
-        /* ----- АНИМАЦИИ ----- */
-        @keyframes fadeSlideDown {
-            0% { opacity: 0; transform: translateY(-28px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes cardAppear {
-            0% { opacity: 0; transform: scale(0.94) rotateX(8deg) translateY(24px); }
-            100% { opacity: 1; transform: scale(1) rotateX(0deg) translateY(0); }
-        }
-
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(120, 160, 255, 0.2); }
-            70% { box-shadow: 0 0 0 18px rgba(120, 160, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(120, 160, 255, 0); }
-        }
-
-        .fact-card.changed {
-            animation: cardAppear 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        /* ----- НАВИГАЦИЯ ----- */
+        /* НИЖНЯЯ ПАНЕЛЬ */
         .nav-controls {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: clamp(0.8rem, 3vw, 2rem);
-            margin-top: 1.2rem;
+            gap: 0.9rem;
             flex-wrap: wrap;
-            animation: fadeSlideDown 0.9s 0.15s both cubic-bezier(0.23, 1, 0.32, 1);
+            margin-top: 1.5rem;
         }
 
         .nav-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e0ecff;
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -187,14 +113,13 @@
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             user-select: none;
             flex-shrink: 0;
             line-height: 1;
             box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
         }
 
-        .nav-btn:hover {
+        .nav-btn:hover:not(:disabled) {
             background: rgba(160, 195, 255, 0.15);
             border-color: rgba(180, 210, 255, 0.3);
             transform: scale(1.06);
@@ -202,370 +127,1542 @@
             box-shadow: 0 12px 28px -8px rgba(80, 140, 255, 0.3);
         }
 
-        .nav-btn:active {
+        .nav-btn:active:not(:disabled) {
             transform: scale(0.94);
             background: rgba(160, 195, 255, 0.25);
         }
 
-        .nav-btn:disabled {
-            opacity: 0.3;
-            pointer-events: none;
-            transform: none;
-            box-shadow: none;
-        }
+        .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
 
+        /* Прогресс-слайдер */
         .progress-wrapper {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.7rem;
             color: #a6bce2;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 500;
             letter-spacing: 0.04em;
             background: rgba(255, 255, 255, 0.03);
-            padding: 0.4rem 1rem 0.4rem 1.4rem;
+            padding: 0.45rem 1.1rem;
             border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(4px);
+            flex: 1;
+            min-width: 160px;
+            cursor: pointer;
+            transition: background 0.25s, border-color 0.25s;
         }
 
-        .progress-bar {
-            width: 120px;
+        .progress-wrapper:hover {
+            background: rgba(160, 195, 255, 0.08);
+            border-color: rgba(180, 210, 255, 0.2);
+        }
+
+        .progress-wrapper .progress-bar {
+            flex: 1;
             height: 4px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             overflow: hidden;
-            margin-left: 0.2rem;
+            min-width: 50px;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #7aa5ff, #c5b4ff);
             border-radius: 4px;
-            transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: 0 0 12px rgba(120, 160, 255, 0.5);
-            width: 4%;
         }
 
-        /* ----- ДОП. КНОПКИ (внизу) ----- */
-        .extra-actions {
-            display: flex;
-            justify-content: center;
-            gap: 1.2rem;
-            margin-top: 1.4rem;
-            flex-wrap: wrap;
-            animation: fadeSlideDown 1s 0.25s both cubic-bezier(0.23, 1, 0.32, 1);
+        .progress-wrapper .chevron {
+            font-size: 0.7rem;
+            opacity: 0.5;
+            transition: transform 0.3s;
         }
 
-        .pill-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #c0d4f0;
-            padding: 0.55rem 1.6rem;
-            border-radius: 40px;
+        .progress-wrapper.open .chevron { transform: rotate(180deg); }
+
+        /* DROPDOWN */
+        .fact-dropdown {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: rgba(14, 22, 42, 0.96);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(160, 195, 255, 0.15);
+            border-radius: 16px;
+            padding: 0.6rem;
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8),
+                        0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+            opacity: 0;
+            transform: translateY(10px) scale(0.96);
+            pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 280px;
+            overflow-y: auto;
+            z-index: 20;
+        }
+
+        .progress-wrapper.open .fact-dropdown {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .fact-dropdown::-webkit-scrollbar { width: 4px; }
+        .fact-dropdown::-webkit-scrollbar-thumb {
+            background: rgba(160, 195, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.4rem;
+        }
+
+        .dropdown-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            color: #a6bce2;
+            padding: 0.55rem 0;
+            border-radius: 10px;
             font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.25s;
-            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(160, 195, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .dropdown-item.active {
+            background: linear-gradient(135deg, #3a5a9a, #5a4a9a);
+            color: #ffffff;
+            border-color: rgba(180, 210, 255, 0.3);
+            box-shadow: 0 4px 12px -2px rgba(90, 140, 255, 0.4);
+        }
+
+        /* ============================================
+           ЧЕКБОКС РАНДОМА (с анимацией)
+           ============================================ */
+        .random-toggle {
+            position: relative;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c0d4f0;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            font-size: 1.35rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            flex-shrink: 0;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .pill-btn:hover {
+        .random-toggle input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .random-toggle .dice {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .random-toggle:hover {
             background: rgba(160, 195, 255, 0.12);
             border-color: rgba(180, 210, 255, 0.25);
+        }
+
+        .random-toggle input:checked ~ .dice {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .random-toggle:has(input:checked) {
+            background: linear-gradient(135deg, #3a5a9a, #5a4a9a);
+            border-color: rgba(180, 210, 255, 0.35);
             color: #ffffff;
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 4px rgba(120, 160, 255, 0.15),
+                        0 8px 20px -6px rgba(80, 140, 255, 0.5);
+            animation: randomPulse 2s infinite;
         }
 
-        .pill-btn:active {
-            transform: scale(0.96);
+        @keyframes randomPulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(120, 160, 255, 0.15), 0 8px 20px -6px rgba(80, 140, 255, 0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(120, 160, 255, 0.08), 0 8px 24px -6px rgba(80, 140, 255, 0.7); }
         }
 
-        /* ----- АДАПТИВ ----- */
-        @media (max-width: 600px) {
-            .fact-card {
-                border-radius: 1.6rem;
-                padding: 1.8rem 1.4rem;
-                min-height: 190px;
-            }
-            .fact-number {
-                top: 0.8rem;
-                left: 1.2rem;
-                font-size: 3.4rem;
-            }
-            .fact-text {
-                font-size: 1.1rem;
-                padding-left: 0.2rem;
-            }
-            .nav-btn {
-                width: 48px;
-                height: 48px;
-                font-size: 1.4rem;
-            }
-            .progress-bar {
-                width: 70px;
-            }
-            .progress-wrapper {
-                gap: 0.4rem;
-                padding: 0.3rem 0.8rem 0.3rem 1rem;
-                font-size: 0.8rem;
-            }
-            .extra-actions {
-                gap: 0.8rem;
-            }
-            .pill-btn {
-                padding: 0.4rem 1.1rem;
-                font-size: 0.7rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            body { padding: 0.8rem; }
-            .fact-text { font-size: 1rem; }
-            .nav-controls { gap: 0.5rem; }
-            .progress-bar { width: 50px; }
-        }
-
-        /* Декоративная подсветка */
-        .glow-orb {
-            position: fixed;
-            width: 45vmax;
-            height: 45vmax;
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c0d4f0;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(90, 140, 255, 0.08) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+            flex-shrink: 0;
+        }
+
+        .settings-btn:hover {
+            background: rgba(160, 195, 255, 0.15);
+            border-color: rgba(180, 210, 255, 0.3);
+            transform: scale(1.06) rotate(45deg);
+        }
+
+        .settings-btn:active { transform: scale(0.94) rotate(45deg); }
+        .settings-btn.active { background: rgba(160, 195, 255, 0.2); color: #fff; }
+
+        /* ПРАВАЯ ЧАСТЬ: фото */
+        .fact-right {
+            flex: 0 0 48%;
+            position: relative;
+            background: linear-gradient(160deg, #0f1a2e 0%, #131f38 100%);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .fact-right::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8%;
+            bottom: 8%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(180, 210, 255, 0.18), transparent);
+            z-index: 5;
+        }
+
+        .photo-stage { position: absolute; inset: 0; z-index: 2; }
+
+        .photo-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: scale(1.08);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 1.6s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: opacity, transform;
+            overflow: hidden;
+        }
+
+        .photo-slide.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        /* Покачивание фото */
+        .photo-slide.sway img,
+        .photo-slide.sway canvas {
+            animation: gentleSway 14s ease-in-out infinite alternate;
+            transform-origin: 50% 55%;
+        }
+
+        @keyframes gentleSway {
+            0% { transform: scale(1.02) translate(0, 0) rotate(0deg); }
+            25% { transform: scale(1.05) translate(-1%, 0.5%) rotate(-0.4deg); }
+            50% { transform: scale(1.03) translate(0.5%, -0.7%) rotate(0.3deg); }
+            75% { transform: scale(1.06) translate(-0.7%, 0.3%) rotate(-0.2deg); }
+            100% { transform: scale(1.02) translate(0.3%, -0.5%) rotate(0.4deg); }
+        }
+
+        .photo-slide img,
+        .photo-slide canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-slide .photo-caption {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            padding: 2rem 1.6rem 1.3rem;
+            background: linear-gradient(to top, rgba(5, 10, 25, 0.9) 0%, rgba(5, 10, 25, 0.4) 60%, transparent 100%);
+            font-size: 0.82rem;
+            color: #c8d8f0;
+            letter-spacing: 0.02em;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.6s 0.25s ease, transform 0.6s 0.25s ease;
+            z-index: 3;
+        }
+
+        .photo-slide.active .photo-caption { opacity: 1; transform: translateY(0); }
+
+        /* ============================================
+           ПАНЕЛЬ НАСТРОЕК
+           ============================================ */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(360px, 92vw);
+            height: 100%;
+            background: rgba(12, 20, 38, 0.96);
+            backdrop-filter: blur(24px);
+            border-left: 1px solid rgba(160, 195, 255, 0.12);
+            box-shadow: -20px 0 60px -20px rgba(0, 0, 0, 0.9);
+            padding: 2rem 1.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+            transform: translateX(105%);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open { transform: translateX(0); }
+
+        .settings-panel::-webkit-scrollbar { width: 4px; }
+        .settings-panel::-webkit-scrollbar-thumb {
+            background: rgba(160, 195, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .settings-header h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #a0c4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .settings-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c0d4f0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .settings-close:hover {
+            background: rgba(255, 100, 100, 0.15);
+            border-color: rgba(255, 150, 150, 0.3);
+        }
+
+        .settings-section { display: flex; flex-direction: column; gap: 0.7rem; }
+
+        .settings-section > label {
+            font-size: 0.78rem;
+            color: #9ab0d8;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* ============================================
+           ЧИП-СЛАЙДЕР (исправленный)
+           ============================================ */
+        .chips {
+            display: flex;
+            gap: 0.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.3rem;
+            border-radius: 40px;
+            position: relative;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .chip {
+            flex: 1 1 0;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            color: #8ea4c8;
+            padding: 0.5rem 0;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            font-family: inherit;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .chip:hover { color: #c0d8ff; }
+        .chip.active { color: #ffffff; }
+
+        .chip-indicator {
+            position: absolute;
+            top: 0.3rem;
+            left: 0;
+            height: calc(100% - 0.6rem);
+            border-radius: 30px;
+            background: linear-gradient(135deg, #3a5a9a, #5a4a9a);
+            box-shadow: 0 4px 16px -4px rgba(90, 140, 255, 0.5),
+                        0 0 0 1px rgba(180, 210, 255, 0.2) inset;
+            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1;
             pointer-events: none;
-            top: -15vmax;
-            right: -15vmax;
-            z-index: 0;
-            animation: floatOrb 18s infinite alternate ease-in-out;
+            opacity: 0;
+            will-change: transform, width;
         }
 
-        .glow-orb.two {
-            width: 35vmax;
-            height: 35vmax;
-            background: radial-gradient(circle, rgba(200, 160, 255, 0.06) 0%, transparent 70%);
-            bottom: -12vmax;
-            left: -12vmax;
-            top: auto;
-            right: auto;
-            animation-duration: 22s;
-            animation-delay: -5s;
+        .chip-indicator.ready { opacity: 1; }
+
+        /* ============================================
+           МЕЛОДИИ
+           ============================================ */
+        .melody-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
         }
 
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(-6vmax, 6vmax) scale(1.15); }
+        .melody-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 0.65rem 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .melody-item:hover {
+            background: rgba(160, 195, 255, 0.08);
+            border-color: rgba(180, 210, 255, 0.2);
+            transform: translateX(2px);
+        }
+
+        .melody-item.active {
+            background: linear-gradient(135deg, rgba(58, 90, 154, 0.5), rgba(90, 74, 154, 0.5));
+            border-color: rgba(180, 210, 255, 0.35);
+            box-shadow: 0 4px 20px -6px rgba(90, 140, 255, 0.5);
+        }
+
+        .melody-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(120, 160, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            transition: all 0.25s;
+        }
+
+        .melody-item.active .melody-icon {
+            background: rgba(120, 255, 180, 0.2);
+            animation: melodyPulse 1.8s infinite;
+        }
+
+        @keyframes melodyPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(120, 255, 180, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(120, 255, 180, 0); }
+        }
+
+        .melody-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+
+        .melody-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #d0e0ff;
+        }
+
+        .melody-desc {
+            font-size: 0.72rem;
+            color: #8ea4c8;
+            opacity: 0.8;
+        }
+
+        .melody-item .eq-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 16px;
+            width: 18px;
+            opacity: 0;
+            transition: opacity 0.25s;
+            flex-shrink: 0;
+        }
+
+        .melody-item.active .eq-bars { opacity: 1; }
+
+        .eq-bars span {
+            width: 2px;
+            background: linear-gradient(to top, #7affb0, #7aa5ff);
+            border-radius: 2px;
+            animation: eqBounce 0.9s ease-in-out infinite;
+        }
+
+        .eq-bars span:nth-child(2) { animation-delay: 0.15s; }
+        .eq-bars span:nth-child(3) { animation-delay: 0.3s; }
+        .eq-bars span:nth-child(4) { animation-delay: 0.45s; }
+
+        @keyframes eqBounce {
+            0%, 100% { height: 4px; }
+            50% { height: 14px; }
+        }
+
+        .volume-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-top: 0.6rem;
+        }
+
+        .volume-row span {
+            font-size: 0.75rem;
+            color: #8ea4c8;
+            flex-shrink: 0;
+            min-width: 60px;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7aa5ff, #c5b4ff);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(120, 160, 255, 0.6);
+            transition: transform 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7aa5ff, #c5b4ff);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(120, 160, 255, 0.6);
+        }
+
+        /* Автопереключение */
+        .auto-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+        }
+
+        .auto-toggle-row .auto-text {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: #d0ddf0;
+        }
+
+        .auto-toggle-row .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #7aa5ff;
+            box-shadow: 0 0 10px rgba(120, 160, 255, 0.6);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .auto-toggle-row .dot.active {
+            background: #7affb0;
+            box-shadow: 0 0 10px rgba(120, 255, 180, 0.7);
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        .auto-progress-ring { width: 18px; height: 18px; flex-shrink: 0; }
+        .auto-progress-ring circle { fill: none; stroke-width: 2.5; transition: stroke-dashoffset 0.3s linear; }
+
+        /* Оверлей */
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+            z-index: 90;
+        }
+
+        .settings-overlay.open { opacity: 1; pointer-events: auto; }
+
+        /* Анимации появления */
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .fact-number, .fact-text, .nav-controls {
+            animation: fadeSlideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+        }
+        .fact-text { animation-delay: 0.08s; }
+        .nav-controls { animation-delay: 0.16s; }
+
+        .fact-card.changed .fact-number,
+        .fact-card.changed .fact-text,
+        .fact-card.changed .nav-controls { animation: none; }
+
+        @media (max-width: 900px) {
+            .fact-card { flex-direction: column; }
+            .fact-left { flex: 1 1 auto; padding: 1.5rem 1.3rem 1.2rem; }
+            .fact-right {
+                flex: 0 0 45vh;
+                order: -1;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .fact-right::after { display: none; }
+            .fact-number { font-size: 3.5rem; }
+            .fact-text { font-size: 1.05rem; }
+        }
+
+        @media (max-width: 480px) {
+            .fact-left { padding: 1.1rem 0.9rem 1rem; }
+            .fact-right { flex: 0 0 38vh; }
+            .fact-number { font-size: 3rem; }
+            .fact-text { font-size: 0.98rem; }
+            .nav-btn, .settings-btn, .random-toggle { width: 46px; height: 46px; font-size: 1.2rem; }
+            .dropdown-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div class="glow-orb"></div>
-    <div class="glow-orb two"></div>
-
-    <header class="app-header">
-        <h1>25 фактов о России</h1>
-        <div class="subtitle">интерактивная презентация</div>
-        <div class="counter-badge" id="counterBadge">факт 1 / 25</div>
-    </header>
-
-    <main class="card-container">
-        <div class="fact-card" id="factCard">
-            <div class="fact-number" id="factNumber">01</div>
-            <div class="fact-text" id="factText">Россия — самая большая страна в мире по площади: более 17 миллионов квадратных километров.</div>
-        </div>
-    </main>
-
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" aria-label="Предыдущий факт" disabled>‹</button>
-        <div class="progress-wrapper">
-            <span id="progressLabel">1 / 25</span>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 4%;"></div>
+    <div class="fact-card" id="factCard">
+        <div class="fact-left">
+            <div class="fact-content">
+                <div class="fact-number" id="factNumber">01</div>
+                <div class="fact-text" id="factText">Россия — самая большая страна в мире по площади: более 17 миллионов квадратных километров.</div>
+            </div>
+            <div class="nav-controls">
+                <button class="settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">⚙</button>
+                <button class="nav-btn" id="prevBtn" aria-label="Предыдущий факт" disabled>‹</button>
+                <div class="progress-wrapper" id="progressWrapper">
+                    <span id="progressLabel">1 / 20</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 5%;"></div>
+                    </div>
+                    <span class="chevron">▼</span>
+                    <div class="fact-dropdown" id="factDropdown">
+                        <div class="dropdown-grid" id="dropdownGrid"></div>
+                    </div>
+                </div>
+                <button class="nav-btn" id="nextBtn" aria-label="Следующий факт">›</button>
+                <label class="random-toggle" id="randomToggle" title="Случайный порядок">
+                    <input type="checkbox" id="randomCheckbox">
+                    <span class="dice">🎲</span>
+                </label>
             </div>
         </div>
-        <button class="nav-btn" id="nextBtn" aria-label="Следующий факт">›</button>
+
+        <div class="fact-right">
+            <div class="photo-stage" id="photoStage"></div>
+        </div>
     </div>
 
-    <div class="extra-actions">
-        <button class="pill-btn" id="randomBtn">🎲 Случайный факт</button>
-        <button class="pill-btn" id="resetBtn">↻ В начало</button>
-    </div>
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <aside class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>Настройки</h2>
+            <button class="settings-close" id="settingsClose" aria-label="Закрыть">✕</button>
+        </div>
+
+        <div class="settings-section">
+            <label>Автопереключение фактов</label>
+            <div class="auto-toggle-row">
+                <div class="auto-text">
+                    <span class="dot" id="autoDot"></span>
+                    <span id="autoStatus">Выключено</span>
+                </div>
+                <svg class="auto-progress-ring" viewBox="0 0 20 20" id="autoRing" style="display:none;">
+                    <circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.1)"/>
+                    <circle cx="10" cy="10" r="8" stroke="#7aa5ff" id="autoRingProgress"
+                            stroke-dasharray="50.27" stroke-dashoffset="50.27"
+                            transform="rotate(-90 10 10)"/>
+                </svg>
+            </div>
+            <div class="chips" id="chips">
+                <div class="chip-indicator" id="chipIndicator"></div>
+                <button class="chip active" data-sec="0">0</button>
+                <button class="chip" data-sec="3">3</button>
+                <button class="chip" data-sec="5">5</button>
+                <button class="chip" data-sec="10">10</button>
+                <button class="chip" data-sec="30">30</button>
+                <button class="chip" data-sec="60">60</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <label>Фоновая музыка</label>
+            <div class="melody-list" id="melodyList"></div>
+            <div class="volume-row">
+                <span>Громкость</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="35">
+            </div>
+        </div>
+    </aside>
 
     <script>
         (function() {
-            // ---- Данные из JSON (встроены) ----
+            // =============================================
+            // ДАННЫЕ: 20 фактов
+            // =============================================
             const facts = [
-                "Россия — самая большая страна в мире по площади: более 17 миллионов квадратных километров.",
-                "Территория России омывается водами 12 морей, принадлежащих трём океанам: Атлантическому, Тихому и Северному Ледовитому.",
-                "В России находится озеро Байкал — самое глубокое озеро в мире (около 1642 метров) и крупнейший резервуар пресной воды.",
-                "Россия граничит с 18 государствами — это одно из наибольших количеств соседних стран в мире.",
-                "На территории России расположены одни из самых старых гор на планете — Уральские; возраст некоторых горных образований превышает 4 миллиарда лет.",
-                "Московский Кремль — крупнейшая сохранившаяся действующая средневековая крепость в Европе.",
-                "В Санкт‑Петербурге находится самое глубокое метро в мире: средняя глубина станций — около 100 метров, а некоторые — ещё глубже.",
-                "В России проживает более 190 народов, говорящих на разных языках и сохраняющих свои традиции.",
-                "Ключевская Сопка на Камчатке — один из самых активных и крупнейших действующих вулканов Евразии (высота — более 4750 метров).",
-                "В городе Оймякон (Якутия) зафиксирована одна из самых низких температур в обитаемом Северном полушарии — ниже −70 °C.",
-                "Транссибирская железнодорожная магистраль — самая длинная пассажирская железная дорога в мире, её протяжённость — более 9200 километров.",
-                "В России находится самая большая в мире площадь лесов — они занимают более 8 миллионов квадратных километров.",
-                "Волга — самая длинная река в Европе, её длина составляет более 3500 километров.",
-                "Эльбрус — высочайшая точка России и Европы, его высота — 5642 метра над уровнем моря.",
-                "В России более 2,8 миллиона рек и свыше 2 миллионов озёр.",
-                "Санкт‑Петербург называют «Северной Венецией»: в городе более 90 рек, каналов и протоков, а также свыше 300 мостов.",
-                "Россия охватывает 11 часовых поясов — это больше, чем любая другая страна мира.",
-                "Эрмитаж в Санкт‑Петербурге — один из крупнейших и старейших музеев мира: в нём хранится более 3 миллионов произведений искусства.",
-                "В Якутии добывают значительную часть мировых запасов алмазов; регион известен крупнейшими в мире алмазными карьерами.",
-                "Русская баня — важная часть культуры; традиционные бани топят по‑чёрному и по‑белому, а ритуал парения включает использование веников.",
-                "Первый человек в космосе — Юрий Гагарин из СССР (1961 год); этот факт остаётся важной частью российской и мировой истории.",
-                "В России есть уникальные природные зоны: от арктических пустынь на севере до субтропиков на юге (например, в Сочи).",
-                "Соляные пещеры в Пермском крае (например, на территории бывшего рудника в Соликамске) — одни из крупнейших в Европе.",
-                "В России сохранились уникальные деревянные храмы Русского Севера, построенные без единого гвоздя.",
-                "Русский язык — один из шести официальных языков ООН и входит в число самых распространённых языков мира по числу носителей."
+                { text: "Россия — самая большая страна в мире по площади: более 17 миллионов квадратных километров.", img: "https://i.pinimg.com/originals/ee/fe/7b/eefe7b927e9564fb7c8c5b9c87d12a43.png", caption: "Россия на карте мира", sway: false },
+                { text: "Территория России омывается водами 12 морей, принадлежащих трём океанам: Атлантическому, Тихому и Северному Ледовитому.", img: "https://avatars.mds.yandex.net/i?id=447a02ca2634142e3f5dc50955136237_l-5743853-images-thumbs&n=13", caption: "Моря России", sway: true },
+                { text: "В России находится озеро Байкал — самое глубокое озеро в мире (около 1642 метров) и крупнейший резервуар пресной воды.", img: "https://avatars.mds.yandex.net/get-shedevrum/13235602/img_03f5907dddbc11efa77cf2d0e7e1e07f/orig", caption: "Озеро Байкал", sway: true },
+                { text: "Россия граничит с 18 государствами — это одно из наибольших количеств соседних стран в мире.", img: "https://thumbs.dreamstime.com/b/none-60519238.jpg", caption: "Границы России", sway: false },
+                { text: "На территории России расположены одни из самых старых гор на планете — Уральские; возраст некоторых горных образований превышает 4 миллиарда лет.", img: "https://i.pinimg.com/originals/b1/04/09/b104098bc440e0a83ff6859f6c4832bc.jpg", caption: "Уральские горы", sway: true },
+                { text: "Московский Кремль — крупнейшая сохранившаяся действующая средневековая крепость в Европе.", img: "https://resize.tripster.ru/WF0JTi0WuMBtopNIfAAi5ZKES7Y=/fit-in/1080x810/filters:no_upscale()/https://cdn.tripster.ru/photos/8f18e2d0-11e4-4312-829e-3b33af506085.jpg", caption: "Московский Кремль", sway: false },
+                { text: "В Санкт‑Петербурге находится самое глубокое метро в мире: средняя глубина станций — около 100 метров, а некоторые — ещё глубже.", img: "https://i.pinimg.com/originals/ff/a1/c9/ffa1c9557c1e6ff028d1c9d01d1623f6.jpg?nii=t", caption: "Метро Санкт-Петербурга", sway: false },
+                { text: "В России проживает более 190 народов, говорящих на разных языках и сохраняющих свои традиции.", img: "https://static.vecteezy.com/system/resources/previews/034/045/814/non_2x/a-man-and-a-woman-in-russian-folk-costumes-culture-and-traditions-of-russia-illustration-vector.jpg", caption: "Народы России", sway: true },
+                { text: "Ключевская Сопка на Камчатке — один из самых активных и крупнейших действующих вулканов Евразии (высота — более 4750 метров).", img: "https://avatars.mds.yandex.net/i?id=13cdb2f9be5315ad300b9ca37f18b525_l-3523167-images-thumbs&n=13", caption: "Ключевская Сопка", sway: true },
+                { text: "В городе Оймякон (Якутия) зафиксирована одна из самых низких температур в обитаемом Северном полушарии — ниже −70 °C.", img: "https://wikiway.com/upload/uf/048/oyamikon_024.jpg", caption: "Оймякон", sway: true },
+                { text: "Транссибирская железнодорожная магистраль — самая длинная пассажирская железная дорога в мире, её протяжённость — более 9200 километров.", img: "https://im.kommersant.ru/relay/relayimage/1569911tyucolon20220707172100/1200", caption: "Транссибирская магистраль", sway: false },
+                { text: "В России находится самая большая в мире площадь лесов — они занимают более 8 миллионов квадратных километров.", img: "https://avatars.mds.yandex.net/i?id=288c3bc49209e8c593ff8900bb59c475_l-4824873-images-thumbs&n=13", caption: "Леса России", sway: true },
+                { text: "Волга — самая длинная река в Европе, её длина составляет более 3500 километров.", img: "https://natlibraryrm.ru/wp-content/uploads/2021/08/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%BD%D0%B5%D1%82-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82-%D0%97%D0%B0%D0%B3%D0%BB%D1%8F%D0%BD%D0%B8-%D0%B2-%D0%BC%D0%B8%D1%80-%D0%B6%D0%B8%D0%B2%D0%BE%D0%B9-%D0%BF%D1%80%D0%B8%D1%80%D0%BE%D0%B4%D1%8B-_-%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%B0%D1%8F-%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0-%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8F-%D0%BD%D0%B0-%D1%81%D0%B0%D0%B9%D1%82-%D0%9D%D0%91_5.jpg", caption: "Река Волга", sway: true },
+                { text: "Эльбрус — высочайшая точка России и Европы, его высота — 5642 метра над уровнем моря.", img: "https://static.tildacdn.com/tild3765-6466-4566-a336-346365316636/elbrus3.jpeg", caption: "Гора Эльбрус", sway: true },
+                { text: "В России более 2,8 миллиона рек и свыше 2 миллионов озёр.", img: null, caption: "Реки и озёра России", sway: true },
+                { text: "Санкт‑Петербург называют «Северной Венецией»: в городе более 90 рек, каналов и протоков, а также свыше 300 мостов.", img: null, caption: "Северная Венеция", sway: true },
+                { text: "Россия охватывает 11 часовых поясов — это больше, чем любая другая страна мира.", img: null, caption: "11 часовых поясов", sway: false },
+                { text: "Эрмитаж в Санкт‑Петербурге — один из крупнейших и старейших музеев мира: в нём хранится более 3 миллионов произведений искусства.", img: "https://avatars.mds.yandex.net/i?id=ca93e54e0428c9290490a6bfbe1a5661_l-9112075-images-thumbs&n=13", caption: "Эрмитаж", sway: false },
+                { text: "В Якутии добывают значительную часть мировых запасов алмазов; регион известен крупнейшими в мире алмазными карьерами.", img: null, caption: "Алмазный карьер", sway: false },
+                { text: "Русская баня — важная часть культуры; традиционные бани топят по‑чёрному и по‑белому, а ритуал парения включает использование веников.", img: null, caption: "Русская баня", sway: true }
             ];
 
-            // ---- DOM ----
+            const total = facts.length;
+            let currentIndex = 0;
+
+            // DOM
             const factCard = document.getElementById('factCard');
             const factNumberEl = document.getElementById('factNumber');
             const factTextEl = document.getElementById('factText');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            const randomBtn = document.getElementById('randomBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const counterBadge = document.getElementById('counterBadge');
             const progressLabel = document.getElementById('progressLabel');
             const progressFill = document.getElementById('progressFill');
+            const progressWrapper = document.getElementById('progressWrapper');
+            const dropdownGrid = document.getElementById('dropdownGrid');
+            const photoStage = document.getElementById('photoStage');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsOverlay = document.getElementById('settingsOverlay');
+            const settingsClose = document.getElementById('settingsClose');
+            const chipsContainer = document.getElementById('chips');
+            const chipIndicator = document.getElementById('chipIndicator');
+            const autoDot = document.getElementById('autoDot');
+            const autoRing = document.getElementById('autoRing');
+            const autoRingProgress = document.getElementById('autoRingProgress');
+            const autoStatus = document.getElementById('autoStatus');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const randomCheckbox = document.getElementById('randomCheckbox');
+            const melodyList = document.getElementById('melodyList');
 
-            let currentIndex = 0; // 0-based
-            const total = facts.length;
+            // =============================================
+            // CANVAS-ЗАГЛУШКИ (5 разных сцен)
+            // =============================================
+            const placeholderScenes = [
+                // 0: Волны
+                function(ctx, w, h, t) {
+                    const layers = [
+                        { y: 0.3, amp: 0.08, c: 'rgba(60, 110, 200, 0.35)', sp: 0.6 },
+                        { y: 0.5, amp: 0.07, c: 'rgba(80, 140, 230, 0.3)', sp: 0.9 },
+                        { y: 0.7, amp: 0.06, c: 'rgba(100, 170, 250, 0.25)', sp: 1.2 },
+                        { y: 0.9, amp: 0.05, c: 'rgba(140, 200, 255, 0.2)', sp: 1.5 }
+                    ];
+                    layers.forEach((L, i) => {
+                        ctx.beginPath();
+                        ctx.moveTo(0, h);
+                        for (let x = 0; x <= w; x += 6) {
+                            const y = h * L.y + Math.sin(x * 0.01 + t * L.sp + i) * h * L.amp;
+                            ctx.lineTo(x, y);
+                        }
+                        ctx.lineTo(w, h);
+                        ctx.closePath();
+                        ctx.fillStyle = L.c;
+                        ctx.fill();
+                    });
+                },
+                // 1: Горы
+                function(ctx, w, h, t) {
+                    const layers = [
+                        { y: 0.5, amp: 0.18, c: 'rgba(40, 70, 130, 0.4)', sp: 0.4, s: 10 },
+                        { y: 0.65, amp: 0.16, c: 'rgba(60, 100, 170, 0.35)', sp: 0.6, s: 25 },
+                        { y: 0.8, amp: 0.13, c: 'rgba(80, 130, 210, 0.3)', sp: 0.9, s: 40 },
+                        { y: 0.95, amp: 0.1, c: 'rgba(110, 170, 240, 0.25)', sp: 1.2, s: 55 }
+                    ];
+                    layers.forEach((L, i) => {
+                        ctx.beginPath();
+                        ctx.moveTo(0, h);
+                        for (let x = 0; x <= w; x += 4) {
+                            const n = Math.sin(x * 0.006 + L.s + t * L.sp) * 0.6 +
+                                      Math.sin(x * 0.018 + L.s * 2 + t * L.sp * 1.3) * 0.3;
+                            const y = h * L.y - Math.abs(n) * h * L.amp;
+                            ctx.lineTo(x, y);
+                        }
+                        ctx.lineTo(w, h);
+                        ctx.closePath();
+                        ctx.fillStyle = L.c;
+                        ctx.fill();
+                    });
+                },
+                // 2: Частицы-звёзды
+                function(ctx, w, h, t) {
+                    const g = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.max(w,h)*0.7);
+                    g.addColorStop(0, 'rgba(50, 80, 150, 0.3)');
+                    g.addColorStop(1, 'rgba(10, 20, 45, 0.6)');
+                    ctx.fillStyle = g;
+                    ctx.fillRect(0, 0, w, h);
+                    for (let i = 0; i < 60; i++) {
+                        const a = (i * 2.399) % (Math.PI * 2);
+                        const r = Math.min(w, h) * (0.1 + (i % 10) * 0.08);
+                        const x = w/2 + Math.cos(a + t * 0.2) * r;
+                        const y = h/2 + Math.sin(a + t * 0.2) * r;
+                        const alpha = 0.3 + 0.7 * Math.abs(Math.sin(t * 0.8 + i));
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1 + (i % 3), 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(180, 215, 255, ${alpha})`;
+                        ctx.fill();
+                    }
+                },
+                // 3: Орбиты
+                function(ctx, w, h, t) {
+                    const cx = w/2, cy = h/2;
+                    for (let i = 0; i < 6; i++) {
+                        const r = Math.min(w, h) * (0.08 + i * 0.06);
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy, r, r * 0.7, 0, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(140, 190, 255, ${0.1 + i * 0.04})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        const angle = t * 0.3 + i * 1.2;
+                        const px = cx + Math.cos(angle) * r;
+                        const py = cy + Math.sin(angle) * r * 0.7;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(200, 225, 255, ${0.5 + 0.4 * Math.sin(t * 2 + i)})`;
+                        ctx.fill();
+                    }
+                },
+                // 4: Поле из точек
+                function(ctx, w, h, t) {
+                    const cols = 14, rows = 9;
+                    for (let i = 0; i < cols; i++) {
+                        for (let j = 0; j < rows; j++) {
+                            const x = (i + 0.5) / cols * w;
+                            const y = (j + 0.5) / rows * h;
+                            const d = Math.hypot(x - w/2, y - h/2);
+                            const wave = Math.sin(d * 0.015 - t * 2) * 0.5 + 0.5;
+                            const size = 1.5 + wave * 2.5;
+                            ctx.beginPath();
+                            ctx.arc(x, y, size, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(140, 190, 255, ${0.15 + wave * 0.5})`;
+                            ctx.fill();
+                        }
+                    }
+                }
+            ];
 
-            // ---- Вспомогательные ----
-            function formatNumber(num) {
-                return String(num).padStart(2, '0');
+            // =============================================
+            // СЛАЙДЫ ФОТО
+            // =============================================
+            const slides = facts.map((fact, i) => {
+                const slide = document.createElement('div');
+                slide.className = 'photo-slide' + (fact.sway ? ' sway' : '');
+                slide.dataset.index = i;
+
+                if (fact.img) {
+                    const img = document.createElement('img');
+                    img.loading = 'lazy';
+                    img.alt = fact.caption || ('Факт ' + (i + 1));
+                    img.src = fact.img;
+                    img.referrerPolicy = 'no-referrer';
+                    img.addEventListener('error', () => {
+                        img.remove();
+                        addCanvasPlaceholder(slide);
+                    });
+                    slide.appendChild(img);
+                } else {
+                    addCanvasPlaceholder(slide);
+                }
+
+                const caption = document.createElement('div');
+                caption.className = 'photo-caption';
+                caption.textContent = fact.caption || '';
+                slide.appendChild(caption);
+
+                photoStage.appendChild(slide);
+                return slide;
+            });
+
+            function addCanvasPlaceholder(slide) {
+                if (slide.querySelector('canvas')) return;
+                const canvas = document.createElement('canvas');
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style.display = 'block';
+                slide.insertBefore(canvas, slide.firstChild);
+
+                const sceneIdx = Math.floor(Math.random() * placeholderScenes.length);
+                const drawFn = placeholderScenes[sceneIdx];
+
+                // Подгоняем размер
+                const rect = slide.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const w = rect.width || 600;
+                const h = rect.height || 600;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                const ctx = canvas.getContext('2d');
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                let t = 0;
+                let animId = null;
+                let running = false;
+
+                function frame() {
+                    if (!running) return;
+                    t += 0.016;
+                    ctx.clearRect(0, 0, w, h);
+                    drawFn(ctx, w, h, t);
+                    animId = requestAnimationFrame(frame);
+                }
+
+                // Запускаем только когда слайд активен
+                slide._startCanvas = () => {
+                    if (running) return;
+                    const r = slide.getBoundingClientRect();
+                    if (r.width && r.height) {
+                        const d = window.devicePixelRatio || 1;
+                        canvas.width = r.width * d;
+                        canvas.height = r.height * d;
+                        ctx.setTransform(d, 0, 0, d, 0, 0);
+                        w = r.width; h = r.height;
+                    }
+                    running = true;
+                    frame();
+                };
+                slide._stopCanvas = () => {
+                    running = false;
+                    if (animId) cancelAnimationFrame(animId);
+                    animId = null;
+                };
             }
 
-            // Обновить UI с анимацией
+            function showSlide(index) {
+                slides.forEach((s, i) => {
+                    const active = i === index;
+                    s.classList.toggle('active', active);
+                    if (active) {
+                        if (s._startCanvas) s._startCanvas();
+                    } else {
+                        if (s._stopCanvas) s._stopCanvas();
+                    }
+                });
+            }
+
+            // =============================================
+            // DROPDOWN
+            // =============================================
+            facts.forEach((_, i) => {
+                const item = document.createElement('button');
+                item.className = 'dropdown-item';
+                item.textContent = String(i + 1).padStart(2, '0');
+                item.dataset.index = i;
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    renderFact(i);
+                    closeDropdown();
+                });
+                dropdownGrid.appendChild(item);
+            });
+
+            function updateDropdownActive() {
+                dropdownGrid.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.classList.toggle('active', parseInt(item.dataset.index, 10) === currentIndex);
+                });
+            }
+
+            function openDropdown() { progressWrapper.classList.add('open'); }
+            function closeDropdown() { progressWrapper.classList.remove('open'); }
+            function toggleDropdown() {
+                if (progressWrapper.classList.contains('open')) closeDropdown();
+                else openDropdown();
+            }
+
+            progressWrapper.addEventListener('click', (e) => {
+                if (e.target.closest('.fact-dropdown')) return;
+                toggleDropdown();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!progressWrapper.contains(e.target)) closeDropdown();
+            });
+
+            // =============================================
+            // ЛОГИКА ФАКТОВ
+            // =============================================
+            function formatNumber(num) { return String(num).padStart(2, '0'); }
+
             function renderFact(index, animate = true) {
-                // Защита от выхода за границы
                 if (index < 0) index = 0;
                 if (index >= total) index = total - 1;
-                if (index === currentIndex && animate) {
-                    // всё равно обновим, но без лишней анимации? — нет, принудительно перерисуем
-                }
+
                 currentIndex = index;
 
-                // Данные
-                const numberStr = formatNumber(index + 1);
-                const factStr = facts[index];
-
-                // Применяем анимацию через класс (перезапуск)
                 if (animate) {
                     factCard.classList.remove('changed');
-                    // Форсируем reflow
                     void factCard.offsetWidth;
                     factCard.classList.add('changed');
+                    [factNumberEl, factTextEl].forEach(el => {
+                        el.style.animation = 'none';
+                        void el.offsetWidth;
+                        el.style.animation = '';
+                    });
                 }
 
-                // Обновляем контент
-                factNumberEl.textContent = numberStr;
-                factTextEl.textContent = factStr;
+                factNumberEl.textContent = formatNumber(index + 1);
+                factTextEl.textContent = facts[index].text;
 
-                // Счётчики и прогресс
-                const humanNumber = index + 1;
-                counterBadge.textContent = `факт ${humanNumber} / ${total}`;
-                progressLabel.textContent = `${humanNumber} / ${total}`;
-                const percent = (humanNumber / total) * 100;
-                progressFill.style.width = percent + '%';
+                showSlide(index);
 
-                // Кнопки
+                progressLabel.textContent = `${index + 1} / ${total}`;
+                progressFill.style.width = ((index + 1) / total) * 100 + '%';
+
                 prevBtn.disabled = (index === 0);
                 nextBtn.disabled = (index === total - 1);
+
+                updateDropdownActive();
+                resetAutoTimer();
             }
 
-            // ---- Обработчики ----
-            function goPrev() {
-                if (currentIndex > 0) {
-                    renderFact(currentIndex - 1, true);
-                }
-            }
-
+            function goPrev() { if (currentIndex > 0) renderFact(currentIndex - 1); }
             function goNext() {
-                if (currentIndex < total - 1) {
-                    renderFact(currentIndex + 1, true);
+                if (randomCheckbox.checked) {
+                    // Случайный порядок
+                    if (total <= 1) return;
+                    let newIndex;
+                    do { newIndex = Math.floor(Math.random() * total); }
+                    while (newIndex === currentIndex);
+                    renderFact(newIndex);
+                } else if (currentIndex < total - 1) {
+                    renderFact(currentIndex + 1);
+                } else if (autoIntervalSec > 0) {
+                    renderFact(0);
                 }
             }
 
-            function goRandom() {
-                let newIndex;
-                if (total <= 1) return;
-                do {
-                    newIndex = Math.floor(Math.random() * total);
-                } while (newIndex === currentIndex && total > 1);
-                renderFact(newIndex, true);
-            }
-
-            function goReset() {
-                renderFact(0, true);
-            }
-
-            // ---- Навешиваем события ----
             prevBtn.addEventListener('click', goPrev);
             nextBtn.addEventListener('click', goNext);
-            randomBtn.addEventListener('click', goRandom);
-            resetBtn.addEventListener('click', goReset);
 
-            // Клавиатура
             window.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    goPrev();
-                } else if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    goNext();
-                } else if (e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К') {
-                    // случайный факт (R / К)
-                    if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-                        e.preventDefault();
-                        goRandom();
-                    }
-                } else if (e.key === 'Home' || e.key === 'home' || e.key === 'г' || e.key === 'Г') {
-                    e.preventDefault();
-                    goReset();
+                if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+                else if (e.key === 'Escape') {
+                    closeDropdown();
+                    closeSettings();
                 }
             });
 
-            // Свайпы для мобильных (опционально, улучшает UX)
             let touchStartX = 0;
-            let touchEndX = 0;
             factCard.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
             }, { passive: true });
-
             factCard.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                const diff = touchEndX - touchStartX;
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) {
-                        goPrev(); // свайп вправо -> назад
-                    } else {
-                        goNext(); // свайп влево -> вперёд
-                    }
+                const diff = e.changedTouches[0].screenX - touchStartX;
+                if (Math.abs(diff) > 60) {
+                    if (diff > 0) goPrev(); else goNext();
                 }
             }, { passive: true });
 
-            // ---- Инициализация ----
-            renderFact(0, false); // без анимации при первой загрузке, но счётчики выставим
-            // Легкая анимация появления уже есть у карточки при загрузке
-            // Убедимся, что кнопки в правильном состоянии
+            // =============================================
+            // НАСТРОЙКИ
+            // =============================================
+            function openSettings() {
+                settingsPanel.classList.add('open');
+                settingsOverlay.classList.add('open');
+                settingsBtn.classList.add('active');
+            }
+            function closeSettings() {
+                settingsPanel.classList.remove('open');
+                settingsOverlay.classList.remove('open');
+                settingsBtn.classList.remove('active');
+            }
+
+            settingsBtn.addEventListener('click', openSettings);
+            settingsClose.addEventListener('click', closeSettings);
+            settingsOverlay.addEventListener('click', closeSettings);
+
+            // =============================================
+            // АВТОПЕРЕКЛЮЧЕНИЕ
+            // =============================================
+            let autoIntervalSec = 0;
+            let autoTimer = null;
+            let autoProgressStart = 0;
+            let autoProgressRAF = null;
+            const ringCircumference = 2 * Math.PI * 8;
+
+            function updateAutoRing() {
+                if (autoIntervalSec <= 0) {
+                    autoRing.style.display = 'none';
+                    autoDot.classList.remove('active');
+                    return;
+                }
+                autoRing.style.display = 'inline-block';
+                autoDot.classList.add('active');
+
+                const elapsed = (performance.now() - autoProgressStart) / 1000;
+                const prog = Math.min(elapsed / autoIntervalSec, 1);
+                autoRingProgress.setAttribute('stroke-dashoffset', ringCircumference * (1 - prog));
+
+                if (prog < 1) {
+                    autoProgressRAF = requestAnimationFrame(updateAutoRing);
+                }
+            }
+
+            function resetAutoTimer() {
+                if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+                if (autoProgressRAF) { cancelAnimationFrame(autoProgressRAF); autoProgressRAF = null; }
+
+                if (autoIntervalSec <= 0) {
+                    autoRing.style.display = 'none';
+                    autoDot.classList.remove('active');
+                    autoStatus.textContent = 'Выключено';
+                    return;
+                }
+
+                autoStatus.textContent = `Каждые ${autoIntervalSec} сек`;
+                autoProgressStart = performance.now();
+                updateAutoRing();
+
+                autoTimer = setTimeout(() => {
+                    goNext();
+                }, autoIntervalSec * 1000);
+            }
+
+            function positionChipIndicator(chip) {
+                if (!chip) return;
+                const containerRect = chipsContainer.getBoundingClientRect();
+                const rect = chip.getBoundingClientRect();
+                const left = rect.left - containerRect.left;
+                chipIndicator.style.width = rect.width + 'px';
+                chipIndicator.style.transform = `translateX(${left}px)`;
+                chipIndicator.classList.add('ready');
+            }
+
+            function setAutoInterval(sec) {
+                autoIntervalSec = sec;
+                let activeChip = null;
+                chipsContainer.querySelectorAll('.chip').forEach(chip => {
+                    const s = parseInt(chip.dataset.sec, 10);
+                    const isActive = s === sec;
+                    chip.classList.toggle('active', isActive);
+                    if (isActive) activeChip = chip;
+                });
+                if (activeChip) positionChipIndicator(activeChip);
+                resetAutoTimer();
+            }
+
+            chipsContainer.addEventListener('click', (e) => {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                setAutoInterval(parseInt(chip.dataset.sec, 10));
+            });
+
+            // =============================================
+            // МЕЛОДИИ (Web Audio API)
+            // =============================================
+            const MELODIES = [
+                {
+                    id: 'ambient',
+                    name: 'Спокойный эмбиент',
+                    desc: 'Мягкие синусоиды, пентатоника',
+                    icon: '🌙',
+                    tempo: 0.5,
+                    bassPattern: [110.00, 110.00, 130.81, 130.81, 146.83, 146.83, 130.81, 110.00],
+                    melodyPattern: [
+                        [440.00, 523.25, 659.25, 523.25],
+                        [587.33, 440.00, 523.25, 392.00],
+                        [523.25, 659.25, 783.99, 659.25],
+                        [587.33, 523.25, 440.00, 392.00],
+                        [392.00, 523.25, 659.25, 523.25],
+                        [440.00, 523.25, 587.33, 523.25],
+                        [659.25, 587.33, 523.25, 440.00],
+                        [392.00, 440.00, 523.25, 392.00]
+                    ],
+                    waveType: 'sine',
+                    harmonyType: 'triangle',
+                    volume: 0.12
+                },
+                {
+                    id: 'dreamy',
+                    name: 'Мечтательный',
+                    desc: 'Мажорные арпеджио с обертонами',
+                    icon: '✨',
+                    tempo: 0.4,
+                    bassPattern: [130.81, 130.81, 146.83, 146.83, 174.61, 174.61, 146.83, 130.81],
+                    melodyPattern: [
+                        [523.25, 659.25, 783.99, 659.25],
+                        [587.33, 698.46, 880.00, 698.46],
+                        [698.46, 880.00, 1046.50, 880.00],
+                        [659.25, 783.99, 987.77, 783.99],
+                        [523.25, 659.25, 783.99, 659.25],
+                        [587.33, 698.46, 880.00, 698.46],
+                        [698.46, 880.00, 1046.50, 880.00],
+                        [587.33, 659.25, 783.99, 587.33]
+                    ],
+                    waveType: 'triangle',
+                    harmonyType: 'sine',
+                    volume: 0.10
+                },
+                {
+                    id: 'calm',
+                    name: 'Умиротворение',
+                    desc: 'Медленные низкие тона',
+                    icon: '🌊',
+                    tempo: 0.75,
+                    bassPattern: [82.41, 82.41, 98.00, 98.00, 110.00, 110.00, 98.00, 82.41],
+                    melodyPattern: [
+                        [329.63, 392.00, 493.88, 392.00],
+                        [392.00, 493.88, 587.33, 493.88],
+                        [440.00, 523.25, 659.25, 523.25],
+                        [392.00, 493.88, 587.33, 493.88],
+                        [329.63, 392.00, 493.88, 392.00],
+                        [392.00, 493.88, 587.33, 493.88],
+                        [440.00, 523.25, 659.25, 523.25],
+                        [329.63, 392.00, 493.88, 329.63]
+                    ],
+                    waveType: 'sine',
+                    harmonyType: 'sine',
+                    volume: 0.13
+                },
+                {
+                    id: 'oriental',
+                    name: 'Восточные мотивы',
+                    desc: 'Фригийский лад, таинственность',
+                    icon: '🏔',
+                    tempo: 0.55,
+                    bassPattern: [110.00, 110.00, 130.81, 130.81, 110.00, 110.00, 146.83, 110.00],
+                    melodyPattern: [
+                        [440.00, 466.16, 587.33, 466.16],
+                        [523.25, 466.16, 440.00, 349.23],
+                        [440.00, 466.16, 587.33, 698.46],
+                        [659.25, 587.33, 466.16, 440.00],
+                        [440.00, 523.25, 587.33, 523.25],
+                        [466.16, 587.33, 659.25, 587.33],
+                        [698.46, 659.25, 587.33, 523.25],
+                        [466.16, 440.00, 392.00, 440.00]
+                    ],
+                    waveType: 'triangle',
+                    harmonyType: 'sine',
+                    volume: 0.11
+                },
+                {
+                    id: 'bright',
+                    name: 'Светлая',
+                    desc: 'Мажор, восходящие арпеджио',
+                    icon: '☀️',
+                    tempo: 0.45,
+                    bassPattern: [130.81, 130.81, 174.61, 174.61, 196.00, 196.00, 174.61, 130.81],
+                    melodyPattern: [
+                        [523.25, 659.25, 783.99, 1046.50],
+                        [698.46, 880.00, 1046.50, 880.00],
+                        [783.99, 987.77, 1174.66, 987.77],
+                        [880.00, 1046.50, 1318.51, 1046.50],
+                        [523.25, 659.25, 783.99, 1046.50],
+                        [698.46, 880.00, 1046.50, 880.00],
+                        [783.99, 987.77, 1174.66, 987.77],
+                        [698.46, 783.99, 880.00, 698.46]
+                    ],
+                    waveType: 'sine',
+                    harmonyType: 'triangle',
+                    volume: 0.10
+                },
+                {
+                    id: 'noir',
+                    name: 'Ночная',
+                    desc: 'Минор, глубокие тона',
+                    icon: '🌌',
+                    tempo: 0.65,
+                    bassPattern: [73.42, 73.42, 87.31, 87.31, 98.00, 98.00, 87.31, 73.42],
+                    melodyPattern: [
+                        [293.66, 349.23, 440.00, 349.23],
+                        [392.00, 293.66, 349.23, 293.66],
+                        [349.23, 440.00, 523.25, 440.00],
+                        [392.00, 349.23, 293.66, 261.63],
+                        [293.66, 349.23, 440.00, 523.25],
+                        [440.00, 392.00, 349.23, 293.66],
+                        [349.23, 392.00, 440.00, 392.00],
+                        [293.66, 261.63, 233.08, 261.63]
+                    ],
+                    waveType: 'sine',
+                    harmonyType: 'triangle',
+                    volume: 0.13
+                }
+            ];
+
+            let audioCtx = null;
+            let masterGain = null;
+            let currentMelody = null;
+            let isPlaying = false;
+            let scheduledNodes = [];
+            let musicLoopTimer = null;
+            let musicVolume = 0.35;
+
+            function initAudio() {
+                if (audioCtx) return;
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = musicVolume;
+                masterGain.connect(audioCtx.destination);
+            }
+
+            function playNote(freq, startTime, duration, type = 'sine', volume = 0.15) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(volume, startTime + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(startTime);
+                osc.stop(startTime + duration + 0.05);
+                scheduledNodes.push(osc);
+            }
+
+            function scheduleMelodyCycle(melody, startTime) {
+                const noteDur = melody.tempo;
+                const beatDur = noteDur * 4;
+                const totalBars = melody.melodyPattern.length;
+
+                for (let bar = 0; bar < totalBars; bar++) {
+                    const barStart = startTime + bar * beatDur;
+                    melody.melodyPattern[bar].forEach((freq, i) => {
+                        const noteStart = barStart + i * noteDur;
+                        playNote(freq, noteStart, noteDur * 1.6, melody.waveType, melody.volume);
+                        playNote(freq * 2, noteStart, noteDur * 0.8, melody.harmonyType, melody.volume * 0.25);
+                    });
+                    playNote(melody.bassPattern[bar], barStart, beatDur * 0.95, 'sine', melody.volume * 0.85);
+                }
+                return startTime + totalBars * beatDur;
+            }
+
+            function startMusic() {
+                if (!currentMelody) return;
+                if (!audioCtx) initAudio();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                isPlaying = true;
+                updateMelodyUI();
+
+                const now = audioCtx.currentTime + 0.1;
+                let nextCycleStart = scheduleMelodyCycle(currentMelody, now);
+
+                function scheduleNext() {
+                    if (!isPlaying) return;
+                    const nextStart = nextCycleStart;
+                    nextCycleStart = scheduleMelodyCycle(currentMelody, nextStart);
+                    const checkIn = (nextStart - audioCtx.currentTime - 2) * 1000;
+                    musicLoopTimer = setTimeout(scheduleNext, Math.max(checkIn, 100));
+                }
+
+                const beatDur = currentMelody.tempo * 4;
+                const totalDur = currentMelody.melodyPattern.length * beatDur;
+                const firstCheckIn = (nextCycleStart - audioCtx.currentTime - 2) * 1000;
+                musicLoopTimer = setTimeout(scheduleNext, Math.max(firstCheckIn, 100));
+            }
+
+            function stopMusic() {
+                isPlaying = false;
+                updateMelodyUI();
+
+                if (musicLoopTimer) {
+                    clearTimeout(musicLoopTimer);
+                    musicLoopTimer = null;
+                }
+
+                if (masterGain && audioCtx) {
+                    const now = audioCtx.currentTime;
+                    masterGain.gain.cancelScheduledValues(now);
+                    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+                    masterGain.gain.linearRampToValueAtTime(0, now + 0.3);
+
+                    setTimeout(() => {
+                        scheduledNodes.forEach(node => {
+                            try { node.stop(); } catch(e) {}
+                        });
+                        scheduledNodes = [];
+                        if (masterGain) {
+                            masterGain.gain.setValueAtTime(musicVolume, audioCtx.currentTime);
+                        }
+                    }, 400);
+                }
+            }
+
+            function selectMelody(melody) {
+                const wasPlaying = isPlaying;
+                if (isPlaying) stopMusic();
+                currentMelody = melody;
+                renderMelodyList();
+                if (wasPlaying) {
+                    setTimeout(() => startMusic(), 450);
+                }
+            }
+
+            function updateMelodyUI() {
+                document.querySelectorAll('.melody-item').forEach(item => {
+                    const isActive = currentMelody && item.dataset.id === currentMelody.id && isPlaying;
+                    item.classList.toggle('active', isActive);
+                });
+            }
+
+            function renderMelodyList() {
+                melodyList.innerHTML = '';
+                MELODIES.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'melody-item';
+                    item.dataset.id = m.id;
+
+                    const isActive = currentMelody && currentMelody.id === m.id && isPlaying;
+                    if (isActive) item.classList.add('active');
+
+                    item.innerHTML = `
+                        <div class="melody-icon">${m.icon}</div>
+                        <div class="melody-info">
+                            <div class="melody-name">${m.name}</div>
+                            <div class="melody-desc">${m.desc}</div>
+                        </div>
+                        <div class="eq-bars">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        if (currentMelody && currentMelody.id === m.id) {
+                            // Тот же трек — toggle play/pause
+                            if (isPlaying) stopMusic();
+                            else startMusic();
+                        } else {
+                            selectMelody(m);
+                        }
+                    });
+
+                    melodyList.appendChild(item);
+                });
+            }
+
+            volumeSlider.addEventListener('input', (e) => {
+                musicVolume = parseInt(e.target.value, 10) / 100;
+                if (masterGain && audioCtx && isPlaying) {
+                    masterGain.gain.setValueAtTime(musicVolume, audioCtx.currentTime);
+                }
+            });
+
+            // =============================================
+            // ИНИЦИАЛИЗАЦИЯ
+            // =============================================
+            renderMelodyList();
+            currentMelody = MELODIES[0];
+
+            renderFact(0, false);
             prevBtn.disabled = true;
             nextBtn.disabled = (total <= 1);
-
-            // Доп: начальный прогресс (уже в CSS 4%, но выставим корректно)
             progressFill.style.width = (1 / total * 100) + '%';
+
+            // Позиционируем индикатор чипов
+            function repositionChipIndicator() {
+                const activeChip = chipsContainer.querySelector('.chip.active');
+                if (activeChip) positionChipIndicator(activeChip);
+            }
+
+            requestAnimationFrame(() => {
+                repositionChipIndicator();
+                setTimeout(repositionChipIndicator, 150);
+                setTimeout(repositionChipIndicator, 400);
+            });
+
+            window.addEventListener('resize', () => {
+                repositionChipIndicator();
+            });
+
+            // При открытии панели — пересчитываем позицию (ширина может измениться)
+            const originalOpenSettings = openSettings;
+            window.openSettings = function() {
+                originalOpenSettings();
+                setTimeout(repositionChipIndicator, 50);
+                setTimeout(repositionChipIndicator, 500);
+            };
         })();
     </script>
 </body>
-  </html>
+</html>
