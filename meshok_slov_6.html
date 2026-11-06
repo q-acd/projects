@@ -1,0 +1,3851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>💰 Мешок слов</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; -webkit-tap-highlight-color:transparent; }
+
+:root {
+    --neon-blue:#00f0ff; --neon-pink:#ff00e5; --neon-purple:#9d00ff;
+    --glass-bg:rgba(255,255,255,0.1); --glass-border:rgba(255,255,255,0.2);
+    --dark-bg:#0a0a1a; --card-bg:rgba(20,20,40,0.85);
+}
+
+body {
+    background:var(--dark-bg); color:white; min-height:100vh;
+    overflow:hidden; position:relative; touch-action:manipulation;
+}
+
+body.light-theme {
+    --dark-bg:#e8e8f0; --glass-bg:rgba(0,0,0,0.05);
+    --glass-border:rgba(0,0,0,0.15); --card-bg:rgba(255,255,255,0.95);
+    color:#1a1a2e;
+}
+
+body.no-animations * { animation:none !important; transition:none !important; }
+
+.bg-animation {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    z-index:0; overflow:hidden; pointer-events:none;
+}
+.bg-animation .orb {
+    position:absolute; border-radius:50%; filter:blur(80px);
+    opacity:0.4; animation:float 20s infinite ease-in-out;
+}
+.orb:nth-child(1) { width:400px; height:400px; background:var(--neon-blue); top:-100px; left:-100px; }
+.orb:nth-child(2) { width:350px; height:350px; background:var(--neon-pink); bottom:-100px; right:-100px; animation-delay:-5s; }
+.orb:nth-child(3) { width:300px; height:300px; background:var(--neon-purple); top:50%; left:50%; animation-delay:-10s; }
+.orb:nth-child(4) { width:250px; height:250px; background:#00ff88; bottom:20%; left:10%; animation-delay:-15s; }
+@keyframes float {
+    0%,100% { transform:translate(0,0) scale(1); }
+    25% { transform:translate(100px,100px) scale(1.2); }
+    50% { transform:translate(-50px,150px) scale(0.9); }
+    75% { transform:translate(150px,-50px) scale(1.1); }
+}
+
+.glass {
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border); border-radius:20px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.3), inset 0 0 32px rgba(255,255,255,0.05);
+}
+
+.neon-btn {
+    background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(255,0,229,0.15));
+    border:1px solid var(--glass-border); color:white;
+    padding:12px 22px; border-radius:14px; cursor:pointer;
+    font-size:14px; font-weight:600; display:flex; align-items:center;
+    justify-content:center; gap:8px; transition:all 0.3s ease;
+    backdrop-filter:blur(10px); position:relative; overflow:hidden;
+    font-family:'Montserrat',sans-serif;
+}
+body.light-theme .neon-btn { color:#1a1a2e; }
+.neon-btn::before {
+    content:''; position:absolute; top:0; left:-100%;
+    width:100%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+    transition:left 0.5s;
+}
+.neon-btn:hover::before { left:100%; }
+.neon-btn:hover { transform:translateY(-2px); box-shadow:0 0 20px rgba(0,240,255,0.4); border-color:var(--neon-blue); }
+.neon-btn:active { transform:translateY(0); }
+.neon-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.neon-btn.danger { background:linear-gradient(135deg,rgba(255,0,50,0.3),rgba(255,0,100,0.2)); border-color:rgba(255,0,50,0.5); }
+.neon-btn.success { background:linear-gradient(135deg,rgba(0,255,100,0.3),rgba(0,255,200,0.2)); border-color:rgba(0,255,100,0.5); }
+.neon-btn.warning { background:linear-gradient(135deg,rgba(255,200,0,0.3),rgba(255,150,0,0.2)); border-color:rgba(255,200,0,0.5); }
+
+.screen {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    display:none; flex-direction:column; z-index:1;
+    padding:20px; overflow-y:auto; overflow-x:hidden;
+}
+.screen.active { display:flex; }
+#mainMenu { justify-content:center; align-items:center; }
+
+.menu-container {
+    display:flex; flex-direction:column; align-items:center; gap:22px;
+    padding:36px 44px; max-width:480px; width:100%;
+    position:relative; z-index:2;
+}
+
+.game-title {
+    font-size:42px; font-weight:800;
+    background:linear-gradient(135deg,var(--neon-blue),var(--neon-pink),var(--neon-purple));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; text-align:center; line-height:1.2;
+    animation:pulse 3s ease-in-out infinite;
+}
+.game-subtitle {
+    font-size:12px; color:rgba(255,255,255,0.5);
+    letter-spacing:4px; text-transform:uppercase;
+}
+body.light-theme .game-subtitle { color:rgba(0,0,0,0.5); }
+@keyframes pulse {
+    0%,100% { filter:brightness(1); }
+    50% { filter:brightness(1.3); }
+}
+
+.balance-display {
+    position:fixed; top:20px; right:20px;
+    display:flex; align-items:center; gap:8px;
+    padding:10px 16px; border-radius:14px;
+    font-weight:700; font-size:16px; z-index:100;
+    transition:opacity 0.3s, transform 0.3s;
+}
+.balance-display.hidden { opacity:0; transform:translateY(-100px); pointer-events:none; }
+.balance-display .material-icons { color:#ffd700; filter:drop-shadow(0 0 8px rgba(255,215,0,0.5)); }
+
+.menu-buttons { display:flex; flex-direction:column; gap:8px; width:100%; }
+.menu-buttons .neon-btn { padding:13px; font-size:14px; }
+
+.container { max-width:900px; margin:0 auto; width:100%; padding-bottom:20px; }
+
+.screen-header {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 0; margin-bottom:14px; flex-wrap:wrap;
+}
+.screen-header h2 { font-size:24px; font-weight:700; }
+
+.back-btn {
+    background:var(--glass-bg); border:1px solid var(--glass-border);
+    color:white; width:42px; height:42px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.3s; backdrop-filter:blur(10px);
+    flex-shrink:0;
+}
+body.light-theme .back-btn { color:#1a1a2e; }
+.back-btn:hover { background:rgba(255,255,255,0.15); border-color:var(--neon-blue); }
+
+.settings-group { padding:18px; margin-bottom:14px; }
+.settings-group h3 { margin-bottom:14px; font-size:16px; display:flex; align-items:center; gap:8px; }
+
+.setting-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid var(--glass-border);
+    gap:10px; flex-wrap:wrap;
+}
+.setting-row:last-child { border-bottom:none; }
+.setting-label { display:flex; align-items:center; gap:10px; font-size:14px; }
+
+.toggle { position:relative; width:50px; height:26px; cursor:pointer; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider {
+    position:absolute; inset:0;
+    background:rgba(255,255,255,0.1);
+    border-radius:26px;
+    border:1px solid var(--glass-border);
+    transition:all 0.3s;
+}
+.toggle-slider::before {
+    content:''; position:absolute;
+    width:18px; height:18px; left:3px; top:3px;
+    background:white; border-radius:50%; transition:all 0.3s;
+}
+.toggle input:checked + .toggle-slider {
+    background:var(--neon-blue); border-color:var(--neon-blue);
+    box-shadow:0 0 15px rgba(0,240,255,0.4);
+}
+.toggle input:checked + .toggle-slider::before { transform:translateX(24px); }
+
+.mini-chip-slider {
+    display:flex; align-items:center;
+    background:rgba(0,0,0,0.25);
+    border:1px solid var(--glass-border);
+    border-radius:22px; padding:4px; gap:2px;
+    flex-wrap:wrap; justify-content:center;
+}
+.mini-chip {
+    display:flex; align-items:center; gap:5px;
+    padding:7px 12px; border-radius:18px;
+    cursor:pointer; font-weight:600; font-size:11px;
+    background:transparent; color:white;
+    border:none; transition:all 0.3s;
+    font-family:'Montserrat',sans-serif;
+    white-space:nowrap;
+}
+body.light-theme .mini-chip { color:#1a1a2e; }
+.mini-chip:hover:not(.active) { background:rgba(255,255,255,0.08); }
+.mini-chip.active {
+    background:linear-gradient(135deg,rgba(0,240,255,0.35),rgba(255,0,229,0.25));
+    box-shadow:0 0 10px rgba(0,240,255,0.4);
+}
+.mini-chip .material-icons { font-size:14px; }
+
+.player-config { display:flex; flex-direction:column; gap:12px; }
+.config-row { display:flex; flex-direction:column; gap:6px; }
+.config-row label { font-size:13px; opacity:0.7; }
+
+.neon-input {
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    color:white; padding:12px 16px; border-radius:12px;
+    font-size:15px; outline:none; transition:all 0.3s;
+    font-family:'Montserrat',sans-serif; width:100%;
+}
+body.light-theme .neon-input { color:#1a1a2e; background:rgba(0,0,0,0.05); }
+.neon-input:focus { border-color:var(--neon-blue); box-shadow:0 0 15px rgba(0,240,255,0.2); }
+
+.avatar-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:5px; max-height:260px; overflow-y:auto; padding:4px; }
+.avatar-option {
+    width:100%; aspect-ratio:1; max-width:52px;
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:24px; cursor:pointer; border:2px solid transparent;
+    background:rgba(255,255,255,0.05); transition:all 0.2s;
+}
+.avatar-option:hover { background:rgba(255,255,255,0.1); }
+.avatar-option.selected { border-color:var(--neon-blue); box-shadow:0 0 15px rgba(0,240,255,0.4); }
+
+.color-grid { display:flex; flex-wrap:wrap; gap:5px; max-height:180px; overflow-y:auto; padding:4px; }
+.color-option {
+    width:36px; height:36px; border-radius:50%;
+    cursor:pointer; border:3px solid transparent;
+    transition:all 0.2s; flex-shrink:0;
+}
+.color-option:hover { transform:scale(1.1); }
+.color-option.selected { border-color:white; box-shadow:0 0 15px currentColor; }
+
+.shop-search {
+    position:relative; margin-bottom:12px;
+}
+.shop-search input {
+    width:100%;
+    padding-left:44px !important;
+}
+.shop-search .material-icons {
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    color:rgba(255,255,255,0.4); font-size:20px; pointer-events:none;
+}
+body.light-theme .shop-search .material-icons { color:rgba(0,0,0,0.4); }
+
+.shop-tabs { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.shop-tab {
+    padding:7px 14px; border-radius:10px; cursor:pointer;
+    background:var(--glass-bg); border:1px solid var(--glass-border);
+    color:white; font-weight:600; transition:all 0.3s;
+    display:flex; align-items:center; gap:5px;
+    font-family:'Montserrat',sans-serif; font-size:12px;
+}
+body.light-theme .shop-tab { color:#1a1a2e; }
+.shop-tab.active {
+    background:linear-gradient(135deg,rgba(0,240,255,0.3),rgba(255,0,229,0.2));
+    border-color:var(--neon-blue);
+    box-shadow:0 0 15px rgba(0,240,255,0.3);
+}
+
+.shop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+
+.shop-item {
+    padding:14px; display:flex; flex-direction:column;
+    align-items:center; gap:8px; transition:all 0.3s;
+    position:relative;
+}
+.shop-item:hover { transform:translateY(-3px); box-shadow:0 0 20px rgba(0,240,255,0.3); }
+
+.shop-item-preview {
+    width:54px; height:54px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; background:rgba(255,255,255,0.05);
+}
+.shop-item-name { font-size:12px; font-weight:600; text-align:center; }
+.shop-item-price {
+    display:flex; align-items:center; gap:3px;
+    font-size:12px; color:#ffd700; font-weight:700;
+}
+.shop-item-price .material-icons { font-size:13px; }
+.shop-item.owned { border-color:rgba(0,255,100,0.5); }
+.shop-item.owned .shop-item-price { color:#00ff64; }
+
+.discount-badge {
+    position:absolute; top:6px; right:6px;
+    background:linear-gradient(135deg,#ff0050,#ff00e5);
+    padding:2px 6px; border-radius:6px;
+    font-size:10px; font-weight:700;
+}
+
+.empty-search {
+    grid-column:1/-1; text-align:center; padding:40px 20px;
+    opacity:0.5; font-size:14px;
+}
+
+.stats-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:10px; margin-bottom:18px;
+}
+.stat-card { padding:18px; text-align:center; }
+.stat-value {
+    font-size:28px; font-weight:800;
+    background:linear-gradient(135deg,var(--neon-blue),var(--neon-pink));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.stat-label { font-size:11px; opacity:0.6; margin-top:4px; }
+
+.achievements-list { display:flex; flex-direction:column; gap:8px; }
+.achievement-item {
+    padding:12px 16px; display:flex; align-items:center; gap:12px;
+    transition:all 0.3s;
+}
+.achievement-icon {
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0;
+    background:rgba(255,255,255,0.05);
+}
+.achievement-item.unlocked .achievement-icon {
+    background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,150,0,0.2));
+    box-shadow:0 0 15px rgba(255,215,0,0.4);
+}
+.achievement-info { flex:1; min-width:0; }
+.achievement-name { font-weight:700; font-size:13px; margin-bottom:2px; }
+.achievement-desc { font-size:11px; opacity:0.6; }
+.achievement-item.locked { opacity:0.5; }
+
+.help-content { padding:18px; line-height:1.7; }
+.help-content h3 {
+    margin:16px 0 6px; color:var(--neon-blue);
+    display:flex; align-items:center; gap:6px; font-size:15px;
+}
+.help-content h3:first-child { margin-top:0; }
+.help-content p,.help-content li { opacity:0.85; margin-bottom:6px; font-size:13px; }
+.help-content ul { padding-left:18px; }
+
+.dev-credit {
+    margin-top:20px; padding-top:14px;
+    border-top:1px solid var(--glass-border);
+    text-align:center; font-size:12px; opacity:0.7;
+}
+.dev-credit a { color:var(--neon-blue); text-decoration:none; }
+
+.player-count-selector { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.player-count-btn {
+    flex:1; min-width:60px; padding:14px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; border-radius:14px;
+    border:2px solid var(--glass-border);
+    background:var(--glass-bg); color:white;
+    transition:all 0.3s; font-family:'Montserrat',sans-serif;
+    font-size:11px;
+}
+body.light-theme .player-count-btn { color:#1a1a2e; }
+.player-count-btn:hover { border-color:rgba(0,240,255,0.5); }
+.player-count-btn.selected {
+    border-color:var(--neon-blue);
+    box-shadow:0 0 20px rgba(0,240,255,0.4);
+    background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(255,0,229,0.1));
+}
+.player-count-btn .material-icons { font-size:24px; }
+
+.player-setup-card { padding:14px; margin-bottom:10px; }
+.player-setup-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+
+.player-avatar-preview {
+    width:40px; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; flex-shrink:0;
+}
+.player-setup-header span { font-weight:700; font-size:14px; }
+
+.words-input-section { display:flex; flex-direction:column; gap:8px; }
+.word-input-row { display:flex; gap:8px; align-items:center; }
+.word-input-row .neon-input { flex:1; min-width:0; }
+
+.remove-word-btn {
+    width:38px; height:38px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,0,50,0.2);
+    border:1px solid rgba(255,0,50,0.4);
+    border-radius:10px; color:#ff4d6d;
+    cursor:pointer; transition:all 0.2s;
+}
+
+#gameScreen { padding:0; display:none; }
+#gameScreen.active { display:flex; }
+
+.game-top-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; gap:10px; flex-wrap:wrap;
+    background:rgba(0,0,0,0.2);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--glass-border);
+}
+
+.players-scoreboard { display:flex; gap:6px; flex-wrap:wrap; flex:1; min-width:0; }
+
+.player-score-card {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 10px; border-radius:10px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    transition:all 0.3s;
+    font-size:11px;
+}
+.player-score-card.active-turn {
+    border-color:var(--neon-blue);
+    box-shadow:0 0 15px rgba(0,240,255,0.4);
+    background:rgba(0,240,255,0.1);
+}
+.player-score-card.eliminated { opacity:0.4; text-decoration:line-through; }
+
+.score-avatar {
+    width:26px; height:26px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; flex-shrink:0;
+}
+
+.score-info { display:flex; flex-direction:column; min-width:0; }
+.score-name { font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px; }
+.score-coins { font-size:10px; color:#ffd700; display:flex; align-items:center; gap:2px; }
+.score-coins .material-icons { font-size:11px; }
+
+.combo-badge {
+    display:inline-flex; align-items:center; gap:2px;
+    padding:1px 5px; border-radius:5px;
+    background:linear-gradient(135deg,#ff0050,#ffd700);
+    font-size:9px; font-weight:800; color:white;
+    margin-left:2px;
+}
+
+.top-bar-actions { display:flex; gap:6px; flex-shrink:0; }
+.top-bar-actions .back-btn { width:36px; height:36px; }
+
+.game-main-area {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-start;
+    padding:12px; gap:10px;
+    overflow-y:auto;
+}
+
+.game-info-row {
+    display:flex; align-items:center; gap:8px;
+    flex-wrap:wrap; justify-content:center; width:100%;
+}
+
+.current-turn-indicator {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 12px; border-radius:10px;
+    font-size:12px; font-weight:600;
+}
+
+.game-progress {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 12px; border-radius:10px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    font-size:11px; font-weight:700;
+}
+.game-progress .material-icons { font-size:14px; color:var(--neon-blue); }
+.game-progress .progress-num { color:var(--neon-blue); font-weight:800; }
+.game-progress.limit-reached {
+    border-color:#ffd700;
+    background:rgba(255,215,0,0.15);
+    animation:pulse 2s ease-in-out infinite;
+}
+.game-progress.limit-reached .progress-num { color:#ffd700; }
+
+/* Бусты с таймером */
+.boosts-row {
+    display:flex; gap:6px; flex-wrap:wrap; justify-content:center;
+    width:100%;
+}
+.boost-btn {
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:6px 12px; border-radius:10px;
+    background:linear-gradient(135deg,rgba(0,240,255,0.2),rgba(157,0,255,0.15));
+    border:1px solid rgba(0,240,255,0.4);
+    color:white; cursor:pointer; font-weight:600; font-size:11px;
+    transition:all 0.3s; font-family:'Montserrat',sans-serif;
+    position:relative;
+    min-width:80px;
+}
+.boost-btn:hover:not(:disabled) {
+    box-shadow:0 0 15px rgba(0,240,255,0.5);
+    transform:translateY(-1px);
+}
+.boost-btn:disabled { opacity:0.45; cursor:not-allowed; }
+.boost-btn .boost-main {
+    display:flex; align-items:center; gap:4px;
+}
+.boost-btn .material-icons { font-size:16px; }
+.boost-btn .boost-timer {
+    font-size:9px;
+    opacity:0.75;
+    font-weight:700;
+    color:#ffc800;
+    display:flex; align-items:center; gap:2px;
+}
+.boost-btn .boost-timer .material-icons { font-size:10px; }
+.boost-btn .boost-timer.ready { color:#00ff64; }
+.boost-btn .free-badge {
+    position:absolute; top:-5px; right:-5px;
+    background:linear-gradient(135deg,#00ff64,#00ffaa);
+    color:#0a0a1a; padding:1px 5px; border-radius:6px;
+    font-size:8px; font-weight:800;
+}
+
+/* Доска с курсором */
+.current-word-display {
+    display:flex; flex-wrap:wrap; gap:4px;
+    justify-content:center; align-items:center;
+    min-height:72px; padding:10px 14px;
+    width:100%; max-width:700px;
+    position:relative;
+    transition:background 0.2s, border-color 0.2s;
+    border:2px dashed transparent;
+    touch-action:none;
+}
+.current-word-display.drop-active {
+    border-color:rgba(0,240,255,0.6);
+    background:rgba(0,240,255,0.08);
+}
+.current-word-placeholder {
+    opacity:0.4; font-size:12px; padding:8px;
+}
+
+.current-word-letter {
+    width:44px; height:52px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,rgba(0,240,255,0.2),rgba(255,0,229,0.15));
+    border:2px solid rgba(0,240,255,0.5);
+    border-radius:10px; font-size:22px; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+    animation:letterPop 0.2s ease;
+    user-select:none;
+    position:relative;
+    touch-action:none;
+}
+.current-word-letter:hover {
+    background:rgba(255,0,50,0.3);
+    border-color:#ff0050;
+    transform:scale(1.05);
+}
+.current-word-letter.dragging {
+    opacity:0.5;
+    transform:scale(0.9);
+}
+.current-word-letter.drop-target {
+    border-color:#ffd700 !important;
+    box-shadow:0 0 15px rgba(255,215,0,0.6);
+}
+.current-word-letter.touch-dragging {
+    position:fixed;
+    z-index:1000;
+    pointer-events:none;
+    opacity:0.85;
+    transform:scale(1.15) rotate(5deg);
+    box-shadow:0 0 25px rgba(0,240,255,0.8);
+    transition:none;
+}
+
+/* Курсор вставки */
+.insert-cursor {
+    width:3px;
+    height:52px;
+    border-radius:2px;
+    background:var(--neon-blue);
+    box-shadow:0 0 12px currentColor, 0 0 4px currentColor;
+    animation:cursorBlink 1s ease-in-out infinite;
+    flex-shrink:0;
+    align-self:center;
+    transition:transform 0.2s;
+    pointer-events:none;
+    position:relative;
+}
+.insert-cursor::before {
+    content:'';
+    position:absolute;
+    top:-6px; left:50%;
+    transform:translateX(-50%);
+    width:8px; height:8px;
+    border-radius:50%;
+    background:currentColor;
+    box-shadow:0 0 10px currentColor;
+}
+@keyframes cursorBlink {
+    0%,100% { opacity:1; }
+    50% { opacity:0.4; }
+}
+
+/* Управление курсором */
+.cursor-controls {
+    display:flex; gap:6px; justify-content:center;
+    align-items:center; padding:6px 12px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:12px;
+    flex-wrap:wrap;
+    margin-top:-4px;
+}
+.cursor-btn {
+    width:36px; height:36px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,240,255,0.15);
+    border:1px solid rgba(0,240,255,0.4);
+    border-radius:10px;
+    color:white; cursor:pointer;
+    transition:all 0.2s;
+    font-family:'Montserrat',sans-serif;
+}
+body.light-theme .cursor-btn { color:#1a1a2e; }
+.cursor-btn:hover:not(:disabled) {
+    background:rgba(0,240,255,0.35);
+    box-shadow:0 0 12px rgba(0,240,255,0.5);
+    transform:scale(1.05);
+}
+.cursor-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.cursor-btn .material-icons { font-size:20px; }
+.cursor-position-label {
+    font-size:11px; opacity:0.6; padding:0 8px;
+    font-weight:600;
+}
+
+@keyframes letterPop {
+    0% { transform:scale(0); }
+    70% { transform:scale(1.1); }
+    100% { transform:scale(1); }
+}
+
+.keyboard-container {
+    display:flex; flex-wrap:wrap; gap:6px;
+    justify-content:center; max-width:700px; width:100%;
+    position:relative;
+    touch-action:none;
+}
+
+.key-btn {
+    width:48px; height:56px; border-radius:12px;
+    border:1px solid var(--glass-border);
+    background:var(--glass-bg); color:white;
+    font-size:20px; font-weight:700;
+    cursor:pointer; position:relative;
+    transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(10px);
+    font-family:'Montserrat',sans-serif;
+    flex-shrink:0;
+    user-select:none;
+    touch-action:none;
+}
+body.light-theme .key-btn { color:#1a1a2e; }
+.key-btn:hover:not(:disabled) {
+    border-color:var(--neon-blue);
+    box-shadow:0 0 15px rgba(0,240,255,0.3);
+    transform:translateY(-2px);
+}
+.key-btn:active:not(:disabled) { transform:translateY(0) scale(0.95); }
+.key-btn:disabled { opacity:0.25; cursor:not-allowed; }
+.key-btn.hint-target {
+    border-color:#00ff64 !important;
+    box-shadow:0 0 20px rgba(0,255,100,0.8) !important;
+    animation:hintPulse 0.8s ease-in-out infinite;
+}
+@keyframes hintPulse {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.15); }
+}
+
+.key-count {
+    position:absolute; top:3px; right:5px;
+    font-size:10px; font-weight:700;
+    color:var(--neon-blue);
+    background:rgba(0,240,255,0.15);
+    padding:1px 4px; border-radius:5px;
+}
+
+.words-made-list {
+    display:flex; flex-wrap:wrap; gap:4px;
+    justify-content:center; max-width:700px; width:100%;
+    padding:6px; border-radius:10px;
+    min-height:28px;
+}
+.word-chip {
+    padding:2px 8px;
+    background:rgba(0,240,255,0.15);
+    border:1px solid rgba(0,240,255,0.3);
+    border-radius:6px; font-size:10px; font-weight:600;
+}
+
+.game-controls-chip {
+    display:flex; align-items:center;
+    padding:8px 16px; gap:6px;
+    justify-content:center;
+    position:relative;
+    flex-wrap:wrap;
+}
+.chip-slider {
+    display:flex; align-items:center;
+    background:rgba(0,0,0,0.25);
+    border:1px solid var(--glass-border);
+    border-radius:22px;
+    padding:4px; gap:3px;
+    box-shadow:inset 0 2px 8px rgba(0,0,0,0.2);
+    flex-wrap:wrap;
+    justify-content:center;
+}
+.chip {
+    display:flex; align-items:center; gap:4px;
+    padding:6px 11px; border-radius:18px;
+    cursor:pointer; font-weight:600; font-size:11px;
+    background:transparent; color:white;
+    border:none; transition:all 0.3s;
+    font-family:'Montserrat',sans-serif;
+    white-space:nowrap;
+}
+body.light-theme .chip { color:#1a1a2e; }
+.chip .material-icons { font-size:14px; }
+.chip:hover:not(:disabled) { background:rgba(255,255,255,0.08); }
+.chip:disabled { opacity:0.35; cursor:not-allowed; }
+.chip.chip-danger {
+    background:linear-gradient(135deg,rgba(255,0,50,0.3),rgba(255,0,100,0.2));
+    border:1px solid rgba(255,0,50,0.4);
+    color:#ff4d6d;
+}
+.chip.chip-success {
+    background:linear-gradient(135deg,rgba(0,255,100,0.3),rgba(0,255,200,0.2));
+    border:1px solid rgba(0,255,100,0.4);
+    color:#00ff64;
+    padding:6px 18px;
+}
+.chip.chip-warning {
+    background:linear-gradient(135deg,rgba(255,200,0,0.3),rgba(255,150,0,0.2));
+    border:1px solid rgba(255,200,0,0.4);
+    color:#ffc800;
+}
+
+.modal-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(8px);
+    display:none; align-items:center; justify-content:center;
+    z-index:1000; padding:20px;
+}
+.modal-overlay.active { display:flex; }
+.modal-content {
+    padding:24px; max-width:520px; width:100%;
+    text-align:center; animation:modalIn 0.3s ease;
+    max-height:90vh; overflow-y:auto;
+}
+@keyframes modalIn {
+    0% { transform:scale(0.8); opacity:0; }
+    100% { transform:scale(1); opacity:1; }
+}
+.modal-content h2 { margin-bottom:16px; font-size:20px; }
+.modal-content .neon-btn { width:100%; margin-top:8px; }
+
+.word-not-found-box {
+    padding:12px; border-radius:12px;
+    background:rgba(255,200,0,0.15);
+    border:1px solid rgba(255,200,0,0.4);
+    margin-bottom:12px;
+    text-align:left;
+}
+.word-not-found-box p { font-size:12px; margin-bottom:6px; }
+.word-not-found-box .word-preview {
+    font-size:16px; font-weight:700; color:#ffd700;
+    padding:6px 10px; background:rgba(0,0,0,0.2);
+    border-radius:8px; text-align:center;
+    letter-spacing:2px;
+}
+
+.notification {
+    position:fixed; top:20px; left:50%;
+    transform:translate(-50%,-200px); opacity:0;
+    padding:12px 22px; border-radius:12px;
+    background:var(--card-bg);
+    border:1px solid var(--neon-blue);
+    box-shadow:0 0 30px rgba(0,240,255,0.4);
+    font-weight:600; z-index:2000;
+    transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275),opacity 0.3s ease;
+    display:flex; align-items:center; gap:8px;
+    max-width:calc(100vw - 40px);
+    pointer-events:none;
+    font-size:13px;
+}
+.notification.show { transform:translate(-50%,0); opacity:1; }
+.notification.success { border-color:#00ff64; box-shadow:0 0 30px rgba(0,255,100,0.4); }
+.notification.error { border-color:#ff0050; box-shadow:0 0 30px rgba(255,0,80,0.4); }
+.notification.warning { border-color:#ffc800; box-shadow:0 0 30px rgba(255,200,0,0.4); }
+
+.game-over-stats { display:flex; flex-direction:column; gap:6px; margin:14px 0; }
+.game-over-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; background:rgba(255,255,255,0.05);
+    border-radius:10px; gap:10px;
+}
+.game-over-row.winner {
+    border:1px solid var(--neon-blue);
+    box-shadow:0 0 20px rgba(0,240,255,0.3);
+}
+
+.confetti {
+    position:fixed; width:10px; height:10px;
+    top:-20px; z-index:3000;
+    animation:confettiFall 3s linear forwards;
+    pointer-events:none;
+}
+@keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+.flying-letter {
+    position:fixed; z-index:500;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; font-weight:700;
+    background:linear-gradient(135deg,rgba(0,240,255,0.3),rgba(255,0,229,0.2));
+    border:2px solid rgba(0,240,255,0.7);
+    border-radius:10px; color:white;
+    pointer-events:none;
+    transition:all 0.45s cubic-bezier(0.5,-0.5,0.5,1.5);
+    box-shadow:0 0 20px rgba(0,240,255,0.6);
+}
+
+.bot-thinking {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 14px; border-radius:10px;
+    background:linear-gradient(135deg,rgba(157,0,255,0.2),rgba(255,0,229,0.15));
+    border:1px solid rgba(157,0,255,0.5);
+    font-weight:600; font-size:12px;
+}
+.bot-thinking .dot {
+    width:5px; height:5px; border-radius:50%;
+    background:var(--neon-purple);
+    animation:botDot 1.4s infinite ease-in-out;
+}
+.bot-thinking .dot:nth-child(2) { animation-delay:0.2s; }
+.bot-thinking .dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes botDot {
+    0%,100% { transform:scale(0.7); opacity:0.4; }
+    50% { transform:scale(1.2); opacity:1; }
+}
+
+/* Колесо */
+.wheel-container {
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+    padding:24px 16px;
+}
+.wheel-wrapper { position:relative; width:280px; height:280px; }
+.wheel {
+    width:100%; height:100%;
+    border-radius:50%;
+    position:relative;
+    transition:transform 4s cubic-bezier(0.17,0.67,0.1,1);
+    box-shadow:0 0 40px rgba(0,240,255,0.5), inset 0 0 40px rgba(0,0,0,0.3);
+    border:6px solid rgba(255,255,255,0.2);
+    overflow:hidden;
+}
+.wheel-segment {
+    position:absolute;
+    width:50%; height:50%;
+    top:0; left:50%;
+    transform-origin:0% 100%;
+    display:flex; align-items:center; justify-content:center;
+    color:white; padding-top:18px;
+}
+.wheel-pointer {
+    position:absolute;
+    top:-14px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:16px solid transparent;
+    border-right:16px solid transparent;
+    border-top:28px solid #ffd700;
+    z-index:10;
+    filter:drop-shadow(0 0 10px rgba(255,215,0,0.8));
+}
+.wheel-center {
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:56px; height:56px;
+    border-radius:50%;
+    background:radial-gradient(circle, #ffd700, #ff8c00);
+    border:4px solid white;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 20px rgba(255,215,0,0.8);
+    z-index:5;
+    font-size:24px;
+}
+.spin-btn {
+    padding:14px 36px; font-size:16px; font-weight:800;
+    background:linear-gradient(135deg,#ffd700,#ff8c00);
+    border:none; border-radius:18px; color:#0a0a1a;
+    cursor:pointer; transition:all 0.3s;
+    box-shadow:0 0 30px rgba(255,215,0,0.5);
+    font-family:'Montserrat',sans-serif;
+    display:flex; align-items:center; gap:8px;
+}
+.spin-btn:hover:not(:disabled) {
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 0 50px rgba(255,215,0,0.8);
+}
+.spin-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.spin-counter {
+    display:flex; align-items:center; gap:14px;
+    flex-wrap:wrap; justify-content:center;
+    padding:10px 18px; border-radius:12px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    font-size:12px;
+}
+.spin-counter-item {
+    display:flex; align-items:center; gap:4px;
+    font-weight:700;
+}
+.spin-counter-item .material-icons { font-size:16px; }
+.spin-counter-item.free .material-icons { color:#00ff64; }
+.spin-counter-item.paid .material-icons { color:#ffd700; }
+
+.hint-popup {
+    position:fixed;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:linear-gradient(135deg,rgba(0,255,100,0.95),rgba(0,200,150,0.95));
+    color:#0a0a1a;
+    padding:18px 28px;
+    border-radius:18px;
+    font-weight:800; font-size:16px;
+    z-index:2000;
+    box-shadow:0 0 40px rgba(0,255,100,0.8);
+    animation:modalIn 0.3s ease;
+    text-align:center;
+    max-width:90vw;
+}
+
+.network-status { padding:36px 20px; text-align:center; }
+.network-status .material-icons {
+    font-size:72px; color:#ff0050;
+    margin-bottom:14px;
+    animation:pulse 2s infinite;
+}
+.network-status h3 {
+    font-size:20px; margin-bottom:8px;
+    color:#ff4d6d;
+}
+.network-status p { opacity:0.7; font-size:13px; margin-bottom:16px; }
+
+.letter-picker-grid {
+    display:grid; grid-template-columns:repeat(8, 1fr);
+    gap:5px; margin:14px 0;
+    max-height:280px; overflow-y:auto;
+}
+.letter-picker-btn {
+    aspect-ratio:1;
+    border-radius:9px;
+    background:rgba(0,240,255,0.15);
+    border:1px solid rgba(0,240,255,0.4);
+    color:white;
+    font-size:15px; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+    font-family:'Montserrat',sans-serif;
+}
+.letter-picker-btn:hover {
+    background:rgba(0,240,255,0.35);
+    box-shadow:0 0 15px rgba(0,240,255,0.6);
+    transform:scale(1.1);
+}
+
+@media (max-width: 600px) {
+    .game-title { font-size:30px; }
+    .key-btn { width:38px; height:44px; font-size:15px; }
+    .current-word-letter { width:30px; height:36px; font-size:15px; }
+    .insert-cursor { height:36px; }
+    .menu-container { padding:22px 18px; gap:16px; }
+    .game-top-bar { padding:8px; }
+    .players-scoreboard { gap:4px; }
+    .player-score-card { padding:4px 6px; gap:4px; font-size:10px; }
+    .score-name { max-width:50px; font-size:9px; }
+    .score-avatar { width:22px; height:22px; font-size:13px; }
+    .screen-header h2 { font-size:18px; }
+    .stat-value { font-size:24px; }
+    .notification { font-size:12px; padding:10px 16px; }
+    .chip { padding:5px 9px; font-size:10px; }
+    .chip .material-icons { font-size:12px; }
+    .mini-chip { padding:5px 8px; font-size:10px; }
+    .mini-chip .material-icons { font-size:12px; }
+    .wheel-wrapper { width:240px; height:240px; }
+    .wheel-center { width:46px; height:46px; font-size:20px; }
+    .spin-btn { padding:12px 26px; font-size:14px; }
+    .letter-picker-grid { grid-template-columns:repeat(6, 1fr); }
+    .avatar-grid { grid-template-columns:repeat(auto-fill,minmax(42px,1fr)); gap:3px; }
+    .avatar-option { max-width:46px; font-size:20px; }
+    .color-option { width:32px; height:32px; }
+    .boost-btn { padding:5px 8px; font-size:10px; min-width:70px; }
+    .cursor-btn { width:32px; height:32px; }
+    .cursor-btn .material-icons { font-size:16px; }
+    .cursor-position-label { font-size:10px; padding:0 4px; }
+}
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="bg-animation">
+    <div class="orb"></div><div class="orb"></div><div class="orb"></div><div class="orb"></div>
+</div>
+
+<div class="balance-display glass" id="balanceDisplay">
+    <span class="material-icons">paid</span>
+    <span id="balanceAmount">0</span>
+</div>
+
+<!-- Main Menu -->
+<div class="screen active" id="mainMenu">
+    <div class="menu-container glass">
+        <div>
+            <div class="game-title">💰 Мешок слов</div>
+            <div class="game-subtitle" style="text-align:center; margin-top:8px;">Собирай слова — зарабатывай монеты</div>
+        </div>
+        <div class="menu-buttons">
+            <button class="neon-btn" onclick="showScreen('gameModeScreen')">
+                <span class="material-icons">play_arrow</span> Играть
+            </button>
+            <button class="neon-btn" onclick="showScreen('wheelScreen')">
+                <span class="material-icons">casino</span> Колесо фортуны
+                <span id="wheelBadge" style="display:none; background:#ff0050; color:white; padding:2px 8px; border-radius:10px; font-size:10px; margin-left:6px;">NEW</span>
+            </button>
+            <button class="neon-btn" onclick="showScreen('dailyScreen')">
+                <span class="material-icons">event_available</span> Бонус дня
+                <span id="dailyBadge" style="display:none; background:#ff0050; color:white; padding:2px 8px; border-radius:10px; font-size:10px; margin-left:6px;">NEW</span>
+            </button>
+            <button class="neon-btn" onclick="showScreen('settingsScreen')">
+                <span class="material-icons">settings</span> Настройки
+            </button>
+            <button class="neon-btn" onclick="showScreen('shopScreen')">
+                <span class="material-icons">storefront</span> Магазин
+            </button>
+            <button class="neon-btn" onclick="showScreen('dictionaryScreen')">
+                <span class="material-icons">book</span> Мой словарь
+            </button>
+            <button class="neon-btn" onclick="showScreen('achievementsScreen')">
+                <span class="material-icons">emoji_events</span> Достижения
+            </button>
+            <button class="neon-btn" onclick="showScreen('helpScreen')">
+                <span class="material-icons">help_outline</span> Помощь
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Game Mode -->
+<div class="screen" id="gameModeScreen">
+    <div class="container" style="max-width:600px;">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Режим игры</h2>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <button class="neon-btn" onclick="startSinglePlayer()" style="padding:20px;">
+                <span class="material-icons">person</span> Одиночная игра
+            </button>
+            <button class="neon-btn" onclick="startBotGame()" style="padding:20px;">
+                <span class="material-icons">smart_toy</span> Игра с ботом
+            </button>
+            <button class="neon-btn" onclick="startMultiplayer()" style="padding:20px;">
+                <span class="material-icons">group</span> Игра с друзьями (2–5)
+            </button>
+            <button class="neon-btn" onclick="openNetworkModal()" style="padding:20px; opacity:0.7;">
+                <span class="material-icons">wifi</span> Игра по сети
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Setup Screen -->
+<div class="screen" id="setupScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('gameModeScreen')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2 id="setupTitle">Настройка игроков</h2>
+        </div>
+        <div id="setupContent"></div>
+    </div>
+</div>
+
+<!-- Words Input -->
+<div class="screen" id="wordsInputScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="backFromWordsInput()">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Введите слова</h2>
+        </div>
+        <div class="glass" style="padding:18px; margin-bottom:14px;">
+            <p style="opacity:0.7; margin-bottom:12px; font-size:12px;">
+                Введите 2–4 слова. Из их букв игроки будут составлять новые слова.
+                Лимит слов = <strong>n²</strong>.
+            </p>
+            <div id="wordsList" class="words-input-section"></div>
+            <button class="neon-btn" onclick="addWordInput()" style="margin-top:12px; width:100%;">
+                <span class="material-icons">add</span> Добавить слово
+            </button>
+        </div>
+        <button class="neon-btn success" onclick="startGameWithWords()" style="width:100%; padding:16px; font-size:16px;">
+            <span class="material-icons">play_arrow</span> Играть!
+        </button>
+    </div>
+</div>
+
+<!-- Game Screen -->
+<div class="screen" id="gameScreen">
+    <div class="game-top-bar">
+        <div class="players-scoreboard" id="gameScoreboard"></div>
+        <div class="top-bar-actions">
+            <button class="back-btn" onclick="openPause()" title="Пауза">
+                <span class="material-icons">pause</span>
+            </button>
+        </div>
+    </div>
+    <div class="game-main-area">
+        <div class="game-info-row">
+            <div class="current-turn-indicator glass" id="turnIndicator"></div>
+            <div class="game-progress glass" id="gameProgress">
+                <span class="material-icons">checklist</span>
+                <span><span class="progress-num" id="progressCurrent">0</span> / <span id="progressTotal">0</span></span>
+            </div>
+        </div>
+        <div class="boosts-row" id="boostsRow"></div>
+        <div class="current-word-display glass" id="currentWordDisplay">
+            <span class="current-word-placeholder">Перетащите буквы сюда или нажмите...</span>
+        </div>
+        <div class="cursor-controls" id="cursorControls" style="display:none;">
+            <button class="cursor-btn" onclick="moveCursorHome()" title="В начало">
+                <span class="material-icons">first_page</span>
+            </button>
+            <button class="cursor-btn" onclick="moveCursorLeft()" title="На 1 букву влево">
+                <span class="material-icons">chevron_left</span>
+            </button>
+            <span class="cursor-position-label" id="cursorPositionLabel">1 / 1</span>
+            <button class="cursor-btn" onclick="moveCursorRight()" title="На 1 букву вправо">
+                <span class="material-icons">chevron_right</span>
+            </button>
+            <button class="cursor-btn" onclick="moveCursorEnd()" title="В конец">
+                <span class="material-icons">last_page</span>
+            </button>
+        </div>
+        <div class="keyboard-container" id="keyboard"></div>
+        <div class="words-made-list glass" id="wordsMadeList"></div>
+    </div>
+    <div class="game-controls-chip">
+        <div class="chip-slider">
+            <button class="chip chip-danger" onclick="surrender()" id="surrenderBtn">
+                <span class="material-icons">flag</span> Сдаться
+            </button>
+            <button class="chip chip-success" onclick="submitWord()" id="submitWordBtn">
+                <span class="material-icons">check</span> Готово
+            </button>
+            <button class="chip chip-warning" onclick="shuffleLetters()" id="shuffleBtn">
+                <span class="material-icons">shuffle</span> Перемешать
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Wheel Screen -->
+<div class="screen" id="wheelScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>🎡 Колесо фортуны</h2>
+        </div>
+        <div class="glass">
+            <div class="wheel-container">
+                <div class="wheel-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="wheel"></div>
+                    <div class="wheel-center">💰</div>
+                </div>
+                <div class="spin-counter" id="spinCounter"></div>
+                <button class="spin-btn" id="spinBtn" onclick="spinWheel()">
+                    <span class="material-icons" style="font-size:20px;">casino</span>
+                    <span id="spinBtnText">Крутить</span>
+                </button>
+                <p style="opacity:0.6; font-size:11px; text-align:center; max-width:400px;">
+                    Выигрывайте монеты, бусты или ничего. Обновление каждые 3 часа.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daily Screen -->
+<div class="screen" id="dailyScreen">
+    <div class="container" style="max-width:700px;">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Бонус дня</h2>
+        </div>
+        <div id="dailyContent"></div>
+    </div>
+</div>
+
+<!-- Dictionary Screen -->
+<div class="screen" id="dictionaryScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Мой словарь</h2>
+        </div>
+        <div class="glass" style="padding:14px; margin-bottom:12px;">
+            <p style="opacity:0.7; font-size:12px; margin-bottom:10px;">
+                Слова, которых нет в общем словаре.
+            </p>
+            <div style="display:flex; gap:8px;">
+                <input class="neon-input" id="customWordInput" placeholder="Добавить слово..." maxlength="30">
+                <button class="neon-btn" onclick="addCustomWordManually()" style="padding:12px 18px;">
+                    <span class="material-icons">add</span>
+                </button>
+            </div>
+        </div>
+        <div id="customWordsList" class="glass" style="padding:14px; min-height:80px;">
+            <p style="opacity:0.5; text-align:center;">Загрузка...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Settings -->
+<div class="screen" id="settingsScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Настройки</h2>
+        </div>
+        <div class="settings-group glass">
+            <h3><span class="material-icons">tune</span> Игра</h3>
+            <div class="setting-row">
+                <div class="setting-label"><span class="material-icons">volume_up</span> Звуки</div>
+                <label class="toggle">
+                    <input type="checkbox" id="soundToggle" onchange="toggleSound(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div class="setting-label"><span class="material-icons">dark_mode</span> Тёмная тема</div>
+                <label class="toggle">
+                    <input type="checkbox" id="themeToggle" onchange="toggleTheme(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div class="setting-label"><span class="material-icons">animation</span> Анимации</div>
+                <label class="toggle">
+                    <input type="checkbox" id="animToggle" onchange="toggleAnimations(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="settings-group glass">
+            <h3><span class="material-icons">paid</span> Как сохранять монеты</h3>
+            <p style="opacity:0.7; font-size:12px; margin-bottom:10px;">Чьи монеты переходят на ваш баланс.</p>
+            <div class="mini-chip-slider" id="moneyModeSlider">
+                <button class="mini-chip" data-mode="all" onclick="setMoneyMode('all')">
+                    <span class="material-icons">groups</span> Со всех
+                </button>
+                <button class="mini-chip" data-mode="winner" onclick="setMoneyMode('winner')">
+                    <span class="material-icons">emoji_events</span> Победитель
+                </button>
+                <button class="mini-chip" data-mode="first" onclick="setMoneyMode('first')">
+                    <span class="material-icons">person</span> Первый
+                </button>
+                <button class="mini-chip" data-mode="first_winner" onclick="setMoneyMode('first_winner')">
+                    <span class="material-icons">star</span> Первый + победитель
+                </button>
+            </div>
+        </div>
+        <div class="settings-group glass">
+            <h3><span class="material-icons">person</span> Профиль</h3>
+            <div class="player-config">
+                <div class="config-row">
+                    <label>Имя</label>
+                    <input class="neon-input" id="playerNameInput" maxlength="20" onchange="updatePlayerName(this.value)">
+                </div>
+                <div class="config-row">
+                    <label>Аватар (купленные доступны)</label>
+                    <div class="avatar-grid" id="avatarGrid"></div>
+                </div>
+                <div class="config-row">
+                    <label>Цвет</label>
+                    <div class="color-grid" id="colorGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shop -->
+<div class="screen" id="shopScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Магазин</h2>
+            <div style="margin-left:auto; display:flex; align-items:center; gap:5px; font-weight:700; color:#ffd700;">
+                <span class="material-icons" style="font-size:18px;">paid</span>
+                <span id="shopBalance">0</span>
+            </div>
+        </div>
+        <div class="shop-search">
+            <span class="material-icons">search</span>
+            <input class="neon-input" id="shopSearchInput" placeholder="Поиск по названию..." oninput="renderShopGrid()">
+        </div>
+        <div style="padding:8px 14px; margin-bottom:10px; border-radius:10px; background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.3); display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span class="material-icons" style="color:var(--neon-blue); font-size:14px;">local_offer</span>
+            <span>Скидка: <strong id="discountDisplay">0%</strong> (покупок: <span id="purchaseCountDisplay">0</span>)</span>
+        </div>
+        <div class="shop-tabs" id="shopTabs"></div>
+        <div class="shop-grid" id="shopGrid"></div>
+    </div>
+</div>
+
+<!-- Achievements -->
+<div class="screen" id="achievementsScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Достижения</h2>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+        <h3 style="margin:18px 0 10px; display:flex; align-items:center; gap:8px; font-size:15px;">
+            <span class="material-icons" style="color:var(--neon-blue);">military_tech</span> Награды
+        </h3>
+        <div class="achievements-list" id="achievementsList"></div>
+    </div>
+</div>
+
+<!-- Help -->
+<div class="screen" id="helpScreen">
+    <div class="container">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h2>Помощь</h2>
+        </div>
+        <div class="glass help-content">
+            <h3><span class="material-icons">info</span> Как играть</h3>
+            <p>Один игрок вводит 2–4 слова. Из букв все игроки по очереди составляют новые.</p>
+            <p><strong>Лимит = n²</strong>. 2 слова → 4, 3 → 9, 4 → 16.</p>
+            <p>Каждая буква = <strong>5 монет</strong>. Минимум 2 буквы.</p>
+            <p>Нельзя повторять слова.</p>
+
+            <h3><span class="material-icons">touch_app</span> Управление</h3>
+            <p>🖱️ <strong>Перетаскивайте</strong> буквы мышью или пальцем.</p>
+            <p>🎯 <strong>Курсор вставки</strong> показывает, куда добавится буква (цвет — ваш цвет).</p>
+            <p>⬅️ Кнопки под доской: <strong>«</strong> в начало, <strong><</strong> на 1 влево, <strong>></strong> на 1 вправо, <strong>»</strong> в конец.</p>
+            <p>👆 Или просто нажимайте на буквы — они добавятся в позицию курсора.</p>
+            <p>🗑️ Нажмите на букву на доске — удалить.</p>
+
+            <h3><span class="material-icons">wifi</span> Игра по сети</h3>
+            <p><strong>В разработке.</strong> Сервер недоступен.</p>
+            <p>Но можно играть по видеосвязи, поочерёдно в режиме «Игра с друзьями»!</p>
+
+            <h3><span class="material-icons">casino</span> Колесо фортуны</h3>
+            <p>8 прокрутов за 3 часа: 3 бесплатных + 5 по 50 монет.</p>
+
+            <h3><span class="material-icons">bolt</span> Бусты</h3>
+            <p><strong>Добавить букву</strong> — любая буква на всю игру.</p>
+            <p><strong>Подсказка</strong> — подсветит нужную букву.</p>
+            <p>3 бесплатных раза каждый, потом 60 монет. Кулдаун 5 мин, перезарядка 5 часов (таймер виден на кнопке).</p>
+
+            <h3><span class="material-icons">book</span> Мой словарь</h3>
+            <p>Если слова нет в общем — добавьте в свой. Оно <strong>сразу засчитается</strong> в текущей игре и сохранится.</p>
+
+            <div class="dev-credit">
+                Разработчик: <strong>Quantum ACD</strong><br>
+                <a href="https://github.com/q-acd" target="_blank">github.com/q-acd</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pause Modal -->
+<div class="modal-overlay" id="pauseModal">
+    <div class="modal-content glass">
+        <h2>⏸ Пауза</h2>
+        <div class="settings-group" style="padding:0; margin-bottom:12px; text-align:left;">
+            <div class="setting-row">
+                <div class="setting-label"><span class="material-icons">volume_up</span> Звуки</div>
+                <label class="toggle">
+                    <input type="checkbox" id="pauseSoundToggle" onchange="toggleSound(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div class="setting-label"><span class="material-icons">dark_mode</span> Тёмная тема</div>
+                <label class="toggle">
+                    <input type="checkbox" id="pauseThemeToggle" onchange="toggleTheme(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row" style="border-bottom:none;">
+                <div class="setting-label"><span class="material-icons">animation</span> Анимации</div>
+                <label class="toggle">
+                    <input type="checkbox" id="pauseAnimToggle" onchange="toggleAnimations(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <button class="neon-btn success" onclick="closePause()">
+            <span class="material-icons">play_arrow</span> Продолжить
+        </button>
+        <button class="neon-btn danger" onclick="confirmEndGame()">
+            <span class="material-icons">stop</span> Закончить игру
+        </button>
+    </div>
+</div>
+
+<!-- Word Not Found Modal -->
+<div class="modal-overlay" id="wordNotFoundModal">
+    <div class="modal-content glass">
+        <h2><span class="material-icons" style="color:#ffc800; vertical-align:middle;">search_off</span> Слово не найдено</h2>
+        <div class="word-not-found-box">
+            <p>Слова <strong id="notFoundWordText">-</strong> нет в общем словаре.</p>
+            <p>Добавьте в свой — оно <strong>засчитается сразу</strong> и сохранится.</p>
+            <div class="word-preview" id="notFoundWordPreview">-</div>
+        </div>
+        <button class="neon-btn success" onclick="addWordToCustomDictionaryFromModal()">
+            <span class="material-icons">book</span> Добавить и засчитать
+        </button>
+        <button class="neon-btn warning" onclick="submitWordAnyway()">
+            <span class="material-icons">check</span> Засчитать один раз
+        </button>
+        <button class="neon-btn" onclick="closeWordNotFound()">
+            <span class="material-icons">close</span> Отмена
+        </button>
+    </div>
+</div>
+
+<!-- Network Modal -->
+<div class="modal-overlay" id="networkModal">
+    <div class="modal-content glass">
+        <div class="network-status">
+            <span class="material-icons">cloud_off</span>
+            <h3>Сервер недоступен</h3>
+            <p>Попробуйте позже</p>
+            <p style="opacity:0.5; font-size:11px;">Мы работаем над сетевым режимом</p>
+        </div>
+        <button class="neon-btn" onclick="openNetworkHelp()">
+            <span class="material-icons">help_outline</span> Помощь
+        </button>
+        <button class="neon-btn" onclick="closeNetworkModal()">
+            <span class="material-icons">close</span> Закрыть
+        </button>
+    </div>
+</div>
+
+<!-- Network Help Modal -->
+<div class="modal-overlay" id="networkHelpModal">
+    <div class="modal-content glass">
+        <h2>🌐 Игра по сети</h2>
+        <p style="opacity:0.8; font-size:13px; margin-bottom:16px; line-height:1.6;">
+            Игра по сети пока в разработке.<br><br>
+            <strong>Но вы можете играть вместе по видеосвязи</strong>, поочерёдно играя в режиме «Игра с друзьями»!
+        </p>
+        <button class="neon-btn success" onclick="closeNetworkHelp()">
+            <span class="material-icons">check</span> Понятно
+        </button>
+    </div>
+</div>
+
+<!-- Letter Picker Modal -->
+<div class="modal-overlay" id="letterPickerModal">
+    <div class="modal-content glass">
+        <h2>➕ Добавить букву</h2>
+        <p style="opacity:0.7; font-size:12px; margin-bottom:10px;">Буква будет доступна всю игру (1 раз)</p>
+        <div class="letter-picker-grid" id="letterPickerGrid"></div>
+        <button class="neon-btn" onclick="closeLetterPicker()">
+            <span class="material-icons">close</span> Отмена
+        </button>
+    </div>
+</div>
+
+<!-- Game Over Modal -->
+<div class="modal-overlay" id="gameOverModal">
+    <div class="modal-content glass">
+        <h2 id="gameOverTitle">Игра окончена!</h2>
+        <div class="game-over-stats" id="gameOverStats"></div>
+        <div id="gameOverReward" style="padding:10px; background:rgba(255,215,0,0.15); border-radius:10px; margin-bottom:10px; display:none;">
+            <span style="font-size:12px;">Начислено: </span>
+            <strong id="gameOverCoins" style="color:#ffd700;">0</strong>
+        </div>
+        <button class="neon-btn success" onclick="playAgain()">
+            <span class="material-icons">replay</span> Играть снова
+        </button>
+        <button class="neon-btn" onclick="closeGameOver()">
+            <span class="material-icons">home</span> В меню
+        </button>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-content glass">
+        <h2 id="confirmTitle">Вы уверены?</h2>
+        <p id="confirmText" style="opacity:0.7; margin-bottom:14px; font-size:13px;"></p>
+        <button class="neon-btn danger" onclick="confirmAction(true)">Да</button>
+        <button class="neon-btn" onclick="confirmAction(false)">Отмена</button>
+    </div>
+</div>
+
+<!-- Notification -->
+<div class="notification glass" id="notification">
+    <span class="material-icons" id="notifIcon">info</span>
+    <span id="notifText"></span>
+</div>
+
+<script>
+/* ============ SOUND ============ */
+const SoundEngine = {
+    ctx:null, enabled:true,
+    init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} } },
+    play(freq, duration=0.1, type='sine', volume=0.15) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        } catch(e){}
+    },
+    click() { this.play(800,0.06,'sine',0.1); },
+    letter() { this.play(600,0.08,'triangle',0.12); },
+    fly() { this.play(400,0.15,'sine',0.08); },
+    success() { this.play(523,0.1); setTimeout(()=>this.play(659,0.1),80); setTimeout(()=>this.play(784,0.15),160); },
+    error() { this.play(200,0.2,'sawtooth',0.1); },
+    coin() { this.play(1200,0.08,'sine',0.1); setTimeout(()=>this.play(1600,0.1),60); },
+    combo() { this.play(659,0.08); setTimeout(()=>this.play(880,0.08),60); setTimeout(()=>this.play(1047,0.12),120); },
+    win() { this.play(523,0.15); setTimeout(()=>this.play(659,0.15),150); setTimeout(()=>this.play(784,0.15),300); setTimeout(()=>this.play(1047,0.3),450); },
+    spin() { this.play(300,0.3,'sawtooth',0.08); }
+};
+
+/* ============ СЛОВАРЬ ============ */
+const BASE_DICTIONARY = new Set(`абажур абзац аборт абрис абсурд аванс авария август автор автобус адрес азарт азиат азот аист айсберг акация аквариум аккорд акробат аксессуар актёр акцент акула аллея
+алмаз алфавит альбом амбар амбиция амнезия ампула ананас анатомия ангел ангар анкета ансамбль антилопа апельсин аппетит аптека арбуз аргумент арест арка аромат арсенал артист арфа архив асфальт
+астроном атака атлас атлет атмосфера атом афиша аэропорт бабушка багаж базар баклажан баланс балет балкон бамбук банан банда банк банка барон бассейн батарея батон башня бегемот беда бедро бездна
+белка бельё бензин берег берёза беседа беседка библиотека бизнес билет биология биржа битва благо бланк блеск блик блин блок блокнот блоха блуза бобёр богатырь бокал бокс болото бомба
+бор борода борщ босс ботаника ботва бочка бревно бренд бритва бровь бронза броня бросок брюки брюнет брус бублик бугор будка буква букет булка булочка бумага бунт бур бургер буря бутерброд
+бутылка буфет бухта бык былина быт бюро бюст вагон ваза вакансия вакуум валенки валюта ванна варенье вариант вата вафля вахта вдох ведро веко вектор великан велосипед вена венок веранда
+верблюд верёвка вертолёт вес весло весна весы ветер ветка ветчина вечер вешалка взгляд вздох взлёт взнос взрыв вид визит вилка вилы вина вино виноград винтик вирус висок виток витрина вихрь вкус влага
+власть вклад влияние вобла водопад водород вождь воз возраст возня война вокал волна волос волшебник вольер вор воробей ворон ворона ворот воск восторг восход время врач вратарь
+всадник вселенная вставка встреча выбор вывеска вывод выговор выдра вызов выкуп вылет вымпел вымысел вынос выпуск вырез выручка выстрел высота выставка вытяжка выход вышивка вышка вьюга вяз газ газета
+газон гайка галета галстук гамак гараж гарантия гардероб гармонь гастроли гвоздь гвоздика гелий гений география гепард герб герой гигант гиена гитара глава глаз глина глобус
+глубина гнездо гном гобелен гол голень голова голод голос голубь гольф гонец гонорар горб гора горе город горох горшок гости гостиница гость государство грабли градус граната граница гранит
+график грейпфрут грелка гребень грех гриб грива грим грипп гроб гроздь гром грохот грудь груздь груша грязь губка гудок гусь гусеница гуща дама дань дар дата дача дачник движение дверь дворец дворник
+двойка дебют девиз девочка дед дедушка дежурный действие декорация делегат деление деликатес дельта деньги дерево деревня держава десять деталь дети детство дефект дефис
+джем джентльмен джин джинсы джунгли диалог диван дивизия диета дизайн диктант диктор дилижанс династия динозавр диплом дирижёр диск дискета дисплей дисциплина дитя дневник дно добавка
+добро добыча довод дождь доза доктор документ долг доллар дом домино домкрат донесение донор дополнение дорога дорожка досада доска доспехи досуг дочка драгоценность драка драма дранка древесина
+дрель дробь дрова дрожжи друг дружина дуб дуга дудка дуло дума дупло дурак дурман дух духи духовка душ душа дым дыня дырка дырокол дыханье дядя еда ежевика ёж ёжик ёлка ёмкость енот ересь ерунда
+есаул ехидна жаба жабра жажда жакет жалоба жанр жара жвачка жезл железо желоб желудок жемчуг жена жених жерло жернов жесть жетон жёлудь живот жижа жила жилет жилище жильё жир житель жнец
+жонглёр жребий жрец жулик журавль жуть жюри забава забой забор забота завал завеса зависть завод завтрак завязь загадка загар заголовок загон зад задор зажим заказ закон залив залог
+залп замок замша занавес запад запись запас запах запеканка заповедь запрос зараза заряд заседание засов засор заставка застёжка застой заступ затылок захват зацепка зачёт зачин
+защита заяц звание звено зверь звон звук звезда здание здоровье земля земляника землянка зенит зерно зеркало зефир зигзаг зима зипун злоба злость змея знак знамя знание зной зов зодчий золото
+зона зонт зоопарк зрачок зрелище зуб зубр зубец зуд зыбь зять игра игла икона икра иллюзия имидж имя инвентарь индеец индекс индюк инерция инжир инженер инициалы иностранец инструмент интервал интернет
+интерьер инфаркт ирис ирония искусство искра ислам исток история истребитель итог ишак йог йогурт йод кабан кабачок кабинет каблук кавалер кадет кадка кадр каждый казак казна казнь
+кайма кактус калач календарь калина калитка камень камин камыш канал канат канва кандидат каникулы канистра кант каньон капель капитан капкан капля капот капуста каравай караван карась караул
+картина картон картофель карусель карьер каскад касса кассета кастрюля каталог катание катер каток кафедра кафтан качели каша кашне каштан каюта квадрат квартира квас квест кекс кедр
+клевер клетка клён клещи климат клоун клуб клубок клюв клюква ключ клякса книга кнопка кобра ковёр ковш коготь код кодекс кожа коза козёл койка кокос кол колба колбаса колготки колесо колея
+количество коллекция колодец колокол колос колпак кольцо колючка ком комар комбайн комета комикс комиссия комната комод компания компас компот компьютер кон конверт конвой конец конёк конкурс
+консоль конспект консул контакт контейнер контекст контора контур конус конференция концерт конь коньяк копия копна копьё корабль корень корзина корица корм короб корова король корпус
+корсет космос костёр кость костюм косуля косяк кот котёл кофе кофта кошелёк кошка краб край крапива краса краска кратер кредит крем кресло крест кризис крик кристалл критерий кровать кровь
+крот крошка круг круиз крупа кружка крючок крыло крыльцо крыша ксерокс куб кубик кувшин кудри кукла кулак кулон культура купе купол кур курган курица курок курс курсор кусок куст кухня
+куча кучер кушетка кювет лабиринт лаборант лава лавр лавка лагерь ладонь ладья лаз лазер лайм лак лампа ландыш ланч лапа лапша ларёк ласка ласточка лауреат лачуга лебедь лев левша
+легенда легион лёд ледник лезвие лейка лекция лемур лента леопард лепка лес лестница лето лётчик леший лещ лиана ливень лига лидер лилия лиман лимит лимон линия
+липа лира лист литера литр лифт лихорадка лицей лицо личность лишайник лоб лобзик ловля логово логика лодка ложка ложь лоза локомотив локоть лом ломоть лопата лопух лосось лось лоток лоханка
+лошадь луг лужа луковица луна лупа луч лыжи лысина лыжня любовь люк люстра лютня люцерна лязг магия магнит мадам мазь майка майонез мак макет макушка малахит малина
+малыш мальва маляр мама манеж манера мангал манго мандат манёвр мания манжета манна мансарда марафон мрамор марка маркер марля мармелад марш маршрут маска маскарад масло масса массаж массив
+мастер мат матч матрос матрас мафия махалка машина маяк мгла мебель медведь медаль медальон медик медицина медуза межа мезонин мел мелодия мелочь мель мельница
+мера метр метро мех меч мечта мешок мещанин миг мигрень мидия мизинец микрофон миксер милиция миля мина миндаль минерал министр минор минус минута мираж мир миска миссия
+митинг миф мишень младенец млекопитающее мнение могила мода модель модем модерн мозаика мозг мозоль мокрый мол молния молодёжь молоко молот молоть молчание моль момент
+монарх монах монета монитор монолог монстр монтаж монумент море морж морковь мороз морс мортира моряк мост мотив мотор мотоцикл мох мочалка мощность мрак мрамор мстить муза музей музыка мука
+мул мультфильм мумия мундир муравей муж мужество мужчина мусс мустанг мутация муфта муха мучение мусор мучной мыло мыс мысль мышь мэр мюзикл мякоть мяч мята
+набор набросок набат навес навигатор наволочка нагоняй надежда надзор надпись наживка нажим назад название назначение наказ накал накипь наклон наконечник накрытие наледь
+наливка налим налог намаз намёк намерение намордник нанесение направление напев напёрсток наплыв напор направо например нарост народ нарзан наркотик нарцисс насос настил настройка наступление
+наследство натиск натрий натура натяжение наука нафталин находка начальник начало нашатырь нашествие нация начальство небо небоскрёб небылица невеста невод неволя невроз неделя недуг нежность незабудка
+незнание неизвестность нейлон нейрон нелепость немощь ненависть неон непогода нерест нерв нефть нехватка нечто нива низина низ никель никотин нимб нитка нить ниша нищий новелла новизна
+новость нога ноготь нож ножницы ножны ноль номер нонсенс норма нос носок нотка ночь ноша нрав нужда нутрия нюанс няня обаяние обвал обгон обед обезьяна оберег обжора
+обида обзор область облик облако обломок обман обмен обморок обмотка обнова обои обойма оболочка оборона оборот обрыв обряд обувь обух обход обхват обшивка общество объект объём обычай овраг
+овощ овца огонь огород огурец одежда одеколон одеяло ожог ожерелье озеленение озеро озон океан оклад окно окоп окорок окраина округ октава олень олива олово омлет омут ондатра опал
+опера операция опека описание описка оплата опора опрос оптик опыт опята оранжерея орбита орган организм орден ордер орёл орех оригами оркестр орнамент оружие оса осада осанка осёл осень
+осина осколок основа особа осока осмотр оспа остров острота ось отара отбор отвага отвар ответ отвёртка отвес отгиб отгул отдел отдых отёк отец отзыв отказ открытие отлив отмель отморозок
+отметка отопление отпор отрог отрезок отросток отрывок отряд отсек отставка оттенок оттиск отчёт отъезд офис офицер охота охрана оценка очерк очки ошейник ошибка оазис
+павильон павлин паводок пагода паёк пакет палас палата палец палисадник палитра палка палуба пальма пальто памфлет панама панда панель паника панорама пантера папа папирус папка пара парад
+парадокс паразит парашют парень пари парик парилка паркет парк парламент парник пароль паром парта парус парфюм пасека паспорт пассаж пассажир паста пастель пастила пастбище пасть
+пасьянс патент патефон патриот пауза паутина пафос пах пахарь пацан пациент пачка пашня паяц певец педант педаль педиатр пекарня пекло пена пение пень пепел перевал перевес перевоз перевязка
+перегар перед переезд перец период перо перрон персик персона перст перчатка песок песня пессимист петля петух пехота печать печень печенье печка печь пешка пещера пианист пиво пижама пинцет пион
+пир пират пирог пирожок пирс писатель письмо пистолет питание питьё пища пиявка плавание плавка плакат пламя план планета пласт пластырь плата платина платье плащ плеер плед племя плен пленум
+плеск плечо плинтус плита плот плотина площадка плуг плюс плюш пляж побег победа повар повод поворот повтор погода погон погреб подарок подвал подвода поджог подкова подлец подъезд поезд
+пожар позор поиск пойма покой покров пол поле полёт полка полк половник полоса полуостров помидор помощь помпа понедельник пони пончик порог порода порок порох порт портрет портфель
+поручение посёлок посол посох постановка постель постройка посуда пот поток потолок потоп поход поцелуй почва почта поэма поэт пояс права правило право праздник практика прах предел
+предмет пресс привет приз призыв приказ примета пример принц природа приступ прицеп приют пробел проблема пробор провод проводник прогноз программа прогресс продажа проект прожектор
+прок проект пролив промысел прораб просвет проспект простота протез протест проход процент процесс прочее пруд прыжок пряник пряность психолог птица публика пуговица пудра пузырь
+пулемёт пульс пункт пунш пурга пуск пустыня пустяк путь пчела пшеница пыль пьеса пюре пятка пятно пять работа раб рагу радар радио радость радуга разбор развал
+разведка разговор размер разум район рак ракета ранец рапорт раса рассвет рассказ раствор растительность растр растяжение расход расчёт рать рвота ребро ребус
+реванш ревень ревматизм революция регион редис режим резец резина резня резерв рейд рейка рейтинг река реклама рекомендация рекорд ректор рельеф рельс ремень ремонт репей
+репертуар репка реплика репортаж репс ресурс ресторан ретушь реферат рефлекс реформа рецепт решение решётка решето ржавчина ржаной ринг рис риск ритм рифма риф робот ров рогатка
+род родина родник роды рожь роза розыгрыш рой рок рокот роман ромб ромашка роса роскошь рост рота роща ртуть рубанок рубль рубеж рубин рубрика ругань руда ружьё рука рукав рулет
+рулетка руль румба рупор русло руст ручка ручей рушить рыба рывок рынок рысь рытьё рычаг рюкзак рюмка ряд сабля саван сад садик сажа сажень сазан сайт салют самба самовар самолёт сапог
+сарай сарафан сарказм сарделька сатин сатира сахар сачок сбруя сбыт свалка сварка свадьба сведение свет светлячок свидание свинец свинья свист свисток свобода свод
+свояк связка связь сгиб сговор сдача сдоба сеанс север седло сезон секрет сектор секунда селедка село сельдь семантика семестр семинар семья сенат сеновал сентябрь сервант сервиз
+сердце серебро середина серия серьга сессия сестра сеть сеялка сжатие сзади сигнал сиденье сила силуэт символ симфония синяк сироп сирень система ситец сияние скала скамья скандал
+сказка скальпель сканер скат скачок сквер скворец скелет скидка склад склон сколько скоморох скорлупа скорость скорпион скот скрипка скульптор скука слава сладкий слайд следователь
+слеза слесарь слива сливки слиток слово слог сложение слой слон случай слуга служба слух слюна смена смерч смесь сметана смех смола смородина смотр смрад смысл снаряд снег снегирь
+снижение сноп сноровка сныть собор соболь совет совок сода содержание сожаление сок сокол сокровище солдат солнце соло соль сом сомнение сон сонет сопка сопло сор сорняк сосед сосна
+сосок состав сотня соус софа соцветие сочинение союз спальня спасение спазм спирт спица сплав спорт спортзал способ справка спрайт спрос спуск спутник среда срыв ссылка
+ставка стадион стакан сталь стан станок старик старуха статист статус статья ствол створка стебель стекло стена степь стиль стимул стирка стихия стойка стол столица столб столяр
+стон стоп сторона сторож страж страна страх строка строение строй струна струя студия ступ ступа стук стул стыд стюард сувенир суд судно судьба суета сукно султан сумма
+сумка суп сустав сутки суть суфле сухарь суша сушка схема сход сцена счёт сюрприз сюжет табак таблетка табло табор табун таверна таз таинство тайга тайна такси такт талант
+талисман талия талон тальк тамбур таможня танец танк тапки таран тарелка тариф тату тачка таять творог театр тезис текст телега телевизор телефон тема тембр тень теолог
+теория терапия терем теремок термин термос терраса тетерев тетрадь тигр тина тишина ткань товар ток толпа томат том тон тонер тонна топ топаз тополь топор торба торг
+торец тормоз торт торшер тостер точка тощий трава трагедия трактор траншея трап трасса травма трамвай транс трата тревога трель тренер трепет треск трест третий треть тётя
+треугольник трос труба трубач труд труп тряпка тряска туалет туба туберкулёз туман тундра тунец туника тупик тур турбина турнир туфля туча тушёнка тушь тыква тыл тюбик
+тюлень тюрьма тюфяк тяга тяжба тяжесть тяпка уборка убыток увёртка уговор уголь угол угроза удав удар удача удочка уезд ужин узда узел узор указ уклон укол укроп уксус укус
+улей улика улитка улица улов улыбка ум умение умник умысел упадок упор упрёк управа упражнение урожай урок урон усадьба успех устав усталость уступ утварь утес утка
+утро утюг уход ухват участок учёба учебник учёт учитель ущелье уют уязвимость фабрика фазан фаза факел факт факультет фальшь фамилия фан фантазия фара фараон фарфор фасад
+фасоль фауна фашизм февраль фейерверк феерия фельдшер фен феномен феодал ферма фестиваль фиалка фигура физика фикус филин фильм фильтр финал финансы финиш финка фиолетовый
+фирма фисташка фитиль фишка флаг флакон фланель фланг флейта флот флюгер фокус фокусник фольга фон фонарь фонд фонтан форма форум фосфор фото фотон фраза фрак фракция фрамуга
+франт фрахт фреза фреска фри футбол футляр фуфайка фуражка фурия фургон фурор футболка фуэте фюзеляж хаки халат халва хам хамса хан хандра хаос харч хвост хвоя хек хижина
+химия хит хирург хлеб хлев хлопок хлопья хлыст хмель хна хобби хобот ход ходьба хозяин хоккей холм холод холст хомут хор хорёк хоровод хоромы хохот храм храп
+хребет хрен хрип хризантема хром хроника хруст хрусталь хрюшка хрящ худоба хулиган хутор цапля царапина царь царица цвет цветень цветок цемент цена центр цепь
+церемония церковь цикада цикл циклон цилиндр циновка цирк циркуль цистерна цитата цифра цоколь цунами цыган цыплёнок чабан чадо чай чайка чайник чакра чалма чан
+чародей час частица часть часы чаша чашка чаща чаяние чебурек чеканка чек челка чело человек челюсть чемодан чемпион череп черешня червь чердак череда черемша черёмуха
+чернила черта чеснок честь честность четверг четки чугун чудак чудо чужой чукча чулан чулок чума чум чучело чуять чушь шабаш шаг шайба шалаш шаман шампиньон шанс шансон
+шапка шар шарж шарик шарф шарманка шасси шатёр шахта шахматы швабра швейцар швы шёпот шерсть шершень шесть шеф шея шёлк шило шина шинель шиповник шипы шифер шишка шкаф
+шкатулка шкура шланг шлем шлюпка шляпа шнур шов шок шоколад шорох шорты шоссе шпага шпаклёвка шпала шпион шприц шпрот шрам шрифт штаб штакетник штамп штанга штора шторм
+штраф штурм штык шуба шум шуруп шут шутка щавель щебень щегол щедрость щека щеколда щель щенок щепка щётка щетина щи щит щука щуп щёлочь экватор экзамен экземпляр экран
+экскурсия экспертиза экспорт экспресс элегия элемент эликсир элита эмаль эмблема эмигрант эмоция энергия эполет эпос эпоха эра эрудит эскадра эскалатор эскиз эссе эстафета этаж
+эталон этика этикет этап этюд эфир эхо эшелон юбилей юбка юг юдоль южанин юла юмор юность юноша юпитер юрист юрта юстиция яблоко яблоня яви явление ягода яд ядро язва
+язык яйцо якорь яма ямщик янтарь японец яр ярд ярмарка ярость ярлык ярус ясень ясность яхта ячмень ящерица ящик`.split(/\s+/).filter(w => w.length >= 2));
+
+const EXTRA_DICT = `акт ар фа рак река катер карта кара рука арка раб бар брак краб кран рана нора роса сон нос сорт трос рост
+стол лот слот кот ток крот рот торт рог порог гора гром мор ром ком мок дом мода дама мама рама марка маска каска каскад сад ад дар рад
+сад садик сок сокол кол колос лось соль слон окно кино око кони конь кон лес сел село сено оса осада
+кто рот рота работа бор бордюр боб борт робот мир миф рифма риф ритм марш март мат лук луна лупа луг дуга друг круг
+рагу гарь рык рыба рыбак бак сом космос мост том мода дам мадам пар парк карп борщ
+топ пот стоп пост спорт сор сорт трос рост роса коса кос пол полк полка лоб болт соло ром гром
+раб бар брак бак лак лук кулак мак рак акр парк карп
+карета карат тигр игра рог гора горе орех хор хорёк так такт акт арт брат пар рак
+нос сон она они оно окно окна кин око кони конь
+оса осада сад садик сок осадок сорок рок крона кран рана
+раб бар брак бак лак лук кулак мак рак акр парк карп кара арка рака
+рука руки руль луна нуль дуло дуга угар гарь
+коала диарея дежавю драже дзюдо эскимо эссе канва какао какаду какапо казуар`.split(/\s+/).filter(w => w.length >= 2);
+EXTRA_DICT.forEach(w => BASE_DICTIONARY.add(w));
+
+let CUSTOM_DICTIONARY = new Set();
+
+function isValidWord(word) {
+    if (!word || word.length < 2) return false;
+    const w = word.toLowerCase().trim();
+    return BASE_DICTIONARY.has(w) || CUSTOM_DICTIONARY.has(w);
+}
+function isInBaseDictionary(word) { return BASE_DICTIONARY.has(word.toLowerCase().trim()); }
+
+/* ============ DATA ============ */
+const ALL_AVATARS = [
+    {icon:'😀', price:0}, {icon:'😎', price:500}, {icon:'🤖', price:500},
+    {icon:'🐻', price:800}, {icon:'👽', price:800},
+    {icon:'🐱', price:600}, {icon:'🦊', price:700}, {icon:'🐼', price:700}, {icon:'🦁', price:900},
+    {icon:'🐸', price:600}, {icon:'🐵', price:600}, {icon:'🌟', price:800}, {icon:'🔥', price:900},
+    {icon:'💎', price:1200}, {icon:'🎮', price:1000}, {icon:'🚀', price:1100}, {icon:'⚡', price:900},
+    {icon:'🌈', price:1200}, {icon:'🦄', price:1500}, {icon:'🐉', price:1200},
+    {icon:'👾', price:800}, {icon:'🎩', price:1100}, {icon:'🦉', price:1300},
+    {icon:'🐺', price:1300}, {icon:'🐯', price:1400}, {icon:'🦅', price:1500},
+    {icon:'👑', price:5000}, {icon:'🎨', price:1600}, {icon:'🎯', price:1400},
+    {icon:'🍀', price:1200}, {icon:'🎪', price:1800},
+    {icon:'🦝', price:1300}, {icon:'🐨', price:1100}, {icon:'🐷', price:900}, {icon:'🐮', price:900},
+    {icon:'🧙', price:3500}, {icon:'🥷', price:4000}, {icon:'👨‍🚀', price:6000}, {icon:'👸', price:4500},
+    {icon:'🤴', price:4500}, {icon:'🧛', price:3200}, {icon:'🧜', price:3800}, {icon:'🧚', price:4200},
+    {icon:'🦸', price:5000}, {icon:'🦹', price:5000}, {icon:'🧞', price:5500}, {icon:'🧟', price:3800},
+    {icon:'🌌', price:3000}, {icon:'🏆', price:10000},
+    {icon:'🐶', price:600}, {icon:'🐕', price:700}, {icon:'🐩', price:800}, {icon:'🐈', price:700},
+    {icon:'🐓', price:600}, {icon:'🦃', price:800}, {icon:'🦆', price:700}, {icon:'🦢', price:1100},
+    {icon:'🦜', price:1200}, {icon:'🦩', price:1400}, {icon:'🐧', price:900}, {icon:'🦔', price:1000},
+    {icon:'🐿️', price:900}, {icon:'🦇', price:1000}, {icon:'🐗', price:1100}, {icon:'🐴', price:1000},
+    {icon:'🦓', price:1400}, {icon:'🦒', price:1500}, {icon:'🐘', price:1300}, {icon:'🦏', price:1600},
+    {icon:'🐪', price:1200}, {icon:'🦙', price:1300}, {icon:'🦘', price:1500}, {icon:'🐄', price:900},
+    {icon:'🐖', price:800}, {icon:'🐑', price:800}, {icon:'🐐', price:900}, {icon:'🦌', price:1100},
+    {icon:'🦎', price:1000}, {icon:'🐊', price:1300}, {icon:'🐢', price:1000}, {icon:'🐍', price:1200},
+    {icon:'🦕', price:1600}, {icon:'🦖', price:1800}, {icon:'🐙', price:1400}, {icon:'🦑', price:1500},
+    {icon:'🦐', price:1200}, {icon:'🦞', price:1400}, {icon:'🦀', price:1100}, {icon:'🐡', price:1200},
+    {icon:'🐠', price:900}, {icon:'🐟', price:700}, {icon:'🐬', price:1300}, {icon:'🐳', price:1500},
+    {icon:'🦈', price:1600}, {icon:'🐋', price:1700}, {icon:'🦭', price:1400},
+    {icon:'🦋', price:1100}, {icon:'🐛', price:600}, {icon:'🐜', price:600}, {icon:'🐝', price:900},
+    {icon:'🪲', price:900}, {icon:'🐞', price:900}, {icon:'🦗', price:1000}, {icon:'🕷️', price:1200},
+    {icon:'🦂', price:1300}, {icon:'🌸', price:800}, {icon:'🌺', price:900}, {icon:'🌻', price:900},
+    {icon:'🌹', price:1000}, {icon:'🌷', price:900}, {icon:'💐', price:1200}, {icon:'🌲', price:800},
+    {icon:'🌳', price:800}, {icon:'🌴', price:900}, {icon:'🌵', price:800},
+    {icon:'🍁', price:1000}, {icon:'🍄', price:1000}, {icon:'🍎', price:700}, {icon:'🍊', price:700},
+    {icon:'🍋', price:700}, {icon:'🍌', price:700}, {icon:'🍉', price:800}, {icon:'🍇', price:800},
+    {icon:'🍓', price:800}, {icon:'🍒', price:800}, {icon:'🍑', price:800}, {icon:'🥭', price:900},
+    {icon:'🍍', price:900}, {icon:'🥥', price:900}, {icon:'🥝', price:1000}, {icon:'🍅', price:700},
+    {icon:'🥑', price:800}, {icon:'🥦', price:800}, {icon:'🥕', price:700}, {icon:'🌽', price:700},
+    {icon:'🍕', price:1000}, {icon:'🍔', price:900}, {icon:'🍟', price:800}, {icon:'🌮', price:900},
+    {icon:'🍣', price:1200}, {icon:'🍜', price:1000}, {icon:'🍩', price:800}, {icon:'🍰', price:900},
+    {icon:'🎂', price:1000}, {icon:'🍪', price:800}, {icon:'🍫', price:800}, {icon:'🍬', price:800},
+    {icon:'🍭', price:800}, {icon:'🥤', price:800}, {icon:'☕', price:800}, {icon:'🍺', price:1000},
+    {icon:'🍷', price:1100}, {icon:'🍸', price:1200},
+    {icon:'🎖️', price:7500}, {icon:'🥇', price:6000}, {icon:'💍', price:9000},
+    {icon:'💠', price:11000}, {icon:'🔮', price:12000}, {icon:'🌠', price:8500},
+    {icon:'🔱', price:14000}, {icon:'⚜️', price:13000}, {icon:'👁️', price:15000}
+];
+
+const ALL_COLORS = [
+    {color:'#00f0ff', price:0, name:'Неон'},
+    {color:'#ff00e5', price:300, name:'Розовый'},
+    {color:'#9d00ff', price:500, name:'Фиолет'},
+    {color:'#00ff88', price:700, name:'Зелёный'},
+    {color:'#ff0050', price:1000, name:'Красный'},
+    {color:'#ffd700', price:2000, name:'Золотой'},
+    {color:'linear-gradient(135deg,#ff0050,#ffd700,#00ff88,#00f0ff)', price:3000, name:'Радуга'},
+    {color:'#4169e1', price:1200, name:'Синий'},
+    {color:'#ff6b00', price:1100, name:'Оранж'},
+    {color:'#00fa9a', price:1500, name:'Мята'},
+    {color:'#87ceeb', price:1800, name:'Небо'},
+    {color:'#dc143c', price:2200, name:'Багровый'},
+    {color:'#8a2be2', price:2500, name:'Аметист'},
+    {color:'#20b2aa', price:2800, name:'Бирюза'},
+    {color:'#da70d6', price:3200, name:'Орхидея'},
+    {color:'#32cd32', price:3500, name:'Лайм'},
+    {color:'#ff1493', price:3800, name:'Малина'},
+    {color:'#00ced1', price:4200, name:'Аква'},
+    {color:'#ff4500', price:4600, name:'Огненный'},
+    {color:'#7fff00', price:5000, name:'Харт'},
+    {color:'#f0e68c', price:5500, name:'Хаки'},
+    {color:'#ffb6c1', price:6000, name:'Персик'},
+    {color:'#9370db', price:7000, name:'Лаванда'},
+    {color:'#3cb371', price:8000, name:'Изумруд'},
+    {color:'#ffa500', price:9000, name:'Янтарь'},
+    {color:'#ba55d3', price:10000, name:'Пурпур'},
+    {color:'#1e90ff', price:11000, name:'Доджер'},
+    {color:'#98fb98', price:12000, name:'Бледно-зелёный'},
+    {color:'#f08080', price:13500, name:'Коралл'},
+    {color:'#ff69b4', price:15000, name:'Горячий розовый'},
+    {color:'#40e0d0', price:16500, name:'Тюркиз'},
+    {color:'linear-gradient(135deg,#000080,#4169e1)', price:18000, name:'Океан'},
+    {color:'linear-gradient(135deg,#8b0000,#ff0000)', price:20000, name:'Пламя'},
+    {color:'linear-gradient(135deg,#006400,#00ff00)', price:22000, name:'Лес'},
+    {color:'linear-gradient(135deg,#ff00ff,#00ffff)', price:25000, name:'Синтвейв'},
+    {color:'linear-gradient(135deg,#ffd700,#ff8c00,#ff0050)', price:28000, name:'Закат'},
+    {color:'linear-gradient(135deg,#00f0ff,#9d00ff,#ff00e5)', price:32000, name:'Галактика'},
+    {color:'linear-gradient(135deg,#00ff88,#00f0ff,#ffd700,#ff0050)', price:35000, name:'Космос'},
+    {color:'linear-gradient(135deg,#000,#333,#666,#999,#ccc,#fff)', price:38000, name:'Легенда'}
+];
+
+const ALL_KEYBOARDS = [
+    {id:'kb_default', name:'Стекло', style:'default', price:0},
+    {id:'kb_neon', name:'Неон', style:'neon', price:1000},
+    {id:'kb_dark', name:'Тьма', style:'dark', price:1500},
+    {id:'kb_gold', name:'Золото', style:'gold', price:2500},
+    {id:'kb_rainbow', name:'Радуга', style:'rainbow', price:4000},
+    {id:'kb_emerald', name:'Изумруд', style:'emerald', price:3000},
+    {id:'kb_sunset', name:'Закат', style:'sunset', price:3500},
+    {id:'kb_ocean', name:'Океан', style:'ocean', price:4500},
+    {id:'kb_fire', name:'Пламя', style:'fire', price:5000},
+    {id:'kb_forest', name:'Лес', style:'forest', price:5500},
+    {id:'kb_ice', name:'Лёд', style:'ice', price:6000},
+    {id:'kb_sakura', name:'Сакура', style:'sakura', price:7000},
+    {id:'kb_galaxy', name:'Галактика', style:'galaxy', price:8500},
+    {id:'kb_retro', name:'Ретро', style:'retro', price:10000},
+    {id:'kb_crystal', name:'Кристалл', style:'crystal', price:12000},
+    {id:'kb_metal', name:'Металл', style:'metal', price:14000},
+    {id:'kb_cyber', name:'Кибер', style:'cyber', price:16000},
+    {id:'kb_royal', name:'Королевский', style:'royal', price:18000},
+    {id:'kb_legendary', name:'Легендарный', style:'legendary', price:22000},
+    {id:'kb_mythic', name:'Мифический', style:'mythic', price:26000},
+    {id:'kb_diamond', name:'Бриллиант', style:'diamond', price:30000},
+    {id:'kb_cosmic', name:'Космический', style:'cosmic', price:34000},
+    {id:'kb_eternal', name:'Вечный', style:'eternal', price:38000}
+];
+
+const SHOP_ITEMS = {
+    avatars: ALL_AVATARS.map((a, i) => ({
+        id: i === 0 ? 'avatar_default' : `avatar_${i}`,
+        name: i === 0 ? 'Классика' : `Иконка ${i}`,
+        icon: a.icon,
+        price: a.price
+    })),
+    colors: ALL_COLORS.map((c, i) => ({
+        id: i === 0 ? 'color_default' : `color_${i}`,
+        name: c.name || `Цвет ${i}`,
+        color: c.color,
+        price: c.price
+    })),
+    keyboards: ALL_KEYBOARDS
+};
+
+const ACHIEVEMENTS = [
+    { id:'first_game', name:'Первая игра', desc:'Сыграйте первую игру', icon:'🎮', check:s=>s.totalGames>=1 },
+    { id:'first_win', name:'Первая победа', desc:'Выиграйте первую игру', icon:'🥇', check:s=>s.totalWins>=1 },
+    { id:'ten_wins', name:'Десятка', desc:'Выиграйте 10 игр', icon:'🎯', check:s=>s.totalWins>=10 },
+    { id:'fifty_wins', name:'Полтинник', desc:'Выиграйте 50 игр', icon:'🏆', check:s=>s.totalWins>=50 },
+    { id:'hundred_words', name:'Словотворец', desc:'Составьте 100 слов', icon:'📚', check:s=>s.totalWordsMade>=100 },
+    { id:'thousand_words', name:'Мастер слов', desc:'Составьте 1000 слов', icon:'✍️', check:s=>s.totalWordsMade>=1000 },
+    { id:'rich', name:'Богач', desc:'Накопите 10 000 монет', icon:'💰', check:s=>s.balance>=10000 },
+    { id:'millionaire', name:'Миллионер', desc:'Накопите 100 000 монет', icon:'💎', check:s=>s.balance>=100000 },
+    { id:'collector', name:'Коллекционер', desc:'Купите 10 предметов', icon:'🎁', check:s=>s.purchaseCount>=10 },
+    { id:'shopaholic', name:'Шопоголик', desc:'Купите 30 предметов', icon:'🛍️', check:s=>s.purchaseCount>=30 },
+    { id:'long_word', name:'Длинное слово', desc:'Слово из 8+ букв', icon:'📏', check:s=>(s.longestWord||0)>=8 },
+    { id:'epic_word', name:'Эпическое слово', desc:'Слово из 12+ букв', icon:'🎆', check:s=>(s.longestWord||0)>=12 },
+    { id:'bot_win', name:'Победитель ботов', desc:'Выиграйте у бота', icon:'🤖', check:s=>(s.botWins||0)>=1 },
+    { id:'bot_master', name:'Гроза ботов', desc:'Выиграйте 10 раз у бота', icon:'⚡', check:s=>(s.botWins||0)>=10 },
+    { id:'dict_keeper', name:'Хранитель слов', desc:'Добавьте 10 слов в свой словарь', icon:'📖', check:s=>CUSTOM_DICTIONARY.size>=10 },
+    { id:'combo_master', name:'Комбо-мастер', desc:'Комбо x5', icon:'🔥', check:s=>(s.maxCombo||0)>=5 },
+    { id:'lucky_wheel', name:'Счастливчик', desc:'Крутите колесо фортуны', icon:'🎡', check:s=>(s.wheelSpins||0)>=1 },
+    { id:'big_win', name:'Большой куш', desc:'Выиграйте 1000+ монет за прокрут', icon:'💎', check:s=>(s.biggestWheelWin||0)>=1000 }
+];
+
+/* ============ CONSTANTS ============ */
+const WHEEL_REFRESH_MS = 3 * 60 * 60 * 1000;
+const BOOST_REFRESH_MS = 5 * 60 * 60 * 1000;
+const BOOST_COOLDOWN_MS = 5 * 60 * 1000;
+const MAX_FREE_BOOSTS = 3;
+const BOOST_PRICE = 60;
+
+/* ============ STATE ============ */
+let state = {
+    balance:0, totalGames:0, totalWins:0, totalLosses:0,
+    totalWordsMade:0, totalCoinsEarned:0, longestWord:0,
+    winStreak:0, bestStreak:0, botWins:0, customWordsCount:0, maxCombo:0,
+    wheelSpins:0, biggestWheelWin:0,
+    playerName:'Игрок 1', playerAvatar:'😀', playerColor:'#00f0ff',
+    soundEnabled:true, darkTheme:true, animationsEnabled:true,
+    ownedItems:['avatar_default','color_default','kb_default'],
+    purchaseCount:0, selectedKeyboard:'kb_default',
+    moneyMode:'winner',
+    dailyBonusLastClaimed: 0,
+    dailyQuestDate:'', dailyQuestsProgress:{},
+    wheelLastRefresh: 0,
+    wheelFreeSpinsUsed: 0,
+    wheelPaidSpinsUsed: 0,
+    boosts: {
+        addLetter: { freeUsed: 0, lastUsedAt: 0, lastRefreshAt: 0 },
+        hint: { freeUsed: 0, lastUsedAt: 0, lastRefreshAt: 0 }
+    },
+    game:null, lastGameConfig:null, paused:false
+};
+
+/* ============ SAVE/LOAD ============ */
+function saveState() {
+    try {
+        const data = { ...state };
+        delete data.game;
+        localStorage.setItem('wordBagGame_v6', JSON.stringify(data));
+        localStorage.setItem('wordBagCustomDict', JSON.stringify([...CUSTOM_DICTIONARY]));
+    } catch(e){}
+}
+function loadState() {
+    try {
+        const saved = localStorage.getItem('wordBagGame_v6');
+        if (saved) Object.assign(state, JSON.parse(saved));
+        const cd = localStorage.getItem('wordBagCustomDict');
+        if (cd) {
+            CUSTOM_DICTIONARY = new Set(JSON.parse(cd));
+            state.customWordsCount = CUSTOM_DICTIONARY.size;
+        }
+        if (!state.boosts) state.boosts = {
+            addLetter: { freeUsed: 0, lastUsedAt: 0, lastRefreshAt: 0 },
+            hint: { freeUsed: 0, lastUsedAt: 0, lastRefreshAt: 0 }
+        };
+    } catch(e){}
+}
+
+/* ============ UI HELPERS ============ */
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    SoundEngine.click();
+    const bal = document.getElementById('balanceDisplay');
+    if (id === 'gameScreen') bal.classList.add('hidden');
+    else bal.classList.remove('hidden');
+
+    if (id === 'shopScreen') { renderShopTabs(); renderShopGrid(); updateBalanceDisplay(); }
+    if (id === 'achievementsScreen') renderAchievements();
+    if (id === 'settingsScreen') { renderAvatarGrid(); renderColorGrid(); renderMoneyModeSlider(); }
+    if (id === 'dictionaryScreen') renderCustomDictionary();
+    if (id === 'dailyScreen') renderDailyScreen();
+    if (id === 'wheelScreen') { initWheel(); renderSpinCounter(); }
+    if (id === 'mainMenu') updateBadges();
+}
+
+function updateBalanceDisplay() {
+    const bal = document.getElementById('balanceAmount');
+    if (bal) bal.textContent = formatNumber(state.balance);
+    const sb = document.getElementById('shopBalance');
+    if (sb) sb.textContent = formatNumber(state.balance);
+}
+function formatNumber(n) { return (n||0).toLocaleString('ru-RU'); }
+
+let notifTimeout = null;
+function showNotification(text, icon='info', type='') {
+    const notif = document.getElementById('notification');
+    document.getElementById('notifText').textContent = text;
+    document.getElementById('notifIcon').textContent = icon;
+    notif.className = 'notification glass ' + type;
+    void notif.offsetWidth;
+    notif.classList.add('show');
+    clearTimeout(notifTimeout);
+    notifTimeout = setTimeout(() => notif.classList.remove('show'), 2500);
+}
+
+function getDiscount() {
+    const c = state.purchaseCount;
+    if (c >= 20) return 50;
+    if (c >= 15) return 40;
+    if (c >= 10) return 30;
+    if (c >= 5) return 20;
+    if (c >= 2) return 10;
+    return 0;
+}
+function getDiscountedPrice(p) { return Math.floor(p * (100 - getDiscount()) / 100); }
+
+/* ============ SETTINGS ============ */
+function toggleSound(enabled) {
+    state.soundEnabled = enabled; SoundEngine.enabled = enabled; saveState();
+    document.querySelectorAll('#soundToggle,#pauseSoundToggle').forEach(e => { if(e) e.checked = enabled; });
+}
+function toggleTheme(isDark) {
+    state.darkTheme = isDark;
+    document.body.classList.toggle('light-theme', !isDark);
+    saveState();
+    document.querySelectorAll('#themeToggle,#pauseThemeToggle').forEach(e => { if(e) e.checked = isDark; });
+}
+function toggleAnimations(enabled) {
+    state.animationsEnabled = enabled;
+    document.body.classList.toggle('no-animations', !enabled);
+    saveState();
+    document.querySelectorAll('#animToggle,#pauseAnimToggle').forEach(e => { if(e) e.checked = enabled; });
+}
+function updatePlayerName(name) { state.playerName = name.trim() || 'Игрок 1'; saveState(); }
+function selectAvatar(avatar) {
+    const item = SHOP_ITEMS.avatars.find(a => a.icon === avatar);
+    if (item && (item.price === 0 || state.ownedItems.includes(item.id))) {
+        state.playerAvatar = avatar; saveState(); renderAvatarGrid(); SoundEngine.click();
+    }
+}
+function selectColor(color) {
+    const item = SHOP_ITEMS.colors.find(c => c.color === color);
+    if (item && (item.price === 0 || state.ownedItems.includes(item.id))) {
+        state.playerColor = color; saveState(); renderColorGrid(); SoundEngine.click();
+    }
+}
+
+function renderAvatarGrid() {
+    const grid = document.getElementById('avatarGrid');
+    if (!grid) return;
+    const owned = SHOP_ITEMS.avatars.filter(a => a.price === 0 || state.ownedItems.includes(a.id));
+    grid.innerHTML = owned.map(a => `
+        <div class="avatar-option ${state.playerAvatar === a.icon ? 'selected' : ''}" onclick="selectAvatar('${a.icon}')" title="${a.name}">${a.icon}</div>
+    `).join('');
+}
+function renderColorGrid() {
+    const grid = document.getElementById('colorGrid');
+    if (!grid) return;
+    const owned = SHOP_ITEMS.colors.filter(c => c.price === 0 || state.ownedItems.includes(c.id));
+    grid.innerHTML = owned.map(c => `
+        <div class="color-option ${state.playerColor === c.color ? 'selected' : ''}"
+             style="background:${c.color}; color:${c.color.startsWith('linear')?'#fff':c.color};" 
+             onclick="selectColor('${c.color}')" title="${c.name}"></div>
+    `).join('');
+}
+
+/* ============ MONEY MODE ============ */
+const MONEY_MODE_LABELS = {
+    all: 'Со всех', winner: 'Победитель', first: 'Первый', first_winner: 'Первый + победитель'
+};
+function setMoneyMode(mode) {
+    state.moneyMode = mode; saveState(); renderMoneyModeSlider(); SoundEngine.click();
+}
+function renderMoneyModeSlider() {
+    const slider = document.getElementById('moneyModeSlider');
+    if (!slider) return;
+    slider.querySelectorAll('.mini-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.mode === state.moneyMode);
+    });
+}
+
+/* ============ SHOP ============ */
+let currentShopTab = 'avatars';
+
+function renderShopTabs() {
+    const tabs = document.getElementById('shopTabs');
+    if (!tabs) return;
+    const defs = [
+        { id:'avatars', name:`Аватары (${SHOP_ITEMS.avatars.length})`, icon:'emoji_emotions' },
+        { id:'colors', name:`Цвета (${SHOP_ITEMS.colors.length})`, icon:'palette' },
+        { id:'keyboards', name:`Клавиатуры (${SHOP_ITEMS.keyboards.length})`, icon:'keyboard' }
+    ];
+    tabs.innerHTML = defs.map(t => `
+        <button class="shop-tab ${currentShopTab === t.id ? 'active' : ''}" onclick="switchShopTab('${t.id}')">
+            <span class="material-icons" style="font-size:14px;">${t.icon}</span> ${t.name}
+        </button>
+    `).join('');
+    const dd = document.getElementById('discountDisplay');
+    if (dd) dd.textContent = getDiscount() + '%';
+    const pc = document.getElementById('purchaseCountDisplay');
+    if (pc) pc.textContent = state.purchaseCount;
+}
+
+function switchShopTab(tab) {
+    currentShopTab = tab;
+    renderShopTabs();
+    renderShopGrid();
+    SoundEngine.click();
+}
+
+function renderShopGrid() {
+    const grid = document.getElementById('shopGrid');
+    if (!grid) return;
+    const search = (document.getElementById('shopSearchInput')?.value || '').toLowerCase().trim();
+    const items = SHOP_ITEMS[currentShopTab].filter(item => {
+        if (!search) return true;
+        return item.name.toLowerCase().includes(search);
+    });
+    const discount = getDiscount();
+
+    if (items.length === 0) {
+        grid.innerHTML = `<div class="empty-search">
+            <span class="material-icons" style="font-size:40px; display:block; margin-bottom:8px;">search_off</span>
+            Ничего не найдено по запросу «${search}»
+        </div>`;
+        return;
+    }
+
+    grid.innerHTML = items.map(item => {
+        const owned = item.price === 0 || state.ownedItems.includes(item.id);
+        const finalPrice = getDiscountedPrice(item.price);
+        const showDiscount = discount > 0 && item.price > 0 && !owned;
+
+        let preview = '';
+        if (currentShopTab === 'avatars') {
+            preview = `<div class="shop-item-preview">${item.icon}</div>`;
+        } else if (currentShopTab === 'colors') {
+            preview = `<div class="shop-item-preview" style="background:${item.color}; border-radius:50%; width:46px; height:46px;"></div>`;
+        } else {
+            const style = getKeyboardStyleCSS(item.style);
+            preview = `<div class="shop-item-preview" style="${style}"><span style="font-size:11px; font-weight:700;">AB</span></div>`;
+        }
+
+        let actionBtn = '';
+        if (!owned) {
+            actionBtn = `<button class="neon-btn" onclick="buyItem('${currentShopTab}','${item.id}')" style="padding:5px 12px; font-size:11px;">
+                <span class="material-icons" style="font-size:13px;">shopping_cart</span> Купить
+            </button>`;
+        } else if (currentShopTab === 'keyboards') {
+            const isSelected = state.selectedKeyboard === item.id;
+            actionBtn = `<button class="neon-btn ${isSelected ? 'success' : ''}" onclick="selectKeyboard('${item.id}')" style="padding:5px 12px; font-size:11px;">
+                ${isSelected ? '✓' : 'Выбрать'}
+            </button>`;
+        }
+
+        return `
+            <div class="shop-item glass ${owned ? 'owned' : ''}">
+                ${showDiscount ? `<div class="discount-badge">-${discount}%</div>` : ''}
+                ${preview}
+                <div class="shop-item-name">${item.name}</div>
+                <div class="shop-item-price">
+                    ${owned ? '<span class="material-icons">check_circle</span>'
+                            : `<span class="material-icons">paid</span> ${formatNumber(finalPrice)}`}
+                </div>
+                ${actionBtn}
+            </div>
+        `;
+    }).join('');
+}
+
+function getKeyboardStyleCSS(style) {
+    const styles = {
+        default:'background:rgba(255,255,255,0.1);',
+        neon:'background:rgba(0,240,255,0.15); border:1px solid #00f0ff; box-shadow:0 0 10px rgba(0,240,255,0.4);',
+        dark:'background:rgba(0,0,0,0.5); border:1px solid #333;',
+        gold:'background:rgba(255,215,0,0.15); border:1px solid #ffd700; box-shadow:0 0 10px rgba(255,215,0,0.4);',
+        rainbow:'background:linear-gradient(135deg,rgba(255,0,80,0.3),rgba(255,215,0,0.3),rgba(0,255,136,0.3),rgba(0,240,255,0.3));',
+        emerald:'background:rgba(0,255,136,0.15); border:1px solid #00ff88; box-shadow:0 0 10px rgba(0,255,136,0.4);',
+        sunset:'background:linear-gradient(135deg,rgba(255,107,0,0.3),rgba(255,0,229,0.3)); border:1px solid #ff6b00;',
+        ocean:'background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,200,255,0.2)); border:1px solid #0099ff;',
+        fire:'background:linear-gradient(135deg,rgba(255,100,0,0.4),rgba(255,50,0,0.3)); border:1px solid #ff4400;',
+        forest:'background:linear-gradient(135deg,rgba(0,100,0,0.3),rgba(100,200,0,0.2)); border:1px solid #228b22;',
+        ice:'background:linear-gradient(135deg,rgba(200,240,255,0.3),rgba(150,200,255,0.2)); border:1px solid #aaddff;',
+        sakura:'background:linear-gradient(135deg,rgba(255,182,193,0.4),rgba(255,105,180,0.3)); border:1px solid #ffb6c1;',
+        galaxy:'background:linear-gradient(135deg,rgba(80,0,150,0.4),rgba(255,0,200,0.3)); border:1px solid #9d00ff;',
+        retro:'background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(0,240,255,0.3)); border:1px dashed #ffd700;',
+        crystal:'background:linear-gradient(135deg,rgba(200,255,255,0.3),rgba(150,220,255,0.2)); border:1px solid #c0ffff; box-shadow:0 0 15px rgba(200,255,255,0.5);',
+        metal:'background:linear-gradient(135deg,rgba(120,120,140,0.4),rgba(200,200,220,0.3)); border:1px solid #8888aa;',
+        cyber:'background:linear-gradient(135deg,rgba(0,255,200,0.3),rgba(255,0,150,0.2)); border:1px solid #00ffcc;',
+        royal:'background:linear-gradient(135deg,rgba(80,0,120,0.4),rgba(200,150,0,0.3)); border:2px solid #ffd700;',
+        legendary:'background:linear-gradient(135deg,rgba(255,215,0,0.4),rgba(255,100,0,0.3)); border:2px solid #ffd700; box-shadow:0 0 15px #ffd700;',
+        mythic:'background:linear-gradient(135deg,rgba(157,0,255,0.4),rgba(255,0,229,0.3),rgba(0,240,255,0.3)); border:2px solid #ff00e5;',
+        diamond:'background:linear-gradient(135deg,rgba(200,255,255,0.5),rgba(150,200,255,0.4),rgba(200,200,255,0.4)); border:2px solid #d0ffff; box-shadow:0 0 20px #d0ffff;',
+        cosmic:'background:radial-gradient(circle, rgba(80,0,150,0.6), rgba(0,0,30,0.8)); border:1px solid #9d00ff; box-shadow:0 0 20px #9d00ff;',
+        eternal:'background:linear-gradient(135deg,#ffd700,#ff00e5,#00f0ff,#ffd700); border:2px solid #fff; box-shadow:0 0 25px rgba(255,215,0,0.8);'
+    };
+    return styles[style] || styles.default;
+}
+
+function buyItem(category, itemId) {
+    const item = SHOP_ITEMS[category].find(i => i.id === itemId);
+    if (!item || state.ownedItems.includes(item.id)) return;
+    const price = getDiscountedPrice(item.price);
+    if (state.balance < price) {
+        showNotification('Недостаточно монет!', 'error', 'error');
+        SoundEngine.error();
+        return;
+    }
+    state.balance -= price;
+    state.ownedItems.push(item.id);
+    state.purchaseCount++;
+    saveState();
+    updateBalanceDisplay();
+    renderShopGrid();
+    renderShopTabs();
+    SoundEngine.coin();
+    showNotification(`Куплено: ${item.name}!`, 'check_circle', 'success');
+}
+
+function selectKeyboard(id) {
+    state.selectedKeyboard = id; saveState(); renderShopGrid(); SoundEngine.click();
+    showNotification('Клавиатура выбрана!', 'keyboard', 'success');
+}
+
+/* ============ ACHIEVEMENTS ============ */
+function renderAchievements() {
+    const grid = document.getElementById('statsGrid');
+    grid.innerHTML = [
+        { label:'Игр', value:state.totalGames, icon:'sports_esports' },
+        { label:'Побед', value:state.totalWins, icon:'emoji_events' },
+        { label:'Слов', value:state.totalWordsMade, icon:'text_fields' },
+        { label:'Комбо', value:state.maxCombo||0, icon:'whatshot' },
+        { label:'Свой словарь', value:CUSTOM_DICTIONARY.size, icon:'book' },
+        { label:'Баланс', value:state.balance, icon:'account_balance_wallet' }
+    ].map(s => `
+        <div class="stat-card glass">
+            <span class="material-icons" style="font-size:22px; margin-bottom:6px; opacity:0.6;">${s.icon}</span>
+            <div class="stat-value">${formatNumber(s.value)}</div>
+            <div class="stat-label">${s.label}</div>
+        </div>
+    `).join('');
+
+    const list = document.getElementById('achievementsList');
+    list.innerHTML = ACHIEVEMENTS.map(a => {
+        const unlocked = a.check(state);
+        return `
+            <div class="achievement-item glass ${unlocked ? 'unlocked' : 'locked'}">
+                <div class="achievement-icon">${a.icon}</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">${a.name}</div>
+                    <div class="achievement-desc">${a.desc}</div>
+                </div>
+                <span class="material-icons" style="color:${unlocked ? '#ffd700' : 'rgba(255,255,255,0.2)'}; font-size:20px;">
+                    ${unlocked ? 'check_circle' : 'lock'}
+                </span>
+            </div>
+        `;
+    }).join('');
+}
+
+/* ============ CUSTOM DICTIONARY ============ */
+function addWordToCustomDictionary(word) {
+    const w = word.toLowerCase().trim();
+    if (w.length < 2) return false;
+    CUSTOM_DICTIONARY.add(w);
+    state.customWordsCount = CUSTOM_DICTIONARY.size;
+    saveState();
+    return true;
+}
+function removeFromCustomDictionary(word) {
+    CUSTOM_DICTIONARY.delete(word.toLowerCase().trim());
+    state.customWordsCount = CUSTOM_DICTIONARY.size;
+    saveState();
+}
+function renderCustomDictionary() {
+    const list = document.getElementById('customWordsList');
+    if (!list) return;
+    if (CUSTOM_DICTIONARY.size === 0) {
+        list.innerHTML = '<p style="opacity:0.5; text-align:center; font-size:12px;">Ваш словарь пуст. Добавляйте слова, которых нет в общем.</p>';
+        return;
+    }
+    const words = [...CUSTOM_DICTIONARY].sort();
+    list.innerHTML = `<div style="margin-bottom:8px; opacity:0.6; font-size:11px;">Всего: ${words.length}</div>
+    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+        ${words.map(w => `
+            <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 7px; background:rgba(0,240,255,0.15); border:1px solid rgba(0,240,255,0.3); border-radius:7px; font-size:11px;">
+                ${w}
+                <span class="material-icons" style="font-size:12px; cursor:pointer; opacity:0.6;" onclick="removeCustomWordConfirm('${w}')">close</span>
+            </span>
+        `).join('')}
+    </div>`;
+}
+function addCustomWordManually() {
+    const inp = document.getElementById('customWordInput');
+    if (!inp) return;
+    const w = inp.value.trim().toLowerCase();
+    if (!w || w.length < 2) { showNotification('Минимум 2 буквы!', 'warning', 'warning'); return; }
+    if (!/^[а-яёa-z]+$/i.test(w)) { showNotification('Только буквы!', 'warning', 'warning'); return; }
+    if (BASE_DICTIONARY.has(w)) { showNotification('Уже в общем словаре!', 'info', 'warning'); return; }
+    if (CUSTOM_DICTIONARY.has(w)) { showNotification('Уже в вашем словаре!', 'info', 'warning'); return; }
+    addWordToCustomDictionary(w);
+    inp.value = '';
+    renderCustomDictionary();
+    SoundEngine.success();
+    showNotification(`«${w}» добавлено!`, 'book', 'success');
+}
+function removeCustomWordConfirm(word) {
+    showConfirm('Удалить?', `Убрать «${word}»?`, () => {
+        removeFromCustomDictionary(word);
+        renderCustomDictionary();
+        showNotification(`«${word}» удалено`, 'delete', 'warning');
+    });
+}
+
+/* ============ DAILY ============ */
+const DAILY_QUEST_TEMPLATES = [
+    { id:'make_words', name:'5 слов', target:5, reward:100, icon:'📝' },
+    { id:'make_10_words', name:'10 слов', target:10, reward:250, icon:'📚' },
+    { id:'long_word', name:'Слово 6+ букв', target:1, reward:150, icon:'📏' },
+    { id:'win_game', name:'Выиграть игру', target:1, reward:300, icon:'🏆' },
+    { id:'combo3', name:'Комбо x3', target:1, reward:200, icon:'🔥' },
+    { id:'use_custom', name:'Слово из словаря', target:1, reward:150, icon:'📖' }
+];
+function getTodayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function canClaimDailyBonus() {
+    const now = new Date().toDateString();
+    const last = state.dailyBonusLastClaimed ? new Date(state.dailyBonusLastClaimed).toDateString() : '';
+    return last !== now;
+}
+function updateBadges() {
+    const badge = document.getElementById('dailyBadge');
+    if (badge) badge.style.display = canClaimDailyBonus() ? 'inline' : 'none';
+    const wheelBadge = document.getElementById('wheelBadge');
+    if (wheelBadge) {
+        refreshWheelState();
+        wheelBadge.style.display = (state.wheelFreeSpinsUsed < 3) ? 'inline' : 'none';
+    }
+}
+function getDailyQuests() {
+    const seed = getTodayKey().split('-').reduce((a,b)=>a+parseInt(b),0);
+    const result = [];
+    for (let i = 0; i < 3; i++) result.push(DAILY_QUEST_TEMPLATES[(seed + i) % DAILY_QUEST_TEMPLATES.length]);
+    return result;
+}
+function renderDailyScreen() {
+    const content = document.getElementById('dailyContent');
+    if (!content) return;
+    const canClaim = canClaimDailyBonus();
+    const bonusAmount = 100 + Math.floor(Math.random() * 100);
+    const quests = getDailyQuests();
+    if (state.dailyQuestDate !== getTodayKey()) {
+        state.dailyQuestDate = getTodayKey();
+        state.dailyQuestsProgress = {};
+    }
+    const progress = state.dailyQuestsProgress || {};
+
+    content.innerHTML = `
+        <div class="glass" style="padding:18px; margin-bottom:14px; background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,100,0,0.15)); border:2px solid #ffd700;">
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                <span class="material-icons" style="font-size:36px; color:#ffd700;">card_giftcard</span>
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="font-size:15px; margin-bottom:3px;">Ежедневный бонус</h4>
+                    <p style="font-size:12px; opacity:0.7;">${canClaim ? `Доступен +${bonusAmount} монет!` : 'Уже получен сегодня'}</p>
+                </div>
+                ${canClaim ? `<button class="neon-btn success" onclick="claimDailyBonus()" style="padding:8px 16px;">
+                    <span class="material-icons">redeem</span> Получить
+                </button>` : ''}
+            </div>
+        </div>
+        <div class="glass" style="padding:16px;">
+            <h3 style="margin-bottom:12px; display:flex; align-items:center; gap:8px; font-size:15px;">
+                <span class="material-icons" style="color:var(--neon-blue);">assignment</span> Задания
+            </h3>
+            ${quests.map(q => {
+                const done = (progress[q.id]||0) >= q.target;
+                return `
+                    <div style="padding:10px 12px; margin-bottom:6px; display:flex; align-items:center; gap:10px; background:${done?'rgba(0,255,100,0.1)':'rgba(255,255,255,0.03)'}; border-radius:10px; border:1px solid ${done?'rgba(0,255,100,0.4)':'var(--glass-border)'};">
+                        <div style="font-size:20px;">${q.icon}</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-weight:600; font-size:12px;">${q.name}</div>
+                            <div style="font-size:10px; opacity:0.6;">${Math.min(progress[q.id]||0, q.target)} / ${q.target}</div>
+                        </div>
+                        <div style="font-weight:700; color:#ffd700; font-size:12px;">
+                            <span class="material-icons" style="font-size:13px; vertical-align:middle;">paid</span> ${q.reward}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+function claimDailyBonus() {
+    if (!canClaimDailyBonus()) return;
+    const amount = 100 + Math.floor(Math.random() * 100);
+    state.balance += amount;
+    state.dailyBonusLastClaimed = Date.now();
+    saveState();
+    updateBalanceDisplay();
+    SoundEngine.coin();
+    showNotification(`Бонус: +${amount}!`, 'redeem', 'success');
+    updateBadges();
+    renderDailyScreen();
+}
+function addQuestProgress(questId, amount = 1) {
+    if (state.dailyQuestDate !== getTodayKey()) {
+        state.dailyQuestDate = getTodayKey();
+        state.dailyQuestsProgress = {};
+    }
+    if (!state.dailyQuestsProgress) state.dailyQuestsProgress = {};
+    const quest = getDailyQuests().find(q => q.id === questId);
+    if (!quest) return;
+    const current = state.dailyQuestsProgress[questId] || 0;
+    if (current >= quest.target) return;
+    state.dailyQuestsProgress[questId] = Math.min(current + amount, quest.target);
+    if (state.dailyQuestsProgress[questId] >= quest.target) {
+        state.balance += quest.reward;
+        showNotification(`Задание: +${quest.reward}`, 'assignment_turned_in', 'success');
+        SoundEngine.coin();
+    }
+    saveState();
+    updateBalanceDisplay();
+}
+
+/* ============ WHEEL ============ */
+const WHEEL_SEGMENTS = [
+    { type:'coins', amount:50, color:'#00f0ff', label:'50' },
+    { type:'boost', boostType:'addLetter', color:'#00ff88', label:'+буква' },
+    { type:'coins', amount:100, color:'#ffd700', label:'100' },
+    { type:'nothing', color:'#666', label:'—' },
+    { type:'coins', amount:200, color:'#ff00e5', label:'200' },
+    { type:'boost', boostType:'hint', color:'#9d00ff', label:'+подсказка' },
+    { type:'coins', amount:500, color:'#ff6b00', label:'500' },
+    { type:'nothing', color:'#444', label:'—' },
+    { type:'coins', amount:1000, color:'#ffd700', label:'1000' }
+];
+
+function refreshWheelState() {
+    const now = Date.now();
+    if (!state.wheelLastRefresh || (now - state.wheelLastRefresh) > WHEEL_REFRESH_MS) {
+        state.wheelLastRefresh = now;
+        state.wheelFreeSpinsUsed = 0;
+        state.wheelPaidSpinsUsed = 0;
+        saveState();
+    }
+    ['addLetter','hint'].forEach(key => {
+        const b = state.boosts[key];
+        if (b.lastRefreshAt && (now - b.lastRefreshAt) > BOOST_REFRESH_MS) {
+            b.freeUsed = 0;
+            b.lastUsedAt = 0;
+            b.lastRefreshAt = now;
+        }
+    });
+    saveState();
+}
+function getTimeUntilWheelRefresh() {
+    const elapsed = Date.now() - state.wheelLastRefresh;
+    const remain = Math.max(0, WHEEL_REFRESH_MS - elapsed);
+    const h = Math.floor(remain / 3600000);
+    const m = Math.floor((remain % 3600000) / 60000);
+    return `${h}ч ${m}м`;
+}
+function initWheel() {
+    refreshWheelState();
+    const wheel = document.getElementById('wheel');
+    if (!wheel) return;
+    const n = WHEEL_SEGMENTS.length;
+    const segAngle = 360 / n;
+    wheel.innerHTML = '';
+    WHEEL_SEGMENTS.forEach((seg, i) => {
+        const segEl = document.createElement('div');
+        segEl.className = 'wheel-segment';
+        segEl.style.background = seg.color;
+        segEl.style.transform = `rotate(${i * segAngle}deg) skewY(-${90 - segAngle}deg)`;
+        segEl.innerHTML = `<span style="transform:skewY(${90 - segAngle}deg) rotate(${segAngle/2}deg); font-size:12px; font-weight:700;">${seg.label}</span>`;
+        wheel.appendChild(segEl);
+    });
+    updateSpinBtn();
+}
+function updateSpinBtn() {
+    const btn = document.getElementById('spinBtn');
+    const text = document.getElementById('spinBtnText');
+    if (!btn || !text) return;
+    if (state.wheelFreeSpinsUsed < 3) {
+        text.textContent = 'Крутить бесплатно';
+        btn.disabled = false;
+    } else if (state.wheelPaidSpinsUsed < 5) {
+        text.textContent = 'Крутить за 50 монет';
+        btn.disabled = state.balance < 50;
+    } else {
+        text.textContent = 'Прокруты закончились';
+        btn.disabled = true;
+    }
+}
+function renderSpinCounter() {
+    const el = document.getElementById('spinCounter');
+    if (!el) return;
+    const free = 3 - state.wheelFreeSpinsUsed;
+    const paid = 5 - state.wheelPaidSpinsUsed;
+    el.innerHTML = `
+        <div class="spin-counter-item free">
+            <span class="material-icons">card_giftcard</span>
+            ${free}/3
+        </div>
+        <div class="spin-counter-item paid">
+            <span class="material-icons">paid</span>
+            ${paid}/5
+        </div>
+        <div class="spin-counter-item" style="opacity:0.6;">
+            <span class="material-icons">schedule</span>
+            ${getTimeUntilWheelRefresh()}
+        </div>
+    `;
+    updateSpinBtn();
+}
+let wheelSpinning = false;
+function spinWheel() {
+    if (wheelSpinning) return;
+    refreshWheelState();
+    let isPaid = false;
+    if (state.wheelFreeSpinsUsed < 3) {
+        state.wheelFreeSpinsUsed++;
+    } else if (state.wheelPaidSpinsUsed < 5) {
+        if (state.balance < 50) { showNotification('Нужно 50 монет!', 'error', 'error'); return; }
+        state.balance -= 50;
+        state.wheelPaidSpinsUsed++;
+        isPaid = true;
+    } else {
+        showNotification('Прокруты закончились!', 'warning', 'warning'); return;
+    }
+    wheelSpinning = true;
+    state.wheelSpins = (state.wheelSpins || 0) + 1;
+    const wheel = document.getElementById('wheel');
+    const btn = document.getElementById('spinBtn');
+    const randomIndex = Math.floor(Math.random() * WHEEL_SEGMENTS.length);
+    const segAngle = 360 / WHEEL_SEGMENTS.length;
+    const targetAngle = 360 * 5 + (360 - randomIndex * segAngle - segAngle/2);
+    wheel.style.transform = `rotate(${targetAngle}deg)`;
+    SoundEngine.spin();
+    btn.disabled = true;
+    setTimeout(() => {
+        const seg = WHEEL_SEGMENTS[randomIndex];
+        if (seg.type === 'coins') {
+            state.balance += seg.amount;
+            if (seg.amount > (state.biggestWheelWin || 0)) state.biggestWheelWin = seg.amount;
+            showNotification(`💰 +${seg.amount} монет!`, 'paid', 'success');
+            SoundEngine.coin();
+        } else if (seg.type === 'boost') {
+            const b = state.boosts[seg.boostType];
+            if (b.freeUsed > 0) b.freeUsed--;
+            showNotification(`🎁 +1 буст!`, 'card_giftcard', 'success');
+            SoundEngine.success();
+        } else {
+            showNotification(`😕 Ничего...`, 'sentiment_dissatisfied', 'warning');
+        }
+        saveState();
+        updateBalanceDisplay();
+        renderSpinCounter();
+        wheelSpinning = false;
+        setTimeout(() => {
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            setTimeout(() => { wheel.style.transition = 'transform 4s cubic-bezier(0.17,0.67,0.1,1)'; }, 50);
+        }, 300);
+    }, 4200);
+}
+
+/* ============ BOOSTS ============ */
+function getBoostStatus(boostType) {
+    refreshWheelState();
+    const b = state.boosts[boostType];
+    const now = Date.now();
+    const cooldownRemain = Math.max(0, BOOST_COOLDOWN_MS - (now - (b.lastUsedAt || 0)));
+    const freeLeft = MAX_FREE_BOOSTS - (b.freeUsed || 0);
+    const refreshRemain = b.lastRefreshAt ? Math.max(0, BOOST_REFRESH_MS - (now - b.lastRefreshAt)) : 0;
+    return {
+        freeLeft, cooldownRemain, refreshRemain,
+        canUseFree: freeLeft > 0 && cooldownRemain === 0,
+        canUsePaid: freeLeft === 0 && cooldownRemain === 0 && state.balance >= BOOST_PRICE,
+        price: BOOST_PRICE,
+        cooldownMin: Math.ceil(cooldownRemain / 60000),
+        cooldownSec: Math.ceil(cooldownRemain / 1000),
+        refreshMin: Math.ceil(refreshRemain / 60000)
+    };
+}
+function formatTime(ms) {
+    const sec = Math.ceil(ms / 1000);
+    if (sec < 60) return `${sec}с`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}м`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return `${h}ч ${m}м`;
+}
+function renderBoosts() {
+    const row = document.getElementById('boostsRow');
+    if (!row) return;
+    const g = state.game;
+    if (!g || g.gameOver) { row.innerHTML = ''; return; }
+
+    const al = getBoostStatus('addLetter');
+    const hi = getBoostStatus('hint');
+
+    function makeBoostHTML(st, icon, name, extraDisabled) {
+        const canUse = st.canUseFree || st.canUsePaid;
+        let timerText = '';
+        let timerClass = '';
+        if (st.cooldownRemain > 0) {
+            timerText = `⏱ ${formatTime(st.cooldownRemain)}`;
+            timerClass = '';
+        } else if (st.freeLeft > 0) {
+            timerText = `Бесплатно: ${st.freeLeft}`;
+            timerClass = 'ready';
+        } else if (st.refreshRemain > 0) {
+            timerText = `⏱ ${formatTime(st.refreshRemain)}`;
+            timerClass = '';
+        } else {
+            timerText = `${st.price}💰`;
+            timerClass = 'ready';
+        }
+        const disabled = !canUse || extraDisabled;
+        return `
+            <button class="boost-btn" ${disabled ? 'disabled' : ''} onclick="use${name === '+буква' ? 'AddLetter' : 'Hint'}Boost()">
+                ${st.freeLeft > 0 && st.cooldownRemain === 0 ? '<span class="free-badge">FREE</span>' : ''}
+                <div class="boost-main">
+                    <span class="material-icons">${icon}</span>
+                    <span>${name}</span>
+                </div>
+                <div class="boost-timer ${timerClass}">${timerText}</div>
+            </button>
+        `;
+    }
+
+    row.innerHTML = makeBoostHTML(al, 'add_circle', '+буква', false) +
+                    makeBoostHTML(hi, 'lightbulb', 'подсказка', false);
+}
+
+// Обновление таймеров каждую секунду
+setInterval(() => {
+    if (state.game && !state.game.gameOver) renderBoosts();
+}, 1000);
+
+let addLetterBoostActive = false;
+function useAddLetterBoost() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    if (g.bonusLetter) { showNotification('Буква уже добавлена!', 'info', 'warning'); return; }
+    const st = getBoostStatus('addLetter');
+    if (st.cooldownRemain > 0) { showNotification(`Перезарядка ${st.cooldownMin}мин`, 'timer', 'warning'); return; }
+    if (st.freeLeft === 0 && state.balance < BOOST_PRICE) {
+        showNotification(`Нужно ${BOOST_PRICE} монет!`, 'error', 'error'); return;
+    }
+    addLetterBoostActive = true;
+    openLetterPicker();
+}
+function useHintBoost() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    const st = getBoostStatus('hint');
+    if (st.cooldownRemain > 0) { showNotification(`Перезарядка ${st.cooldownMin}мин`, 'timer', 'warning'); return; }
+    if (st.freeLeft === 0 && state.balance < BOOST_PRICE) {
+        showNotification(`Нужно ${BOOST_PRICE} монет!`, 'error', 'error'); return;
+    }
+    if (st.freeLeft > 0) {
+        state.boosts.hint.freeUsed = (state.boosts.hint.freeUsed || 0) + 1;
+    } else {
+        state.balance -= BOOST_PRICE;
+        showNotification(`-${BOOST_PRICE} монет за подсказку`, 'paid', 'warning');
+    }
+    state.boosts.hint.lastUsedAt = Date.now();
+    if (!state.boosts.hint.lastRefreshAt) state.boosts.hint.lastRefreshAt = Date.now();
+    saveState();
+    updateBalanceDisplay();
+
+    const available = { ...g.letterCounts };
+    for (const ch of g.currentLetters) available[ch]--;
+    const used = new Set(g.allWordsUsed);
+    let hintWord = null;
+    const candidates = [];
+    for (const word of BASE_DICTIONARY) {
+        if (word.length < 2 || used.has(word)) continue;
+        const temp = { ...available };
+        let can = true;
+        for (const ch of word) {
+            if (!temp[ch] || temp[ch] <= 0) { can = false; break; }
+            temp[ch]--;
+        }
+        if (can) candidates.push(word);
+        if (candidates.length > 50) break;
+    }
+    if (candidates.length > 0) {
+        candidates.sort((a,b) => b.length - a.length);
+        hintWord = candidates[0];
+    }
+    if (!hintWord) { showNotification('Нет доступных слов', 'info', 'warning'); return; }
+
+    const firstLetter = hintWord[0];
+    const kb = document.getElementById('keyboard');
+    let targetBtn = null;
+    if (kb) for (const btn of kb.querySelectorAll('.key-btn')) {
+        if (btn.dataset.letter === firstLetter && !btn.disabled) { targetBtn = btn; break; }
+    }
+    if (targetBtn) {
+        targetBtn.classList.add('hint-target');
+        SoundEngine.success();
+        const popup = document.createElement('div');
+        popup.className = 'hint-popup';
+        popup.innerHTML = `💡 Подсказка:<br><span style="font-size:22px; letter-spacing:2px; margin-top:6px; display:block;">${hintWord.toUpperCase()}</span><br><span style="font-size:12px;">Начните с «${firstLetter.toUpperCase()}»</span>`;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 3500);
+        setTimeout(() => targetBtn.classList.remove('hint-target'), 4000);
+    }
+    renderBoosts();
+}
+function openLetterPicker() {
+    const grid = document.getElementById('letterPickerGrid');
+    const alphabet = 'абвгдежзийклмнопрстуфхцчшщыэюя'.split('');
+    grid.innerHTML = alphabet.map(ch => 
+        `<button class="letter-picker-btn" onclick="pickLetter('${ch}')">${ch.toUpperCase()}</button>`
+    ).join('');
+    document.getElementById('letterPickerModal').classList.add('active');
+}
+function pickLetter(ch) {
+    const g = state.game;
+    if (!g) { closeLetterPicker(); return; }
+    const st = getBoostStatus('addLetter');
+    if (st.freeLeft > 0) {
+        state.boosts.addLetter.freeUsed = (state.boosts.addLetter.freeUsed || 0) + 1;
+    } else {
+        state.balance -= BOOST_PRICE;
+    }
+    state.boosts.addLetter.lastUsedAt = Date.now();
+    if (!state.boosts.addLetter.lastRefreshAt) state.boosts.addLetter.lastRefreshAt = Date.now();
+    saveState();
+    updateBalanceDisplay();
+
+    g.letterCounts[ch] = (g.letterCounts[ch] || 0) + 1;
+    g.availableLetters[ch] = (g.availableLetters[ch] || 0) + 1;
+    g.bonusLetter = ch;
+    g.bonusLetterAvailable = false;
+    closeLetterPicker();
+    SoundEngine.success();
+    showNotification(`Буква «${ch.toUpperCase()}» добавлена!`, 'star', 'success');
+    renderGame();
+}
+function closeLetterPicker() {
+    addLetterBoostActive = false;
+    document.getElementById('letterPickerModal').classList.remove('active');
+}
+
+/* ============ NETWORK ============ */
+function openNetworkModal() { document.getElementById('networkModal').classList.add('active'); }
+function closeNetworkModal() { document.getElementById('networkModal').classList.remove('active'); }
+function openNetworkHelp() {
+    document.getElementById('networkModal').classList.remove('active');
+    document.getElementById('networkHelpModal').classList.add('active');
+}
+function closeNetworkHelp() { document.getElementById('networkHelpModal').classList.remove('active'); }
+
+/* ============ GAME SETUP ============ */
+let gameSetup = { players:[], isSinglePlayer:false, isBot:false };
+
+function startSinglePlayer() {
+    gameSetup.isSinglePlayer = true; gameSetup.isBot = false;
+    gameSetup.players = [{ name:state.playerName, avatar:state.playerAvatar, color:state.playerColor }];
+    state.lastGameConfig = { isSinglePlayer:true, isBot:false, players:[...gameSetup.players] };
+    showWordsInputScreen();
+}
+function startBotGame() {
+    gameSetup.isSinglePlayer = false; gameSetup.isBot = true;
+    gameSetup.players = [
+        { name:state.playerName, avatar:state.playerAvatar, color:state.playerColor },
+        { name:'Бот', avatar:'🤖', color:'#9d00ff', isBot:true }
+    ];
+    state.lastGameConfig = { isSinglePlayer:false, isBot:true, players:gameSetup.players.map(p=>({...p})) };
+    showWordsInputScreen();
+}
+function startMultiplayer() {
+    gameSetup.isSinglePlayer = false; gameSetup.isBot = false;
+    gameSetup.players = [
+        { name:state.playerName, avatar:state.playerAvatar, color:state.playerColor },
+        { name:'Игрок 2', avatar:'😎', color:'#ff00e5' }
+    ];
+    showPlayerSetupScreen();
+}
+function showPlayerSetupScreen() {
+    showScreen('setupScreen');
+    document.getElementById('setupTitle').textContent = 'Настройка игроков (2–5)';
+    renderPlayerSetup();
+}
+function renderPlayerSetup() {
+    const content = document.getElementById('setupContent');
+    const count = gameSetup.players.length;
+    content.innerHTML = `
+        <div class="glass" style="padding:16px; margin-bottom:12px;">
+            <h3 style="margin-bottom:12px; display:flex; align-items:center; gap:8px; font-size:15px;">
+                <span class="material-icons">group</span> Количество игроков
+            </h3>
+            <div class="player-count-selector">
+                ${[2,3,4,5].map(n => `
+                    <button class="player-count-btn ${count === n ? 'selected' : ''}" onclick="setPlayerCount(${n})">
+                        <span class="material-icons">${n === 2 ? 'people' : 'groups'}</span>
+                        <span>${n}</span>
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+        <div id="playerSetupCards"></div>
+        <button class="neon-btn success" onclick="goToWordsInput()" style="width:100%; padding:16px; font-size:15px; margin-top:12px;">
+            <span class="material-icons">arrow_forward</span> Далее
+        </button>
+    `;
+    renderPlayerCards();
+}
+function setPlayerCount(n) {
+    const current = gameSetup.players.length;
+    const defaults = [
+        { name:'Игрок 2', avatar:'😎', color:'#ff00e5' },
+        { name:'Игрок 3', avatar:'🐱', color:'#00ff88' },
+        { name:'Игрок 4', avatar:'🦊', color:'#ffd700' },
+        { name:'Игрок 5', avatar:'🐸', color:'#9d00ff' }
+    ];
+    if (n > current) for (let i = current; i < n; i++) gameSetup.players.push(defaults[i-1] || defaults[0]);
+    else if (n < current) gameSetup.players = gameSetup.players.slice(0, n);
+    renderPlayerSetup();
+    SoundEngine.click();
+}
+function renderPlayerCards() {
+    const container = document.getElementById('playerSetupCards');
+    if (!container) return;
+    const ownedAvatars = SHOP_ITEMS.avatars.filter(a => a.price === 0 || state.ownedItems.includes(a.id)).map(a => a.icon);
+    const ownedColors = SHOP_ITEMS.colors.filter(c => c.price === 0 || state.ownedItems.includes(c.id)).map(c => c.color);
+    container.innerHTML = gameSetup.players.map((p, i) => `
+        <div class="player-setup-card glass">
+            <div class="player-setup-header">
+                <div class="player-avatar-preview" style="background:${p.color}30; border:2px solid ${p.color};">${p.avatar}</div>
+                <span>Игрок ${i+1}</span>
+                ${i === 0 ? '<span style="font-size:10px; opacity:0.5;">(вы)</span>' : ''}
+            </div>
+            <div class="player-config">
+                <div class="config-row">
+                    <label>Имя</label>
+                    <input class="neon-input" value="${p.name}" maxlength="20" onchange="updateSetupPlayer(${i}, 'name', this.value)">
+                </div>
+                <div class="config-row">
+                    <label>Аватар</label>
+                    <div class="avatar-grid" style="max-height:160px;">
+                        ${ownedAvatars.map(a => `
+                            <div class="avatar-option ${p.avatar === a ? 'selected' : ''}" onclick="updateSetupPlayer(${i}, 'avatar', '${a}')">${a}</div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="config-row">
+                    <label>Цвет</label>
+                    <div class="color-grid" style="max-height:110px;">
+                        ${ownedColors.map(c => `
+                            <div class="color-option ${p.color === c ? 'selected' : ''}" style="background:${c}; color:${c.startsWith('linear')?'#fff':c};" onclick="updateSetupPlayer(${i}, 'color', '${c}')"></div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+function updateSetupPlayer(index, field, value) {
+    if (index === 0 && field === 'name') {
+        state.playerName = value.trim() || 'Игрок 1';
+        saveState();
+    }
+    gameSetup.players[index][field] = value;
+    renderPlayerCards();
+    SoundEngine.click();
+}
+function goToWordsInput() {
+    if (gameSetup.players.some(p => !p.name.trim())) {
+        showNotification('Заполните имена!', 'warning', 'warning'); return;
+    }
+    state.lastGameConfig = { isSinglePlayer:false, isBot:false, players:gameSetup.players.map(p=>({...p})) };
+    showWordsInputScreen();
+}
+function showWordsInputScreen() {
+    showScreen('wordsInputScreen');
+    document.getElementById('wordsList').innerHTML = '';
+    addWordInput();
+    addWordInput();
+}
+function backFromWordsInput() {
+    if (gameSetup.isSinglePlayer || gameSetup.isBot) showScreen('gameModeScreen');
+    else showScreen('setupScreen');
+}
+function addWordInput() {
+    const list = document.getElementById('wordsList');
+    if (list.children.length >= 4) { showNotification('Максимум 4 слова!', 'warning', 'warning'); return; }
+    const count = list.children.length;
+    const row = document.createElement('div');
+    row.className = 'word-input-row';
+    row.innerHTML = `
+        <input class="neon-input word-input" placeholder="Слово ${count+1}" maxlength="20">
+        ${count >= 2 ? `<button class="remove-word-btn" onclick="this.parentElement.remove(); SoundEngine.click();">
+            <span class="material-icons">close</span>
+        </button>` : ''}
+    `;
+    list.appendChild(row);
+}
+
+/* ============ START GAME ============ */
+function startGameWithWords() {
+    const inputs = document.querySelectorAll('.word-input');
+    const words = [];
+    inputs.forEach(inp => {
+        const w = inp.value.trim().toLowerCase();
+        if (w) words.push(w);
+    });
+    if (words.length < 2) { showNotification('Минимум 2 слова!', 'warning', 'warning'); SoundEngine.error(); return; }
+    if (words.length > 4) { showNotification('Максимум 4 слова!', 'warning', 'warning'); return; }
+    for (const w of words) {
+        if (!/^[а-яёa-z]+$/i.test(w)) { showNotification('Только буквы!', 'warning', 'warning'); SoundEngine.error(); return; }
+    }
+    const letterCounts = {};
+    words.forEach(w => { for (const ch of w) letterCounts[ch] = (letterCounts[ch]||0) + 1; });
+    const wordLimit = words.length * words.length;
+    refreshWheelState();
+
+    state.game = {
+        sourceWords:words, wordLimit, wordCount:0,
+        letterCounts:{...letterCounts}, availableLetters:{...letterCounts},
+        players: gameSetup.players.map(p => ({
+            ...p, score:0, surrenderCount:0, eliminated:false, words:[], combo:0
+        })),
+        currentPlayerIndex:0,
+        currentLetters:[],
+        cursorPosition:0,
+        isSinglePlayer:gameSetup.isSinglePlayer, isBot:gameSetup.isBot,
+        gameOver:false, wordsMade:[], allWordsUsed:new Set(words),
+        bonusLetterAvailable:false, bonusLetter:null, comboStreak:0,
+        botThinking:false
+    };
+    showScreen('gameScreen');
+    renderGame();
+    if (state.game.players[0].isBot) setTimeout(() => botTurn(), 800);
+}
+
+/* ============ GAME RENDERING ============ */
+function renderGame() {
+    const g = state.game;
+    if (!g) return;
+    renderScoreboard();
+    renderTurnIndicator();
+    renderProgress();
+    renderCurrentWord();
+    renderKeyboard();
+    renderWordsMade();
+    renderBoosts();
+    renderCursorControls();
+    updateBalanceDisplay();
+    applyKeyboardStyle();
+    setupDragAndDrop();
+}
+
+function applyKeyboardStyle() {
+    const item = SHOP_ITEMS.keyboards.find(k => k.id === state.selectedKeyboard);
+    const kb = document.getElementById('keyboard');
+    if (!kb || !item) return;
+    kb.querySelectorAll('.key-btn').forEach(btn => {
+        btn.style.background = ''; btn.style.borderColor = ''; btn.style.boxShadow = '';
+        switch(item.style) {
+            case 'neon': btn.style.background='rgba(0,240,255,0.12)'; btn.style.borderColor='rgba(0,240,255,0.5)'; btn.style.boxShadow='0 0 8px rgba(0,240,255,0.2)'; break;
+            case 'dark': btn.style.background='rgba(0,0,0,0.4)'; btn.style.borderColor='#333'; break;
+            case 'gold': btn.style.background='rgba(255,215,0,0.12)'; btn.style.borderColor='rgba(255,215,0,0.5)'; break;
+            case 'rainbow': btn.style.background='linear-gradient(135deg,rgba(255,0,80,0.15),rgba(255,215,0,0.15),rgba(0,255,136,0.15),rgba(0,240,255,0.15))'; btn.style.borderColor='rgba(255,255,255,0.3)'; break;
+            case 'emerald': btn.style.background='rgba(0,255,136,0.12)'; btn.style.borderColor='rgba(0,255,136,0.5)'; break;
+            case 'sunset': btn.style.background='linear-gradient(135deg,rgba(255,107,0,0.2),rgba(255,0,229,0.2))'; btn.style.borderColor='rgba(255,107,0,0.5)'; break;
+            case 'ocean': btn.style.background='linear-gradient(135deg,rgba(0,100,200,0.2),rgba(0,200,255,0.15))'; btn.style.borderColor='rgba(0,153,255,0.6)'; break;
+            case 'fire': btn.style.background='linear-gradient(135deg,rgba(255,100,0,0.25),rgba(255,50,0,0.2))'; btn.style.borderColor='rgba(255,68,0,0.6)'; break;
+            case 'forest': btn.style.background='linear-gradient(135deg,rgba(0,100,0,0.2),rgba(100,200,0,0.15))'; btn.style.borderColor='rgba(34,139,34,0.6)'; break;
+            case 'ice': btn.style.background='linear-gradient(135deg,rgba(200,240,255,0.2),rgba(150,200,255,0.15))'; btn.style.borderColor='rgba(170,221,255,0.6)'; break;
+            case 'sakura': btn.style.background='linear-gradient(135deg,rgba(255,182,193,0.25),rgba(255,105,180,0.2))'; btn.style.borderColor='rgba(255,182,193,0.6)'; break;
+            case 'galaxy': btn.style.background='linear-gradient(135deg,rgba(80,0,150,0.25),rgba(255,0,200,0.2))'; btn.style.borderColor='rgba(157,0,255,0.6)'; break;
+            case 'retro': btn.style.background='linear-gradient(135deg,rgba(255,215,0,0.2),rgba(0,240,255,0.2))'; btn.style.borderColor='rgba(255,215,0,0.6)'; break;
+            case 'crystal': btn.style.background='linear-gradient(135deg,rgba(200,255,255,0.2),rgba(150,220,255,0.15))'; btn.style.borderColor='rgba(192,255,255,0.7)'; break;
+            case 'metal': btn.style.background='linear-gradient(135deg,rgba(120,120,140,0.25),rgba(200,200,220,0.2))'; btn.style.borderColor='rgba(136,136,170,0.6)'; break;
+            case 'cyber': btn.style.background='linear-gradient(135deg,rgba(0,255,200,0.2),rgba(255,0,150,0.15))'; btn.style.borderColor='rgba(0,255,204,0.6)'; break;
+            case 'royal': btn.style.background='linear-gradient(135deg,rgba(80,0,120,0.25),rgba(200,150,0,0.2))'; btn.style.borderColor='rgba(255,215,0,0.7)'; break;
+            case 'legendary': btn.style.background='linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,100,0,0.2))'; btn.style.borderColor='rgba(255,215,0,0.8)'; btn.style.boxShadow='0 0 12px rgba(255,215,0,0.4)'; break;
+            case 'mythic': btn.style.background='linear-gradient(135deg,rgba(157,0,255,0.3),rgba(255,0,229,0.2),rgba(0,240,255,0.2))'; btn.style.borderColor='rgba(255,0,229,0.7)'; break;
+            case 'diamond': btn.style.background='linear-gradient(135deg,rgba(200,255,255,0.35),rgba(150,200,255,0.25))'; btn.style.borderColor='rgba(208,255,255,0.8)'; btn.style.boxShadow='0 0 15px rgba(208,255,255,0.5)'; break;
+            case 'cosmic': btn.style.background='radial-gradient(circle,rgba(80,0,150,0.5),rgba(0,0,30,0.7))'; btn.style.borderColor='rgba(157,0,255,0.8)'; btn.style.boxShadow='0 0 15px rgba(157,0,255,0.5)'; break;
+            case 'eternal': btn.style.background='linear-gradient(135deg,#ffd700,#ff00e5,#00f0ff,#ffd700)'; btn.style.borderColor='#fff'; btn.style.boxShadow='0 0 20px rgba(255,215,0,0.7)'; break;
+        }
+    });
+}
+
+function renderScoreboard() {
+    const g = state.game;
+    document.getElementById('gameScoreboard').innerHTML = g.players.map((p, i) => `
+        <div class="player-score-card ${i === g.currentPlayerIndex && !g.gameOver ? 'active-turn' : ''} ${p.eliminated ? 'eliminated' : ''}">
+            <div class="score-avatar" style="background:${p.color}30; border:1px solid ${p.color};">${p.avatar}</div>
+            <div class="score-info">
+                <div class="score-name">${p.name}</div>
+                <div class="score-coins">
+                    <span class="material-icons">paid</span> ${p.score}
+                    ${p.combo >= 3 ? `<span class="combo-badge">x${p.combo}</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderTurnIndicator() {
+    const g = state.game;
+    const el = document.getElementById('turnIndicator');
+    if (g.gameOver) { el.innerHTML = '<span class="material-icons" style="color:#ffd700;">emoji_events</span> Игра окончена'; return; }
+    if (g.wordCount >= g.wordLimit) { el.innerHTML = '<span class="material-icons" style="color:#ffd700;">flag</span> Лимит слов!'; return; }
+    const p = g.players[g.currentPlayerIndex];
+    if (p.isBot) {
+        el.innerHTML = `<div class="bot-thinking"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Бот думает...</div>`;
+    } else {
+        const combo = p.combo >= 2 ? ` 🔥x${p.combo}` : '';
+        el.innerHTML = `<span class="material-icons" style="color:${p.color}; font-size:16px;">person</span> <strong style="color:${p.color};">${p.name}</strong>${combo}`;
+    }
+}
+
+function renderProgress() {
+    const g = state.game;
+    document.getElementById('progressCurrent').textContent = g.wordCount;
+    document.getElementById('progressTotal').textContent = g.wordLimit;
+    const el = document.getElementById('gameProgress');
+    if (g.wordCount >= g.wordLimit) el.classList.add('limit-reached');
+    else el.classList.remove('limit-reached');
+}
+
+function renderCurrentWord() {
+    const g = state.game;
+    const display = document.getElementById('currentWordDisplay');
+    if (!g) return;
+    if (g.currentLetters.length === 0) {
+        display.innerHTML = '<span class="current-word-placeholder">Перетащите буквы сюда или нажмите...</span>';
+    } else {
+        const player = g.players[g.currentPlayerIndex];
+        const cursorColor = player?.color || '#00f0ff';
+        const cursorPos = Math.min(g.cursorPosition ?? g.currentLetters.length, g.currentLetters.length);
+        let html = '';
+        g.currentLetters.forEach((ch, i) => {
+            if (i === cursorPos) {
+                html += `<div class="insert-cursor" style="background:${cursorColor}; color:${cursorColor};"></div>`;
+            }
+            html += `<div class="current-word-letter" data-index="${i}" draggable="true">${ch}</div>`;
+        });
+        if (cursorPos === g.currentLetters.length) {
+            html += `<div class="insert-cursor" style="background:${cursorColor}; color:${cursorColor};"></div>`;
+        }
+        display.innerHTML = html;
+    }
+    display.querySelectorAll('.current-word-letter').forEach(el => {
+        el.addEventListener('click', (e) => {
+            if (e.defaultPrevented) return;
+            if (el.dataset.dragMoved === 'true') { el.dataset.dragMoved = 'false'; return; }
+            removeLetter(parseInt(el.dataset.index));
+        });
+    });
+}
+
+function renderKeyboard() {
+    const g = state.game;
+    const kb = document.getElementById('keyboard');
+    if (g.gameOver || g.wordCount >= g.wordLimit) { kb.innerHTML = ''; return; }
+    const letters = Object.keys(g.letterCounts).sort();
+    const isBotTurn = g.players[g.currentPlayerIndex]?.isBot;
+    kb.innerHTML = letters.map(ch => {
+        const avail = g.availableLetters[ch] || 0;
+        const total = g.letterCounts[ch];
+        const disabled = avail <= 0 || isBotTurn;
+        return `
+            <button class="key-btn" data-letter="${ch}" onclick="pressLetter('${ch}', event)" ${disabled ? 'disabled' : ''} draggable="${disabled ? 'false' : 'true'}">
+                ${ch.toUpperCase()}
+                ${total > 1 ? `<span class="key-count">${avail}</span>` : ''}
+            </button>
+        `;
+    }).join('');
+    applyKeyboardStyle();
+    setupKeyDrag();
+}
+
+function renderWordsMade() {
+    const g = state.game;
+    const list = document.getElementById('wordsMadeList');
+    if (g.wordsMade.length === 0) list.innerHTML = '<span style="opacity:0.4; font-size:11px;">Слова появятся здесь</span>';
+    else list.innerHTML = g.wordsMade.map(w => `<span class="word-chip">${w}</span>`).join('');
+}
+
+/* Курсор управления */
+function renderCursorControls() {
+    const g = state.game;
+    const controls = document.getElementById('cursorControls');
+    const label = document.getElementById('cursorPositionLabel');
+    if (!g || g.gameOver || g.currentLetters.length === 0) {
+        if (controls) controls.style.display = 'none';
+        return;
+    }
+    if (controls) controls.style.display = 'flex';
+    const pos = Math.min(g.cursorPosition ?? g.currentLetters.length, g.currentLetters.length);
+    if (label) label.textContent = `${pos + 1} / ${g.currentLetters.length + 1}`;
+}
+
+function moveCursorHome() { 
+    if (!state.game) return;
+    state.game.cursorPosition = 0;
+    renderCurrentWord();
+    renderCursorControls();
+    SoundEngine.click();
+}
+function moveCursorLeft() {
+    if (!state.game) return;
+    state.game.cursorPosition = Math.max(0, (state.game.cursorPosition ?? state.game.currentLetters.length) - 1);
+    renderCurrentWord();
+    renderCursorControls();
+    SoundEngine.click();
+}
+function moveCursorRight() {
+    if (!state.game) return;
+    state.game.cursorPosition = Math.min(state.game.currentLetters.length, (state.game.cursorPosition ?? 0) + 1);
+    renderCurrentWord();
+    renderCursorControls();
+    SoundEngine.click();
+}
+function moveCursorEnd() {
+    if (!state.game) return;
+    state.game.cursorPosition = state.game.currentLetters.length;
+    renderCurrentWord();
+    renderCursorControls();
+    SoundEngine.click();
+}
+
+/* ============ DRAG AND DROP ============ */
+let touchDragEl = null;
+
+function setupKeyDrag() {
+    const kb = document.getElementById('keyboard');
+    if (!kb) return;
+    kb.querySelectorAll('.key-btn[draggable="true"]').forEach(btn => {
+        btn.addEventListener('dragstart', (e) => {
+            const ch = btn.dataset.letter;
+            if (!ch) return;
+            e.dataTransfer.setData('text/plain', ch);
+            e.dataTransfer.setData('source', 'keyboard');
+            e.dataTransfer.effectAllowed = 'copy';
+        });
+        btn.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse') return;
+            const g = state.game;
+            if (!g || g.gameOver) return;
+            if (g.players[g.currentPlayerIndex]?.isBot) return;
+            const ch = btn.dataset.letter;
+            if (!ch || (g.availableLetters[ch]||0) <= 0) return;
+            startTouchDrag(e, ch, 'keyboard', null);
+        });
+    });
+}
+
+function setupDragAndDrop() {
+    const board = document.getElementById('currentWordDisplay');
+    if (!board) return;
+
+    board.querySelectorAll('.current-word-letter').forEach(letterEl => {
+        letterEl.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', letterEl.textContent.trim());
+            e.dataTransfer.setData('source', 'board');
+            e.dataTransfer.setData('boardIndex', letterEl.dataset.index);
+            e.dataTransfer.effectAllowed = 'move';
+            letterEl.classList.add('dragging');
+            letterEl.dataset.dragMoved = 'true';
+        });
+        letterEl.addEventListener('dragend', () => {
+            letterEl.classList.remove('dragging');
+            setTimeout(() => { letterEl.dataset.dragMoved = 'false'; }, 100);
+        });
+        letterEl.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            letterEl.classList.add('drop-target');
+        });
+        letterEl.addEventListener('dragleave', () => letterEl.classList.remove('drop-target'));
+        letterEl.addEventListener('drop', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            letterEl.classList.remove('drop-target');
+            const source = e.dataTransfer.getData('source');
+            const targetIdx = parseInt(letterEl.dataset.index);
+            const g = state.game;
+            if (!g || g.players[g.currentPlayerIndex]?.isBot) return;
+            if (source === 'board') {
+                const fromIdx = parseInt(e.dataTransfer.getData('boardIndex'));
+                if (fromIdx === targetIdx) return;
+                const [moved] = g.currentLetters.splice(fromIdx, 1);
+                g.currentLetters.splice(targetIdx, 0, moved);
+                SoundEngine.click();
+                renderCurrentWord();
+                renderCursorControls();
+                setupDragAndDrop();
+            }
+        });
+        letterEl.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse') return;
+            const g = state.game;
+            if (!g || g.gameOver || g.players[g.currentPlayerIndex]?.isBot) return;
+            startTouchDrag(e, letterEl.textContent.trim(), 'board', parseInt(letterEl.dataset.index));
+        });
+    });
+
+    if (!board._dropSetup) {
+        board._dropSetup = true;
+        board.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            board.classList.add('drop-active');
+            e.dataTransfer.dropEffect = 'copy';
+        });
+        board.addEventListener('dragleave', (e) => {
+            if (e.target === board) board.classList.remove('drop-active');
+        });
+        board.addEventListener('drop', (e) => {
+            e.preventDefault();
+            board.classList.remove('drop-active');
+            const ch = e.dataTransfer.getData('text/plain');
+            const source = e.dataTransfer.getData('source');
+            if (!ch) return;
+            const g = state.game;
+            if (!g || g.gameOver || g.wordCount >= g.wordLimit) return;
+            if (g.players[g.currentPlayerIndex]?.isBot) return;
+            if (source === 'keyboard') {
+                if ((g.availableLetters[ch] || 0) <= 0) return;
+                const pos = g.cursorPosition ?? g.currentLetters.length;
+                g.availableLetters[ch]--;
+                g.currentLetters.splice(pos, 0, ch);
+                g.cursorPosition = pos + 1;
+                SoundEngine.fly();
+                renderCurrentWord();
+                renderKeyboard();
+                renderCursorControls();
+                setupDragAndDrop();
+            }
+        });
+    }
+}
+
+function startTouchDrag(e, ch, source, boardIndex) {
+    e.preventDefault();
+    const g = state.game;
+    if (!g) return;
+
+    const ghost = document.createElement('div');
+    ghost.className = 'current-word-letter touch-dragging';
+    ghost.textContent = ch;
+    ghost.style.left = (e.clientX - 22) + 'px';
+    ghost.style.top = (e.clientY - 26) + 'px';
+    ghost.style.width = '44px';
+    ghost.style.height = '52px';
+    document.body.appendChild(ghost);
+
+    const startX = e.clientX, startY = e.clientY;
+    let moved = false;
+
+    const onMove = (ev) => {
+        ev.preventDefault();
+        if (Math.abs(ev.clientX - startX) > 5 || Math.abs(ev.clientY - startY) > 5) moved = true;
+        ghost.style.left = (ev.clientX - 22) + 'px';
+        ghost.style.top = (ev.clientY - 26) + 'px';
+
+        document.querySelectorAll('.current-word-letter').forEach(el => el.classList.remove('drop-target'));
+        const elemBelow = document.elementFromPoint(ev.clientX, ev.clientY);
+        if (elemBelow) {
+            const target = elemBelow.closest('.current-word-letter');
+            if (target) target.classList.add('drop-target');
+        }
+        const board = document.getElementById('currentWordDisplay');
+        if (board) {
+            const rect = board.getBoundingClientRect();
+            if (ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
+                board.classList.add('drop-active');
+            } else {
+                board.classList.remove('drop-active');
+            }
+        }
+    };
+
+    const onUp = (ev) => {
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+        document.removeEventListener('pointercancel', onUp);
+        ghost.remove();
+        document.querySelectorAll('.current-word-letter').forEach(el => el.classList.remove('drop-target'));
+        const board = document.getElementById('currentWordDisplay');
+        if (board) board.classList.remove('drop-active');
+
+        if (!moved) return;
+
+        const elemBelow = document.elementFromPoint(ev.clientX, ev.clientY);
+        if (!elemBelow) return;
+
+        const boardRect = board ? board.getBoundingClientRect() : null;
+        const overBoard = boardRect && ev.clientX >= boardRect.left && ev.clientX <= boardRect.right 
+                        && ev.clientY >= boardRect.top && ev.clientY <= boardRect.bottom;
+
+        if (source === 'keyboard' && overBoard) {
+            if ((g.availableLetters[ch] || 0) > 0) {
+                // Вставляем в позицию курсора
+                const pos = g.cursorPosition ?? g.currentLetters.length;
+                g.availableLetters[ch]--;
+                g.currentLetters.splice(pos, 0, ch);
+                g.cursorPosition = pos + 1;
+                SoundEngine.fly();
+                renderCurrentWord();
+                renderKeyboard();
+                renderCursorControls();
+                setupDragAndDrop();
+            }
+        } else if (source === 'board') {
+            const targetLetter = elemBelow.closest('.current-word-letter');
+            if (targetLetter && overBoard) {
+                const targetIdx = parseInt(targetLetter.dataset.index);
+                if (targetIdx !== boardIndex && !isNaN(targetIdx)) {
+                    const [moved2] = g.currentLetters.splice(boardIndex, 1);
+                    g.currentLetters.splice(targetIdx, 0, moved2);
+                    SoundEngine.click();
+                    renderCurrentWord();
+                    renderCursorControls();
+                    setupDragAndDrop();
+                }
+            } else if (!overBoard) {
+                removeLetter(boardIndex);
+            }
+        }
+    };
+
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+}
+
+function animateLetterFly(fromEl, ch) {
+    if (!state.animationsEnabled || !fromEl) return;
+    const rect = fromEl.getBoundingClientRect();
+    const fly = document.createElement('div');
+    fly.className = 'flying-letter';
+    fly.style.left = rect.left + 'px';
+    fly.style.top = rect.top + 'px';
+    fly.style.width = rect.width + 'px';
+    fly.style.height = rect.height + 'px';
+    fly.textContent = ch.toUpperCase();
+    document.body.appendChild(fly);
+    const target = document.getElementById('currentWordDisplay');
+    if (target) {
+        const tr = target.getBoundingClientRect();
+        requestAnimationFrame(() => {
+            fly.style.left = (tr.left + tr.width/2 - 20) + 'px';
+            fly.style.top = (tr.top + tr.height/2 - 20) + 'px';
+            fly.style.transform = 'scale(0.6) rotate(360deg)';
+            fly.style.opacity = '0.3';
+        });
+    }
+    setTimeout(() => fly.remove(), 500);
+}
+function animateLetterFlyBack(letterEl, ch) {
+    if (!state.animationsEnabled || !letterEl) return;
+    const rect = letterEl.getBoundingClientRect();
+    const fly = document.createElement('div');
+    fly.className = 'flying-letter';
+    fly.style.left = rect.left + 'px';
+    fly.style.top = rect.top + 'px';
+    fly.style.width = rect.width + 'px';
+    fly.style.height = rect.height + 'px';
+    fly.textContent = ch.toUpperCase();
+    document.body.appendChild(fly);
+    const kb = document.getElementById('keyboard');
+    let targetBtn = null;
+    if (kb) for (const btn of kb.querySelectorAll('.key-btn')) {
+        if (btn.dataset.letter === ch) { targetBtn = btn; break; }
+    }
+    if (targetBtn) {
+        const tr = targetBtn.getBoundingClientRect();
+        requestAnimationFrame(() => {
+            fly.style.left = tr.left + 'px';
+            fly.style.top = tr.top + 'px';
+            fly.style.transform = 'scale(0.6) rotate(-360deg)';
+            fly.style.opacity = '0.3';
+        });
+    }
+    setTimeout(() => fly.remove(), 500);
+}
+
+function pressLetter(ch, event) {
+    const g = state.game;
+    if (!g || g.gameOver || g.wordCount >= g.wordLimit) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    if ((g.availableLetters[ch] || 0) <= 0) return;
+    if (event && event.target) {
+        const btn = event.target.closest('.key-btn');
+        if (btn) animateLetterFly(btn, ch);
+    }
+    // Вставляем в позицию курсора!
+    const pos = g.cursorPosition ?? g.currentLetters.length;
+    g.availableLetters[ch]--;
+    g.currentLetters.splice(pos, 0, ch);
+    g.cursorPosition = pos + 1;
+    SoundEngine.fly();
+    renderCurrentWord();
+    renderKeyboard();
+    renderCursorControls();
+    setupDragAndDrop();
+}
+
+function removeLetter(index) {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    const ch = g.currentLetters[index];
+    const letterEl = document.querySelector(`.current-word-letter[data-index="${index}"]`);
+    if (letterEl) animateLetterFlyBack(letterEl, ch);
+    g.availableLetters[ch] = (g.availableLetters[ch] || 0) + 1;
+    g.currentLetters.splice(index, 1);
+    // Корректируем курсор
+    if (g.cursorPosition > index) g.cursorPosition--;
+    if (g.cursorPosition > g.currentLetters.length) g.cursorPosition = g.currentLetters.length;
+    SoundEngine.click();
+    renderCurrentWord();
+    renderKeyboard();
+    renderCursorControls();
+    setupDragAndDrop();
+}
+
+function shuffleLetters() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    SoundEngine.click();
+    const avail = { ...g.letterCounts };
+    for (const ch of g.currentLetters) avail[ch] = (avail[ch]||1) - 1;
+    g.availableLetters = avail;
+    renderKeyboard();
+    setupDragAndDrop();
+    showNotification('Буквы перемешаны', 'shuffle');
+}
+
+/* ============ SUBMIT WORD ============ */
+let pendingWordNotFound = null;
+
+function submitWord() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    if (g.wordCount >= g.wordLimit) { showNotification('Лимит слов!', 'warning', 'warning'); return; }
+    if (g.currentLetters.length === 0) { showNotification('Составьте слово!', 'warning', 'warning'); SoundEngine.error(); return; }
+    if (g.currentLetters.length < 2) { showNotification('Минимум 2 буквы!', 'warning', 'warning'); SoundEngine.error(); return; }
+
+    const word = g.currentLetters.join('').toLowerCase();
+    if (g.allWordsUsed.has(word)) {
+        showNotification(`«${word}» уже использовалось!`, 'block', 'error');
+        SoundEngine.error();
+        return;
+    }
+    if (!isValidWord(word)) {
+        pendingWordNotFound = word;
+        document.getElementById('notFoundWordText').textContent = `«${word}»`;
+        document.getElementById('notFoundWordPreview').textContent = word.split('').join(' ');
+        document.getElementById('wordNotFoundModal').classList.add('active');
+        SoundEngine.error();
+        return;
+    }
+    const wasInCustom = CUSTOM_DICTIONARY.has(word);
+    acceptWord(word, wasInCustom);
+}
+
+/* ВАЖНОЕ ИСПРАВЛЕНИЕ: сначала acceptWord, потом close */
+function addWordToCustomDictionaryFromModal() {
+    if (!pendingWordNotFound) { closeWordNotFound(); return; }
+    const word = pendingWordNotFound;
+    // Сохраняем локально, чтобы не потерять после сброса pending
+    const alreadyInBase = isInBaseDictionary(word);
+    const alreadyInCustom = CUSTOM_DICTIONARY.has(word);
+
+    if (!alreadyInBase && !alreadyInCustom) {
+        addWordToCustomDictionary(word);
+        showNotification(`«${word}» в вашем словаре!`, 'book', 'success');
+        SoundEngine.success();
+    } else if (alreadyInCustom) {
+        showNotification('Уже в вашем словаре', 'info', 'warning');
+    }
+
+    // Закрываем модалку и сбрасываем pending
+    pendingWordNotFound = null;
+    document.getElementById('wordNotFoundModal').classList.remove('active');
+
+    // И засчитываем слово в текущей игре
+    acceptWord(word, true);
+}
+
+function submitWordAnyway() {
+    if (!pendingWordNotFound) { closeWordNotFound(); return; }
+    const word = pendingWordNotFound;
+    pendingWordNotFound = null;
+    document.getElementById('wordNotFoundModal').classList.remove('active');
+    acceptWord(word, false);
+}
+
+function closeWordNotFound() {
+    pendingWordNotFound = null;
+    document.getElementById('wordNotFoundModal').classList.remove('active');
+}
+
+function acceptWord(word, wasInCustom) {
+    const g = state.game;
+    if (!g) return;
+
+    const player = g.players[g.currentPlayerIndex];
+    player.combo = (player.combo || 0) + 1;
+    if (player.combo > (state.maxCombo || 0)) state.maxCombo = player.combo;
+
+    let points = word.length * 5;
+    if (player.combo >= 3) {
+        points = Math.floor(points * 1.5);
+        SoundEngine.combo();
+        showNotification(`🔥 Комбо x${player.combo}! +50%`, 'whatshot', 'success');
+    }
+
+    player.score += points;
+    player.words.push(word);
+    g.wordsMade.push(word);
+    g.allWordsUsed.add(word);
+    g.wordCount++;
+
+    if (word.length > state.longestWord) state.longestWord = word.length;
+    state.totalWordsMade++;
+    state.totalCoinsEarned += points;
+
+    SoundEngine.success();
+    if (player.combo < 3) showNotification(`«${word}» — +${points}!`, 'check_circle', 'success');
+
+    addQuestProgress('make_words', 1);
+    addQuestProgress('make_10_words', 1);
+    if (word.length >= 6) addQuestProgress('long_word', 1);
+    if (wasInCustom) addQuestProgress('use_custom', 1);
+
+    g.currentLetters = [];
+    g.cursorPosition = 0;
+    g.availableLetters = { ...g.letterCounts };
+
+    if (g.wordCount >= g.wordLimit) { endGame(); return; }
+
+    nextPlayer();
+    saveState();
+    updateBalanceDisplay();
+    renderGame();
+
+    if (g.players[g.currentPlayerIndex]?.isBot) setTimeout(() => botTurn(), 800);
+}
+
+function nextPlayer() {
+    const g = state.game;
+    const active = g.players.filter(p => !p.eliminated);
+    if (active.length <= 1 && g.players.length > 1) { endGame(); return; }
+    let next = (g.currentPlayerIndex + 1) % g.players.length;
+    let tries = 0;
+    while (g.players[next].eliminated && tries < g.players.length) {
+        next = (next + 1) % g.players.length;
+        tries++;
+    }
+    g.currentPlayerIndex = next;
+    g.cursorPosition = 0;
+}
+
+/* ============ BOT ============ */
+function findBotWords(letters, usedWords, maxWords = 5) {
+    const letterPool = { ...letters };
+    const results = [];
+    for (const word of BASE_DICTIONARY) {
+        if (word.length < 2) continue;
+        if (usedWords.has(word)) continue;
+        if (results.length >= maxWords * 4) break;
+        const temp = { ...letterPool };
+        let canMake = true;
+        for (const ch of word) {
+            if (!temp[ch] || temp[ch] <= 0) { canMake = false; break; }
+            temp[ch]--;
+        }
+        if (canMake) results.push(word);
+    }
+    results.sort((a, b) => b.length - a.length);
+    return results.slice(0, maxWords);
+}
+
+function botTurn() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (!g.players[g.currentPlayerIndex]?.isBot) return;
+    if (g.wordCount >= g.wordLimit) { endGame(); return; }
+
+    // Бот "думает"
+    g.botThinking = true;
+    renderTurnIndicator();
+
+    // Небольшая задержка "раздумий" — случайная 1.5-3 сек
+    const thinkTime = 1500 + Math.random() * 1500;
+
+    setTimeout(() => {
+        if (!state.game || state.game !== g || g.gameOver) { g.botThinking = false; return; }
+
+        const used = new Set(g.allWordsUsed);
+        const found = findBotWords(g.letterCounts, used, 5);
+
+        if (found.length === 0) {
+            g.botThinking = false;
+            const bot = g.players[g.currentPlayerIndex];
+            bot.surrenderCount++;
+            if (bot.surrenderCount >= 2) {
+                bot.eliminated = true;
+                showNotification(`Бот выбывает!`, 'flag', 'warning');
+            } else {
+                showNotification(`Бот не нашёл (${bot.surrenderCount}/2)`, 'warning', 'warning');
+            }
+            SoundEngine.error();
+            nextPlayer();
+            renderGame();
+            if (g.players[g.currentPlayerIndex]?.isBot) setTimeout(() => botTurn(), 800);
+            return;
+        }
+
+        const word = found[0];
+        let points = word.length * 5;
+        const bot = g.players[g.currentPlayerIndex];
+        bot.combo = (bot.combo || 0) + 1;
+        if (bot.combo >= 3) { points = Math.floor(points * 1.5); SoundEngine.combo(); }
+        bot.score += points;
+        bot.words.push(word);
+        g.wordsMade.push(word);
+        g.allWordsUsed.add(word);
+        g.wordCount++;
+
+        // Показываем, как бот составляет слово (постепенно)
+        g.currentLetters = [];
+        g.cursorPosition = 0;
+        renderCurrentWord();
+
+        const chars = word.split('');
+        let idx = 0;
+        const typeInterval = setInterval(() => {
+            if (idx >= chars.length) {
+                clearInterval(typeInterval);
+                g.botThinking = false;
+                SoundEngine.success();
+                showNotification(`Бот: «${word}» +${points}`, 'smart_toy', 'success');
+
+                setTimeout(() => {
+                    g.currentLetters = [];
+                    g.cursorPosition = 0;
+                    g.availableLetters = { ...g.letterCounts };
+                    renderCurrentWord();
+                    renderKeyboard();
+                    if (g.wordCount >= g.wordLimit) { endGame(); return; }
+                    nextPlayer();
+                    saveState();
+                    updateBalanceDisplay();
+                    renderGame();
+                    if (g.players[g.currentPlayerIndex]?.isBot) setTimeout(() => botTurn(), 800);
+                }, 800);
+                return;
+            }
+            g.currentLetters.push(chars[idx]);
+            g.availableLetters[chars[idx]]--;
+            idx++;
+            SoundEngine.letter();
+            renderCurrentWord();
+        }, 150);
+    }, thinkTime);
+}
+
+/* ============ SURRENDER ============ */
+function surrender() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    if (g.players[g.currentPlayerIndex]?.isBot) return;
+    const player = g.players[g.currentPlayerIndex];
+    const maxSurrenders = g.isSinglePlayer ? 1 : (g.isBot ? 1 : 2);
+    if (player.surrenderCount >= maxSurrenders) {
+        showNotification('Лимит сдач!', 'warning', 'warning');
+        return;
+    }
+    showConfirm('Сдаться?',
+        (g.isSinglePlayer || g.isBot) ? 'Потеряете все монеты за игру!' : `Сдача ${player.surrenderCount+1}/${maxSurrenders}`,
+        () => {
+            player.surrenderCount++;
+            player.combo = 0;
+            if (g.isSinglePlayer || g.isBot) {
+                player.score = 0;
+                showNotification('Вы сдались!', 'flag', 'warning');
+                endGame();
+                return;
+            }
+            if (player.surrenderCount >= 2) {
+                player.eliminated = true;
+                showNotification(`${player.name} выбывает!`, 'flag', 'warning');
+            } else {
+                showNotification(`${player.name} сдался`, 'flag', 'warning');
+            }
+            SoundEngine.error();
+            nextPlayer();
+            renderGame();
+            if (g.players[g.currentPlayerIndex]?.isBot) setTimeout(() => botTurn(), 800);
+        });
+}
+
+/* ============ END GAME ============ */
+function endGame() {
+    const g = state.game;
+    if (!g || g.gameOver) return;
+    g.gameOver = true;
+
+    const sorted = [...g.players].sort((a, b) => b.score - a.score);
+    const winner = sorted[0];
+
+    let coinsToCredit = 0;
+    switch (state.moneyMode) {
+        case 'all': coinsToCredit = g.players.reduce((s, p) => s + p.score, 0); break;
+        case 'winner': coinsToCredit = winner.score; break;
+        case 'first': coinsToCredit = g.players[0].score; break;
+        case 'first_winner':
+            coinsToCredit = (g.players[0] === winner) ? winner.score : (g.players[0].score + winner.score);
+            break;
+        default: coinsToCredit = winner.score;
+    }
+
+    state.totalGames++;
+    if (winner.score > 0) {
+        state.totalWins++;
+        state.winStreak++;
+        if (state.winStreak > state.bestStreak) state.bestStreak = state.winStreak;
+        if (g.isBot && !winner.isBot) state.botWins = (state.botWins || 0) + 1;
+    } else {
+        state.totalLosses++;
+        state.winStreak = 0;
+    }
+
+    state.balance += coinsToCredit;
+    saveState();
+    updateBalanceDisplay();
+
+    if (winner.score > 0) {
+        addQuestProgress('win_game', 1);
+        if (state.maxCombo >= 3) addQuestProgress('combo3', 1);
+        SoundEngine.win();
+        spawnConfetti();
+    }
+
+    renderGameOverModal(sorted, coinsToCredit);
+    renderGame();
+}
+
+function spawnConfetti() {
+    if (!state.animationsEnabled) return;
+    const colors = ['#00f0ff','#ff00e5','#ffd700','#00ff64','#ff6b00','#9d00ff'];
+    for (let i = 0; i < 60; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDelay = Math.random() * 0.5 + 's';
+        c.style.animationDuration = (2 + Math.random()*2) + 's';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+    }
+}
+
+function renderGameOverModal(sorted, coins) {
+    const g = state.game;
+    document.getElementById('gameOverTitle').textContent = g.isSinglePlayer ? 'Игра окончена!' : '🏆 Результаты';
+    const statsHtml = sorted.map((p, i) => `
+        <div class="game-over-row ${i === 0 && p.score > 0 ? 'winner' : ''}">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                <div style="width:32px; height:32px; border-radius:8px; background:${p.color}30; border:1px solid ${p.color}; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">${p.avatar}</div>
+                <div style="min-width:0;">
+                    <div style="font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+                    <div style="font-size:11px; opacity:0.6;">${p.words.length} слов</div>
+                </div>
+            </div>
+            <div style="font-weight:700; color:#ffd700; flex-shrink:0; font-size:13px;">
+                <span class="material-icons" style="font-size:14px; vertical-align:middle;">paid</span> ${p.score}
+            </div>
+        </div>
+    `).join('');
+    document.getElementById('gameOverStats').innerHTML = statsHtml;
+    const rewardDiv = document.getElementById('gameOverReward');
+    const coinsEl = document.getElementById('gameOverCoins');
+    if (coins > 0) {
+        rewardDiv.style.display = 'block';
+        coinsEl.textContent = `+${coins} (${MONEY_MODE_LABELS[state.moneyMode]})`;
+    } else {
+        rewardDiv.style.display = 'none';
+    }
+    document.getElementById('gameOverModal').classList.add('active');
+}
+
+function closeGameOver() {
+    document.getElementById('gameOverModal').classList.remove('active');
+    state.game = null;
+    showScreen('mainMenu');
+}
+function playAgain() {
+    document.getElementById('gameOverModal').classList.remove('active');
+    state.game = null;
+    if (state.lastGameConfig) {
+        gameSetup = {
+            isSinglePlayer: state.lastGameConfig.isSinglePlayer,
+            isBot: state.lastGameConfig.isBot,
+            players: state.lastGameConfig.players.map(p => ({...p}))
+        };
+        showWordsInputScreen();
+    } else showScreen('gameModeScreen');
+}
+
+/* ============ PAUSE ============ */
+function openPause() {
+    if (!state.game) { showScreen('mainMenu'); return; }
+    state.paused = true;
+    document.getElementById('pauseSoundToggle').checked = state.soundEnabled;
+    document.getElementById('pauseThemeToggle').checked = state.darkTheme;
+    document.getElementById('pauseAnimToggle').checked = state.animationsEnabled;
+    document.getElementById('pauseModal').classList.add('active');
+}
+function closePause() {
+    state.paused = false;
+    document.getElementById('pauseModal').classList.remove('active');
+}
+function confirmEndGame() {
+    closePause();
+    showConfirm('Закончить?', 'Монеты за эту игру не начислятся.', () => {
+        state.game = null;
+        showScreen('mainMenu');
+    });
+}
+
+/* ============ CONFIRM ============ */
+let confirmCallback = null;
+function showConfirm(title, text, callback) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmText').textContent = text;
+    confirmCallback = callback;
+    document.getElementById('confirmModal').classList.add('active');
+}
+function confirmAction(yes) {
+    document.getElementById('confirmModal').classList.remove('active');
+    if (yes && confirmCallback) confirmCallback();
+    confirmCallback = null;
+}
+
+/* ============ INIT ============ */
+function init() {
+    loadState();
+
+    document.getElementById('soundToggle').checked = state.soundEnabled;
+    document.getElementById('themeToggle').checked = state.darkTheme;
+    document.getElementById('animToggle').checked = state.animationsEnabled;
+    document.getElementById('playerNameInput').value = state.playerName;
+
+    SoundEngine.enabled = state.soundEnabled;
+    document.body.classList.toggle('light-theme', !state.darkTheme);
+    document.body.classList.toggle('no-animations', !state.animationsEnabled);
+
+    updateBalanceDisplay();
+    renderAvatarGrid();
+    renderColorGrid();
+    renderMoneyModeSlider();
+    updateBadges();
+
+    if (canClaimDailyBonus()) {
+        setTimeout(() => showNotification('Доступен бонус дня! 🎁', 'card_giftcard'), 1000);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const active = document.activeElement;
+            if (active && active.classList.contains('word-input')) {
+                e.preventDefault();
+                const inputs = document.querySelectorAll('.word-input');
+                const idx = Array.from(inputs).indexOf(active);
+                if (idx === inputs.length - 1 && inputs.length < 4) {
+                    addWordInput();
+                    setTimeout(() => {
+                        const n2 = document.querySelectorAll('.word-input');
+                        n2[n2.length-1]?.focus();
+                    }, 50);
+                }
+            }
+        }
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        }
+        // Управление курсором стрелками
+        if (state.game && document.activeElement === document.body) {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); moveCursorLeft(); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); moveCursorRight(); }
+            if (e.key === 'Home') { e.preventDefault(); moveCursorHome(); }
+            if (e.key === 'End') { e.preventDefault(); moveCursorEnd(); }
+        }
+    });
+
+    console.log('💰 Мешок слов v6 — загружено!');
+    console.log('Базовый словарь:', BASE_DICTIONARY.size);
+    console.log('Иконок:', SHOP_ITEMS.avatars.length);
+    console.log('Цветов:', SHOP_ITEMS.colors.length);
+    console.log('Клавиатур:', SHOP_ITEMS.keyboards.length);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
