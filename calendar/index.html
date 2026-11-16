@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Календарь — Quantum ACD</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GSQ1XVY3XW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GSQ1XVY3XW');
+</script>
+
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<style>
+  :root{
+    --md-primary:#ff7a1a;--md-on-primary:#ffffff;
+    --md-primary-container:#ffdcc2;--md-on-primary-container:#2e1500;
+    --md-secondary:#f0a06a;
+    --md-surface:#fff8f4;--md-surface-container:#f7ece4;--md-surface-container-high:#f2e3d8;
+    --md-on-surface:#221a13;--md-on-surface-variant:#5a4a3e;
+    --md-outline:#8d7d70;--md-outline-variant:#dcc8b8;
+    --md-error:#ba1a1a;--md-on-error:#ffffff;
+    --md-scrim:rgba(0,0,0,.32);
+    --radius-xl:28px;--radius-l:20px;--radius-m:14px;
+    --elev-1:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+    --elev-2:0 3px 8px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.10);
+    --elev-3:0 8px 24px rgba(0,0,0,.18);
+    --font:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  html[data-theme="dark"]{
+    --md-primary:#ffb784;--md-on-primary:#4d2600;
+    --md-primary-container:#6b3a00;--md-on-primary-container:#ffdcc2;
+    --md-secondary:#e0b090;
+    --md-surface:#1a120c;--md-surface-container:#241a12;--md-surface-container-high:#2f2219;
+    --md-on-surface:#f2e2d6;--md-on-surface-variant:#d5c2b3;
+    --md-outline:#a08d7d;--md-outline-variant:#4f3f34;
+    --md-error:#ffb4ab;--md-on-error:#690005;
+    --md-scrim:rgba(0,0,0,.55);
+    --elev-1:0 1px 3px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4);
+    --elev-2:0 3px 8px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.4);
+    --elev-3:0 8px 24px rgba(0,0,0,.65);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0;font-family:var(--font);background:var(--md-surface);color:var(--md-on-surface);
+    display:flex;flex-direction:column;transition:background .25s,color .25s;overscroll-behavior:none}
+  .material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24;
+    font-size:24px;user-select:none;display:inline-block;line-height:1;font-feature-settings:'liga'}
+  .appbar{position:sticky;top:0;z-index:20;background:var(--md-surface);
+    padding:14px 16px 8px;display:flex;align-items:center;gap:12px}
+  .appbar h1{font-size:22px;font-weight:500;margin:0;letter-spacing:.1px;flex:1}
+  .appbar .avatar{width:40px;height:40px;border-radius:50%;
+    background:var(--md-primary-container);color:var(--md-on-primary-container);
+    display:grid;place-items:center;font-weight:600;font-size:16px}
+  .screens{flex:1;position:relative;overflow:hidden}
+  .screen{position:absolute;inset:0;overflow-y:auto;padding:0 16px calc(96px + var(--safe-b));
+    opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .22s,transform .22s;
+    -webkit-overflow-scrolling:touch}
+  .screen.active{opacity:1;pointer-events:auto;transform:none}
+  .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--md-surface-container);
+    display:flex;justify-content:space-around;padding:10px 8px calc(10px + var(--safe-b));
+    box-shadow:var(--elev-2);border-top-left-radius:var(--radius-l);border-top-right-radius:var(--radius-l)}
+  .navitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:none;border:none;cursor:pointer;color:var(--md-on-surface-variant);
+    font-family:var(--font);font-size:12px;font-weight:500;padding:6px 0;border-radius:var(--radius-m);
+    transition:color .2s}
+  .navitem .pill{width:64px;height:32px;border-radius:16px;display:grid;place-items:center;
+    transition:background .2s,color .2s}
+  .navitem.active{color:var(--md-on-surface)}
+  .navitem.active .pill{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+  .navitem.active .material-symbols-rounded{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+  .cal-header{display:flex;align-items:baseline;justify-content:space-between;margin:8px 4px 12px}
+  .cal-header .month{font-size:20px;font-weight:600}
+  .cal-header .year{font-size:16px;color:var(--md-on-surface-variant);font-weight:500}
+  .cal-month-nav{display:flex;gap:6px}
+  .iconbtn{background:var(--md-surface-container-high);border:none;border-radius:50%;
+    width:40px;height:40px;display:grid;place-items:center;color:var(--md-on-surface);cursor:pointer;
+    transition:background .2s,transform .1s}
+  .iconbtn:active{transform:scale(.92)}
+  .iconbtn .material-symbols-rounded{font-size:22px}
+  .photo-wrap{width:100%;aspect-ratio:16/9;border-radius:var(--radius-l);overflow:hidden;
+    margin-bottom:16px;background:var(--md-surface-container-high);box-shadow:var(--elev-1);position:relative}
+  .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;color:var(--md-on-surface-variant);
+    background:linear-gradient(135deg,var(--md-primary-container),var(--md-surface-container-high))}
+  .photo-placeholder .material-symbols-rounded{font-size:40px;opacity:.8}
+  .photo-placeholder small{font-size:12px;opacity:.75}
+  .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px}
+  .weekdays div{text-align:center;font-size:12px;font-weight:600;
+    color:var(--md-on-surface-variant);padding:4px 0}
+  .weekdays div:first-child{color:var(--md-error)}
+  .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:18px}
+  .day{position:relative;aspect-ratio:1;border:none;background:none;cursor:pointer;border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:var(--font);font-size:14px;font-weight:500;color:var(--md-on-surface);
+    transition:background .15s}
+  .day:hover{background:var(--md-surface-container)}
+  .day.other{color:var(--md-on-surface-variant);opacity:.45}
+  .day.weekend{color:var(--md-error)}
+  .day.today{background:var(--md-primary);color:var(--md-on-primary);font-weight:700}
+  .day.selected:not(.today){background:var(--md-primary-container);color:var(--md-on-primary-container)}
+  .day .dots{position:absolute;bottom:5px;display:flex;gap:3px}
+  .day .dot{width:5px;height:5px;border-radius:50%}
+  .dot-holiday{background:var(--md-error)}
+  .dot-task{background:var(--md-primary)}
+  .day.today .dot-holiday,.day.today .dot-task{background:#fff}
+  .detail-card{background:var(--md-surface-container);border-radius:var(--radius-l);
+    padding:16px;margin-bottom:16px;box-shadow:var(--elev-1);animation:slideUp .22s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .detail-card h3{margin:0 0 4px;font-size:17px;font-weight:600}
+  .detail-date{font-size:13px;color:var(--md-on-surface-variant);margin-bottom:12px}
+  .section-label{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--md-on-surface-variant);margin:14px 0 6px}
+  .holiday-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px}
+  .holiday-item .h-ico{width:30px;height:30px;border-radius:9px;
+    background:var(--md-primary-container);color:var(--md-on-primary-container);
+    display:grid;place-items:center;flex:0 0 auto}
+  .holiday-item .h-ico .material-symbols-rounded{font-size:18px}
+  .task-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-m);
+    background:var(--md-surface);margin-bottom:6px}
+  .task-row .t-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--md-outline);
+    flex:0 0 auto;cursor:pointer;display:grid;place-items:center}
+  .task-row.done .t-check{background:var(--md-primary);border-color:var(--md-primary);color:var(--md-on-primary)}
+  .task-row.done .t-check .material-symbols-rounded{font-size:14px}
+  .task-row.done .t-title{text-decoration:line-through;opacity:.6}
+  .t-body{flex:1;min-width:0}
+  .t-title{font-size:14px;font-weight:500}
+  .t-time{font-size:12px;color:var(--md-on-surface-variant)}
+  .empty-note{font-size:13px;color:var(--md-on-surface-variant);padding:6px 0;font-style:italic}
+  .add-task-btn{width:100%;margin-top:10px;border:none;cursor:pointer;
+    background:var(--md-primary-container);color:var(--md-on-primary-container);
+    font-family:var(--font);font-weight:600;font-size:14px;padding:12px;border-radius:var(--radius-m);
+    display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
+  .add-task-btn:active{transform:scale(.98)}
+  .add-task-btn .material-symbols-rounded{font-size:18px}
+  .tasks-toolbar{display:flex;align-items:center;gap:8px;margin:8px 0 14px;flex-wrap:wrap}
+  .sort-select{flex:1;min-width:150px;background:var(--md-surface-container-high);border:none;
+    border-radius:var(--radius-m);color:var(--md-on-surface);font-family:var(--font);
+    font-size:13px;padding:10px 36px 10px 12px;cursor:pointer;-webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238d7d70' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center}
+  .fab{position:fixed;right:20px;z-index:25;bottom:calc(96px + var(--safe-b));
+    width:56px;height:56px;border-radius:18px;background:var(--md-primary);color:var(--md-on-primary);
+    border:none;cursor:pointer;display:grid;place-items:center;box-shadow:var(--elev-3);
+    transition:transform .12s}
+  .fab:active{transform:scale(.92)}
+  .fab .material-symbols-rounded{font-size:28px}
+  .sel-toolbar{position:fixed;left:12px;right:12px;z-index:26;bottom:calc(96px + var(--safe-b));
+    background:var(--md-surface-container-high);border-radius:var(--radius-l);padding:8px;
+    display:none;gap:6px;box-shadow:var(--elev-3);align-items:center}
+  .sel-toolbar.show{display:flex}
+  .sel-toolbar button{flex:1;border:none;background:none;cursor:pointer;
+    font-family:var(--font);font-size:12.5px;font-weight:600;padding:8px 4px;border-radius:var(--radius-m);
+    color:var(--md-on-surface);display:flex;flex-direction:column;align-items:center;gap:3px}
+  .sel-toolbar button:active{background:var(--md-surface-container)}
+  .sel-toolbar button.danger{color:var(--md-error)}
+  .sel-toolbar .material-symbols-rounded{font-size:22px}
+  .task-card{display:flex;align-items:flex-start;gap:10px;background:var(--md-surface-container);
+    border-radius:var(--radius-m);padding:12px;margin-bottom:8px;transition:background .15s,transform .1s;
+    position:relative}
+  .task-card:active{transform:scale(.995)}
+  .task-card.selected{background:var(--md-primary-container);outline:2px solid var(--md-primary)}
+  .task-card .tc-main{flex:1;min-width:0;cursor:pointer}
+  .tc-title{font-size:15px;font-weight:500;margin-bottom:3px;word-break:break-word}
+  .tc-title.done{text-decoration:line-through;opacity:.55}
+  .tc-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--md-on-surface-variant)}
+  .tc-chip{background:var(--md-surface-container-high);padding:2px 8px;border-radius:8px}
+  .tc-chip.prio-high{background:var(--md-error);color:var(--md-on-error)}
+  .tc-chip.prio-mid{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+  .menu-btn{background:none;border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;
+    display:grid;place-items:center;flex:0 0 auto;color:var(--md-on-surface-variant)}
+  .menu-btn:active{background:var(--md-surface-container-high)}
+  .menu-btn .material-symbols-rounded{font-size:20px}
+  .ctx-menu{position:fixed;z-index:60;background:var(--md-surface-container-high);
+    border-radius:var(--radius-m);box-shadow:var(--elev-3);padding:6px;min-width:190px;display:none;
+    animation:pop .14s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+  .ctx-menu button{width:100%;display:flex;align-items:center;gap:10px;background:none;border:none;
+    cursor:pointer;font-family:var(--font);font-size:14px;color:var(--md-on-surface);
+    padding:10px 12px;border-radius:8px;text-align:left}
+  .ctx-menu button:active{background:var(--md-surface-container)}
+  .ctx-menu button.danger{color:var(--md-error)}
+  .ctx-menu .material-symbols-rounded{font-size:20px;flex:0 0 auto}
+  .pref-group{margin-bottom:10px}
+  .pref-group-title{font-size:13px;font-weight:700;letter-spacing:.4px;
+    color:var(--md-primary);padding:14px 16px 6px}
+  .pref-card{background:var(--md-surface-container);border-radius:var(--radius-l);overflow:hidden;
+    box-shadow:var(--elev-1)}
+  .pref-item{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:56px;
+    border-bottom:1px solid var(--md-outline-variant);cursor:pointer;background:none;
+    border-left:none;border-right:none;border-top:none;width:100%;text-align:left;
+    font-family:var(--font);color:var(--md-on-surface);transition:background .15s;text-decoration:none}
+  .pref-item:last-child{border-bottom:none}
+  .pref-item:active{background:var(--md-surface-container-high)}
+  .pref-item .p-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+    flex:0 0 auto;background:var(--md-primary-container);color:var(--md-on-primary-container)}
+  .pref-item .p-ico .material-symbols-rounded{font-size:20px}
+  .pref-item .p-body{flex:1;min-width:0}
+  .p-title{font-size:15px;font-weight:500}
+  .p-summary{font-size:12.5px;color:var(--md-on-surface-variant);margin-top:2px;line-height:1.35}
+  .pref-item .p-end{color:var(--md-on-surface-variant);flex:0 0 auto;display:flex;align-items:center;gap:6px}
+  .p-end .material-symbols-rounded{font-size:20px}
+  .segmented{display:flex;gap:4px;background:var(--md-surface-container-high);
+    border-radius:12px;padding:3px;margin-top:6px}
+  .segmented button{flex:1;border:none;background:none;cursor:pointer;font-family:var(--font);
+    font-size:13px;font-weight:600;padding:8px 4px;border-radius:9px;
+    color:var(--md-on-surface-variant);transition:background .18s,color .18s;
+    display:flex;align-items:center;justify-content:center;gap:4px}
+  .segmented button .material-symbols-rounded{font-size:18px}
+  .segmented button.active{background:var(--md-primary);color:var(--md-on-primary)}
+  .about-hero{display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:26px 16px 18px;gap:8px}
+  .about-hero .logo{width:72px;height:72px;border-radius:22px;
+    background:linear-gradient(135deg,var(--md-primary),var(--md-secondary));
+    display:grid;place-items:center;color:#fff;font-size:30px;font-weight:800;box-shadow:var(--elev-2)}
+  .about-hero .dev-name{font-size:18px;font-weight:700}
+  .about-hero .dev-link{font-size:13px;color:var(--md-primary);text-decoration:none;font-weight:500;
+    display:inline-flex;align-items:center;gap:4px}
+  .about-hero .dev-link .material-symbols-rounded{font-size:16px}
+  .scrim{position:fixed;inset:0;background:var(--md-scrim);z-index:70;display:none;opacity:0;
+    transition:opacity .2s}
+  .scrim.show{display:block;opacity:1}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--md-surface-container-high);
+    border-top-left-radius:var(--radius-xl);border-top-right-radius:var(--radius-xl);
+    padding:8px 16px calc(20px + var(--safe-b));transform:translateY(100%);
+    transition:transform .26s cubic-bezier(.2,.9,.3,1);max-height:88vh;overflow-y:auto}
+  .sheet.show{transform:none}
+  .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--md-outline-variant);
+    margin:8px auto 14px}
+  .sheet h2{margin:0 0 16px;font-size:19px;font-weight:600}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;
+    color:var(--md-on-surface-variant);margin-bottom:6px}
+  .field input,.field textarea,.field select{width:100%;font-family:var(--font);font-size:15px;
+    background:var(--md-surface);color:var(--md-on-surface);border:1.5px solid var(--md-outline-variant);
+    border-radius:var(--radius-m);padding:12px;outline:none;transition:border-color .2s}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--md-primary)}
+  .field textarea{resize:vertical;min-height:70px}
+  .row2{display:flex;gap:10px}
+  .row2 .field{flex:1}
+  .sheet-actions{display:flex;gap:10px;margin-top:6px}
+  .btn{flex:1;border:none;cursor:pointer;font-family:var(--font);font-size:15px;font-weight:600;
+    padding:14px;border-radius:var(--radius-m);transition:transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn-filled{background:var(--md-primary);color:var(--md-on-primary)}
+  .btn-tonal{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+  .btn-text{background:none;color:var(--md-primary)}
+  .btn-danger{background:var(--md-error);color:var(--md-on-error)}
+  .toast{position:fixed;left:50%;bottom:calc(110px + var(--safe-b));
+    transform:translateX(-50%) translateY(20px);background:var(--md-on-surface);color:var(--md-surface);
+    padding:12px 20px;border-radius:var(--radius-m);font-size:13.5px;font-weight:500;z-index:90;
+    opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;
+    max-width:calc(100% - 40px);text-align:center;box-shadow:var(--elev-2)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--md-on-surface-variant)}
+  .empty-state .material-symbols-rounded{font-size:48px;margin-bottom:10px;opacity:.6}
+  .empty-state p{margin:6px 0;font-size:14px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <h1 id="appbarTitle">Календарь</h1>
+  <div class="avatar">Q</div>
+</header>
+
+<main class="screens">
+  <section class="screen active" id="screen-calendar">
+    <div class="cal-header">
+      <div>
+        <div class="month" id="calMonth">—</div>
+        <div class="year" id="calYear">—</div>
+      </div>
+      <div class="cal-month-nav">
+        <button class="iconbtn" id="prevMonth" aria-label="Предыдущий месяц">
+          <span class="material-symbols-rounded">chevron_left</span>
+        </button>
+        <button class="iconbtn" id="nextMonth" aria-label="Следующий месяц">
+          <span class="material-symbols-rounded">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="photo-wrap" id="photoWrap"></div>
+
+    <div class="weekdays">
+      <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+    </div>
+    <div class="days-grid" id="daysGrid"></div>
+    <div id="dayDetail"></div>
+  </section>
+
+  <section class="screen" id="screen-tasks">
+    <div class="tasks-toolbar">
+      <select class="sort-select" id="sortSelect" aria-label="Сортировка">
+        <option value="date-asc">По дате (сначала близкие)</option>
+        <option value="date-desc">По дате (сначала поздние)</option>
+        <option value="created-desc">Сначала новые</option>
+        <option value="created-asc">Сначала старые</option>
+        <option value="title-asc">По названию (А→Я)</option>
+        <option value="title-desc">По названию (Я→А)</option>
+        <option value="prio-desc">По важности</option>
+        <option value="done">Сначала выполненные</option>
+        <option value="undone">Сначала невыполненные</option>
+      </select>
+    </div>
+    <div id="tasksList"></div>
+  </section>
+
+  <section class="screen" id="screen-settings">
+    <div class="about-hero">
+      <div class="logo">Q</div>
+      <div class="dev-name">Quantum ACD</div>
+      <a class="dev-link" href="https://github.com/q-acd" target="_blank" rel="noopener">
+        <span class="material-symbols-rounded">code</span> github.com/q-acd
+      </a>
+    </div>
+
+    <div class="pref-group">
+      <div class="pref-group-title">Оформление</div>
+      <div class="pref-card">
+        <div class="pref-item" style="cursor:default">
+          <div class="p-ico"><span class="material-symbols-rounded" id="themeIco">light_mode</span></div>
+          <div class="p-body">
+            <div class="p-title">Тема оформления</div>
+            <div class="p-summary">Светлая или тёмная</div>
+            <div class="segmented" id="themeSeg">
+              <button data-theme="light"><span class="material-symbols-rounded">light_mode</span> Светлая</button>
+              <button data-theme="dark"><span class="material-symbols-rounded">dark_mode</span> Тёмная</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pref-group">
+      <div class="pref-group-title">Разработчик</div>
+      <div class="pref-card">
+        <a class="pref-item" href="https://github.com/q-acd" target="_blank" rel="noopener">
+          <div class="p-ico"><span class="material-symbols-rounded">code</span></div>
+          <div class="p-body"><div class="p-title">Quantum ACD</div><div class="p-summary">github.com/q-acd</div></div>
+          <div class="p-end"><span class="material-symbols-rounded">open_in_new</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="pref-group">
+      <div class="pref-group-title">Каналы разработчиков</div>
+      <div class="pref-card">
+        <a class="pref-item" href="https://max.ru/channel_mork" target="_blank" rel="noopener">
+          <div class="p-ico"><span class="material-symbols-rounded">campaign</span></div>
+          <div class="p-body"><div class="p-title">Морковчик</div><div class="p-summary">max.ru/channel_mork</div></div>
+          <div class="p-end"><span class="material-symbols-rounded">open_in_new</span></div>
+        </a>
+        <a class="pref-item" href="https://max.ru/channel_qacd" target="_blank" rel="noopener">
+          <div class="p-ico"><span class="material-symbols-rounded">chat</span></div>
+          <div class="p-body"><div class="p-title">Quantum ACD</div><div class="p-summary">max.ru/channel_qacd</div></div>
+          <div class="p-end"><span class="material-symbols-rounded">open_in_new</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottomnav">
+  <button class="navitem active" data-screen="calendar">
+    <span class="pill"><span class="material-symbols-rounded">calendar_month</span></span>Календарь
+  </button>
+  <button class="navitem" data-screen="tasks">
+    <span class="pill"><span class="material-symbols-rounded">checklist</span></span>Задачи
+  </button>
+  <button class="navitem" data-screen="settings">
+    <span class="pill"><span class="material-symbols-rounded">settings</span></span>Настройки
+  </button>
+</nav>
+
+<button class="fab hidden" id="fabAdd" aria-label="Добавить задачу">
+  <span class="material-symbols-rounded">add</span>
+</button>
+
+<div class="sel-toolbar" id="selToolbar">
+  <button id="selCancel"><span class="material-symbols-rounded">close</span>Отмена</button>
+  <button id="selAll"><span class="material-symbols-rounded">select_all</span>Выбрать всё</button>
+  <button class="danger" id="selDelete"><span class="material-symbols-rounded">delete</span>Удалить</button>
+</div>
+
+<div class="ctx-menu" id="ctxMenu"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheetContent"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================
+   ВСЁ В ГЛОБАЛЬНОЙ ОБЛАСТИ — максимально просто, без IIFE
+   ========================================================== */
+
+/* ---------- Константы ---------- */
+var MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+              'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня',
+                  'июля','августа','сентября','октября','ноября','декабря'];
+var WEEKDAYS_FULL = ['воскресенье','понедельник','вторник','среда',
+                     'четверг','пятница','суббота'];
+
+/* ---------- ПРАЗДНИКИ НА КАЖДЫЙ ДЕНЬ ГОДА ---------- */
+/* Ключ = 'MM-DD'. type: 'official' (красный), 'memorial' (обычный) */
+var ALL_HOLIDAYS = {
+  // Январь
+  '01-01': [{n:'Новый год',t:'official'}],
+  '01-02': [{n:'Новогодние каникулы',t:'official'},{n:'День научной фантастики',t:'memorial'}],
+  '01-03': [{n:'Новогодние каникулы',t:'official'}],
+  '01-04': [{n:'Новогодние каникулы',t:'official'},{n:'Всемирный день азбуки Брайля',t:'memorial'}],
+  '01-05': [{n:'Новогодние каникулы',t:'official'}],
+  '01-06': [{n:'Новогодние каникулы',t:'official'}],
+  '01-07': [{n:'Рождество Христово',t:'official'}],
+  '01-08': [{n:'Новогодние каникулы',t:'official'}],
+  '01-09': [{n:'Международный день хореографа',t:'memorial'}],
+  '01-10': [{n:'День рождения SMS',t:'memorial'}],
+  '01-11': [{n:'Всемирный день спасибо',t:'memorial'}],
+  '01-12': [{n:'День работника прокуратуры РФ',t:'memorial'}],
+  '01-13': [{n:'День российской печати',t:'memorial'}],
+  '01-14': [{n:'Старый Новый год',t:'memorial'}],
+  '01-15': [{n:'Всемирный день религии',t:'memorial'}],
+  '01-16': [{n:'Всемирный день The Beatles',t:'memorial'}],
+  '01-17': [{n:'День детских изобретений',t:'memorial'}],
+  '01-18': [{n:'Крещенский сочельник',t:'memorial'}],
+  '01-19': [{n:'Крещение Господне',t:'official'}],
+  '01-20': [{n:'День пингвина',t:'memorial'}],
+  '01-21': [{n:'Международный день объятий',t:'memorial'}],
+  '01-22': [{n:'День дедушки',t:'memorial'}],
+  '01-23': [{n:'День почерка',t:'memorial'}],
+  '01-24': [{n:'Международный день эскимо',t:'memorial'}],
+  '01-25': [{n:'День студента (Татьянин день)',t:'official'}],
+  '01-26': [{n:'Международный день таможенника',t:'memorial'}],
+  '01-27': [{n:'День полного освобождения Ленинграда от блокады',t:'official'}],
+  '01-28': [{n:'Международный день LEGO',t:'memorial'}],
+  '01-29': [{n:'День первооткрывателя',t:'memorial'}],
+  '01-30': [{n:'День Деда Мороза и Снегурочки',t:'memorial'}],
+  '01-31': [{n:'Международный день ювелира',t:'memorial'}],
+
+  // Февраль
+  '02-01': [{n:'День работника лифтового хозяйства',t:'memorial'}],
+  '02-02': [{n:'День сурка',t:'memorial'},{n:'День разгрома фашистов под Сталинградом',t:'official'}],
+  '02-03': [{n:'Всемирный день борьбы с ненормативной лексикой',t:'memorial'}],
+  '02-04': [{n:'Всемирный день борьбы с раком',t:'memorial'}],
+  '02-05': [{n:'День эрудита',t:'memorial'}],
+  '02-06': [{n:'Международный день бармена',t:'memorial'}],
+  '02-07': [{n:'День зимних видов спорта',t:'memorial'}],
+  '02-08': [{n:'День российской науки',t:'official'},{n:'День памяти юного героя-антифашиста',t:'memorial'}],
+  '02-09': [{n:'Международный день стоматолога',t:'memorial'}],
+  '02-10': [{n:'День памяти Пушкина',t:'memorial'},{n:'Международный день домового',t:'memorial'}],
+  '02-11': [{n:'Всемирный день больного',t:'memorial'}],
+  '02-12': [{n:'Международный день науки и гуманизма',t:'memorial'}],
+  '02-13': [{n:'Всемирный день радио',t:'memorial'}],
+  '02-14': [{n:'День всех влюблённых',t:'memorial'},{n:'День компьютерщика',t:'memorial'}],
+  '02-15': [{n:'День памяти воинов-интернационалистов',t:'official'}],
+  '02-16': [{n:'День валенок',t:'memorial'}],
+  '02-17': [{n:'День спонтанного проявления доброты',t:'memorial'}],
+  '02-18': [{n:'День батарейки',t:'memorial'}],
+  '02-19': [{n:'Всемирный день китов',t:'memorial'}],
+  '02-20': [{n:'Всемирный день социальной справедливости',t:'memorial'}],
+  '02-21': [{n:'Международный день родного языка',t:'official'}],
+  '02-22': [{n:'День кошки в Японии',t:'memorial'}],
+  '02-23': [{n:'День защитника Отечества',t:'official'}],
+  '02-24': [{n:'День рождения компакт-диска',t:'memorial'}],
+  '02-25': [{n:'День открытия спирта',t:'memorial'}],
+  '02-26': [{n:'Всемирный день фисташек',t:'memorial'}],
+  '02-27': [{n:'Международный день полярного медведя',t:'memorial'}],
+  '02-28': [{n:'День Калевалы',t:'memorial'}],
+  '02-29': [{n:'День рождения Джузеппе Росси',t:'memorial'}],
+
+  // Март
+  '03-01': [{n:'Всемирный день кошек',t:'memorial'},{n:'Всемирный день гражданской обороны',t:'official'}],
+  '03-02': [{n:'День рождения Сергея Безрукова',t:'memorial'}],
+  '03-03': [{n:'Всемирный день писателя',t:'memorial'},{n:'Всемирный день дикой природы',t:'memorial'}],
+  '03-04': [{n:'Всемирный день борьбы с ожирением',t:'memorial'}],
+  '03-05': [{n:'День рождения Комнаты смеха',t:'memorial'}],
+  '03-06': [{n:'Международный день зубного врача',t:'memorial'}],
+  '03-07': [{n:'Всемирный день чтения вслух',t:'memorial'}],
+  '03-08': [{n:'Международный женский день',t:'official'}],
+  '03-09': [{n:'Международный день ди-джея',t:'memorial'}],
+  '03-10': [{n:'День архивов',t:'memorial'}],
+  '03-11': [{n:'День работника органов наркоконтроля',t:'memorial'}],
+  '03-12': [{n:'День работников геодезии и картографии',t:'memorial'}],
+  '03-13': [{n:'Всемирный день сна',t:'memorial'}],
+  '03-14': [{n:'Международный день числа π',t:'memorial'}],
+  '03-15': [{n:'Всемирный день защиты прав потребителей',t:'official'}],
+  '03-16': [{n:'День образования подводных сил России',t:'memorial'}],
+  '03-17': [{n:'Всемирный день социальной работы',t:'memorial'}],
+  '03-18': [{n:'День воссоединения Крыма с Россией',t:'official'}],
+  '03-19': [{n:'Международный день клиента',t:'memorial'}],
+  '03-20': [{n:'Всемирный день Земли',t:'memorial'},{n:'Международный день счастья',t:'memorial'}],
+  '03-21': [{n:'Всемирный день поэзии',t:'memorial'},{n:'Международный день кукольника',t:'memorial'}],
+  '03-22': [{n:'Всемирный день воды',t:'memorial'}],
+  '03-23': [{n:'Всемирный день метеорологии',t:'memorial'}],
+  '03-24': [{n:'Всемирный день борьбы с туберкулёзом',t:'memorial'}],
+  '03-25': [{n:'День работника культуры РФ',t:'official'}],
+  '03-26': [{n:'День рождения Имени',t:'memorial'}],
+  '03-27': [{n:'Международный день театра',t:'official'},{n:'Всемирный день балета',t:'memorial'}],
+  '03-28': [{n:'День рождения Компании Kodak',t:'memorial'}],
+  '03-29': [{n:'День Самбо',t:'memorial'}],
+  '03-30': [{n:'День рождения Ван Гога',t:'memorial'}],
+  '03-31': [{n:'Международный день резервного копирования',t:'memorial'}],
+
+  // Апрель
+  '04-01': [{n:'День смеха',t:'memorial'},{n:'Международный день птиц',t:'memorial'}],
+  '04-02': [{n:'Международный день детской книги',t:'memorial'}],
+  '04-03': [{n:'Всемирный день вечеринки',t:'memorial'}],
+  '04-04': [{n:'Международный день интернета',t:'memorial'}],
+  '04-05': [{n:'Международный день супа',t:'memorial'}],
+  '04-06': [{n:'Международный день спорта',t:'memorial'}],
+  '04-07': [{n:'Всемирный день здоровья',t:'official'}],
+  '04-08': [{n:'День российской анимации',t:'memorial'}],
+  '04-09': [{n:'Всемирный день борьбы с болезнью Паркинсона',t:'memorial'}],
+  '04-10': [{n:'День братьев и сестёр',t:'memorial'}],
+  '04-11': [{n:'Международный день освобождения узников концлагерей',t:'official'}],
+  '04-12': [{n:'День космонавтики',t:'official'},{n:'Всемирный день авиации и космонавтики',t:'memorial'}],
+  '04-13': [{n:'Всемирный день рок-н-ролла',t:'memorial'}],
+  '04-14': [{n:'День войск ПВО',t:'memorial'}],
+  '04-15': [{n:'Всемирный день искусства',t:'memorial'},{n:'День специалиста по радиоэлектронной борьбе',t:'memorial'}],
+  '04-16': [{n:'Всемирный день голоса',t:'memorial'}],
+  '04-17': [{n:'Всемирный день борьбы с гемофилией',t:'memorial'},{n:'День ветеранов ОВД',t:'memorial'}],
+  '04-18': [{n:'Международный день памятников и исторических мест',t:'memorial'},{n:'День воинской славы — Ледовое побоище',t:'official'}],
+  '04-19': [{n:'День подснежника',t:'memorial'}],
+  '04-20': [{n:'Всемирный день цирка',t:'memorial'},{n:'Национальный день донора',t:'memorial'}],
+  '04-21': [{n:'Всемирный день творчества и инноваций',t:'memorial'},{n:'День местного самоуправления',t:'official'}],
+  '04-22': [{n:'Международный день Матери-Земли',t:'official'}],
+  '04-23': [{n:'Всемирный день книги и авторского права',t:'memorial'}],
+  '04-24': [{n:'Международный день солидарности молодёжи',t:'memorial'}],
+  '04-25': [{n:'Всемирный день пингвинов',t:'memorial'},{n:'Международный день ДНК',t:'memorial'}],
+  '04-26': [{n:'Международный день памяти жертв радиационных аварий',t:'official'},{n:'День рождения Шерлока Холмса',t:'memorial'}],
+  '04-27': [{n:'День российского парламентаризма',t:'official'}],
+  '04-28': [{n:'Всемирный день охраны труда',t:'memorial'},{n:'День работника скорой помощи',t:'official'}],
+  '04-29': [{n:'Международный день танца',t:'memorial'}],
+  '04-30': [{n:'Международный день джаза',t:'memorial'},{n:'День пожарной охраны РФ',t:'official'}],
+
+  // Май
+  '05-01': [{n:'Праздник Весны и Труда',t:'official'}],
+  '05-02': [{n:'Всемирный день тунца',t:'memorial'}],
+  '05-03': [{n:'Всемирный день свободы печати',t:'memorial'},{n:'День кондитера',t:'memorial'}],
+  '05-04': [{n:'Всемирный день борьбы с астмой',t:'memorial'}],
+  '05-05': [{n:'Международный день акушерки',t:'memorial'},{n:'День водолаза',t:'memorial'}],
+  '05-06': [{n:'Международный день без диеты',t:'memorial'}],
+  '05-07': [{n:'День радио',t:'official'},{n:'День создания Вооружённых сил РФ',t:'memorial'}],
+  '05-08': [{n:'Всемирный день Красного Креста и Красного Полумесяца',t:'memorial'}],
+  '05-09': [{n:'День Победы',t:'official'}],
+  '05-10': [{n:'Всемирный день мигрирующих птиц',t:'memorial'}],
+  '05-11': [{n:'Всемирный день справедливой торговли',t:'memorial'}],
+  '05-12': [{n:'Международный день медицинской сестры',t:'memorial'}],
+  '05-13': [{n:'Всемирный день одуванчика',t:'memorial'}],
+  '05-14': [{n:'День фрилансера',t:'memorial'}],
+  '05-15': [{n:'Международный день семьи',t:'memorial'}],
+  '05-16': [{n:'Международный день света',t:'memorial'}],
+  '05-17': [{n:'Всемирный день электросвязи',t:'memorial'},{n:'Всемирный день борьбы с гипертонией',t:'memorial'}],
+  '05-18': [{n:'Международный день музеев',t:'memorial'}],
+  '05-19': [{n:'День пионерии',t:'memorial'},{n:'Всемирный день семейного врача',t:'memorial'}],
+  '05-20': [{n:'Всемирный день метрологии',t:'memorial'},{n:'Всемирный день пчёл',t:'memorial'}],
+  '05-21': [{n:'Всемирный день культурного разнообразия',t:'memorial'},{n:'День полярника',t:'memorial'}],
+  '05-22': [{n:'Международный день биологического разнообразия',t:'memorial'}],
+  '05-23': [{n:'Всемирный день черепахи',t:'memorial'}],
+  '05-24': [{n:'День славянской письменности и культуры',t:'official'}],
+  '05-25': [{n:'День филолога',t:'memorial'},{n:'День сварщика',t:'memorial'}],
+  '05-26': [{n:'День российского предпринимательства',t:'official'}],
+  '05-27': [{n:'Всемирный день без табака',t:'memorial'},{n:'День библиотекаря',t:'memorial'}],
+  '05-28': [{n:'День пограничника',t:'official'}],
+  '05-29': [{n:'День военного автомобилиста',t:'memorial'}],
+  '05-30': [{n:'Всемирный день борьбы с рассеянным склерозом',t:'memorial'}],
+  '05-31': [{n:'Всемирный день без табака',t:'memorial'},{n:'День химика',t:'memorial'}],
+
+  // Июнь
+  '06-01': [{n:'Международный день защиты детей',t:'official'}],
+  '06-02': [{n:'День здорового питания',t:'memorial'}],
+  '06-03': [{n:'Всемирный день велосипеда',t:'memorial'}],
+  '06-04': [{n:'Международный день невинных детей — жертв агрессии',t:'memorial'}],
+  '06-05': [{n:'Всемирный день окружающей среды',t:'official'},{n:'День эколога',t:'official'}],
+  '06-06': [{n:'Пушкинский день России',t:'official'},{n:'День русского языка',t:'official'}],
+  '06-07': [{n:'Всемирный день безопасности пищевых продуктов',t:'memorial'}],
+  '06-08': [{n:'Всемирный день океанов',t:'memorial'},{n:'День социального работника',t:'official'}],
+  '06-09': [{n:'Международный день аккредитации',t:'memorial'},{n:'День пивовара',t:'memorial'}],
+  '06-10': [{n:'Всемирный день вязания на публике',t:'memorial'}],
+  '06-11': [{n:'Всемирный день шоколада',t:'memorial'}],
+  '06-12': [{n:'День России',t:'official'}],
+  '06-13': [{n:'Международный день альбинизма',t:'memorial'}],
+  '06-14': [{n:'Всемирный день донора крови',t:'memorial'}],
+  '06-15': [{n:'Всемирный день ветра',t:'memorial'}],
+  '06-16': [{n:'Международный день отца',t:'memorial'}],
+  '06-17': [{n:'Всемирный день борьбы с опустыниванием',t:'memorial'}],
+  '06-18': [{n:'Международный день суши',t:'memorial'}],
+  '06-19': [{n:'Всемирный день серфинга',t:'memorial'}],
+  '06-20': [{n:'Всемирный день беженцев',t:'memorial'}],
+  '06-21': [{n:'Международный день йоги',t:'memorial'},{n:'День кинолога',t:'memorial'}],
+  '06-22': [{n:'День памяти и скорби',t:'official'}],
+  '06-23': [{n:'Международный день вдов',t:'memorial'},{n:'День балалайки',t:'memorial'}],
+  '06-24': [{n:'Международный день феи',t:'memorial'}],
+  '06-25': [{n:'День дружбы и единения славян',t:'memorial'}],
+  '06-26': [{n:'Международный день борьбы с наркотиками',t:'memorial'}],
+  '06-27': [{n:'День российской молодёжи',t:'official'},{n:'Всемирный день рыболовства',t:'memorial'}],
+  '06-28': [{n:'День рождения Гарри Поттера',t:'memorial'}],
+  '06-29': [{n:'День кораблестроителя',t:'memorial'}],
+  '06-30': [{n:'День астероида',t:'memorial'},{n:'День экономиста',t:'memorial'}],
+
+  // Июль
+  '07-01': [{n:'Всемирный день архитектуры',t:'memorial'}],
+  '07-02': [{n:'Всемирный день НЛО',t:'memorial'},{n:'Международный день спортивного журналиста',t:'memorial'}],
+  '07-03': [{n:'День ГИБДД',t:'official'}],
+  '07-04': [{n:'Международный день кооперативов',t:'memorial'}],
+  '07-05': [{n:'Всемирный день бикини',t:'memorial'}],
+  '07-06': [{n:'Всемирный день поцелуя',t:'memorial'}],
+  '07-07': [{n:'Иван Купала',t:'memorial'},{n:'Всемирный день Кисловодска',t:'memorial'}],
+  '07-08': [{n:'День семьи, любви и верности',t:'official'}],
+  '07-09': [{n:'День рыбака',t:'memorial'}],
+  '07-10': [{n:'День воинской славы — Полтавская битва',t:'official'}],
+  '07-11': [{n:'Всемирный день шоколада',t:'memorial'},{n:'День художника по свету',t:'memorial'}],
+  '07-12': [{n:'Всемирный день бортпроводника',t:'memorial'}],
+  '07-13': [{n:'Международный день головоломки',t:'memorial'}],
+  '07-14': [{n:'День действий против рыбной ловли',t:'memorial'}],
+  '07-15': [{n:'Всемирный день навыков молодёжи',t:'memorial'}],
+  '07-16': [{n:'День рисования на асфальте',t:'memorial'}],
+  '07-17': [{n:'Всемирный день эмодзи',t:'memorial'}],
+  '07-18': [{n:'Международный день Нельсона Манделы',t:'memorial'}],
+  '07-19': [{n:'День фотографии',t:'memorial'}],
+  '07-20': [{n:'Международный день шахмат',t:'memorial'},{n:'Международный день Луны',t:'memorial'}],
+  '07-21': [{n:'День металлурга',t:'memorial'}],
+  '07-22': [{n:'Всемирный день мозга',t:'memorial'}],
+  '07-23': [{n:'Всемирный день китов и дельфинов',t:'memorial'}],
+  '07-24': [{n:'День флориста',t:'memorial'}],
+  '07-25': [{n:'День сотрудника органов следствия',t:'memorial'},{n:'День зубного техника',t:'memorial'}],
+  '07-26': [{n:'День парашютиста',t:'memorial'},{n:'День дяди и тёти',t:'memorial'}],
+  '07-27': [{n:'День работника торговли',t:'memorial'}],
+  '07-28': [{n:'День Крещения Руси',t:'official'},{n:'Всемирный день борьбы с гепатитом',t:'memorial'}],
+  '07-29': [{n:'Международный день тигра',t:'memorial'}],
+  '07-30': [{n:'Международный день дружбы',t:'memorial'}],
+  '07-31': [{n:'День системного администратора',t:'memorial'}],
+
+  // Август
+  '08-01': [{n:'День инкассатора',t:'memorial'},{n:'Всемирный день борьбы с раком лёгких',t:'memorial'}],
+  '08-02': [{n:'День Воздушно-десантных войск',t:'official'},{n:'День рождения почтового ящика',t:'memorial'}],
+  '08-03': [{n:'День арбуза',t:'memorial'}],
+  '08-04': [{n:'Международный день пива',t:'memorial'}],
+  '08-05': [{n:'Международный день светофора',t:'memorial'}],
+  '08-06': [{n:'День железнодорожных войск',t:'memorial'},{n:'Всемирный день борьбы за запрет ядерного оружия',t:'memorial'}],
+  '08-07': [{n:'День железнодорожника',t:'memorial'}],
+  '08-08': [{n:'Всемирный день кошек',t:'memorial'},{n:'День физкультурника',t:'memorial'}],
+  '08-09': [{n:'День воздушных поцелуев',t:'memorial'},{n:'Международный день коренных народов',t:'memorial'}],
+  '08-10': [{n:'День попутного ветра',t:'memorial'}],
+  '08-11': [{n:'День рождения футбольного клуба «Спартак»',t:'memorial'}],
+  '08-12': [{n:'День ВВС РФ',t:'official'},{n:'Международный день молодёжи',t:'memorial'}],
+  '08-13': [{n:'Международный день левшей',t:'memorial'}],
+  '08-14': [{n:'Медовый Спас',t:'official'}],
+  '08-15': [{n:'День археолога',t:'memorial'},{n:'День Воздушного флота России',t:'official'}],
+  '08-16': [{n:'Всемирный день бездомных животных',t:'memorial'},{n:'День малинового варенья',t:'memorial'}],
+  '08-17': [{n:'День самовара',t:'memorial'}],
+  '08-18': [{n:'День географа',t:'memorial'},{n:'День смеха в Индии',t:'memorial'}],
+  '08-19': [{n:'Яблочный Спас',t:'official'},{n:'Всемирный день фотографии',t:'memorial'}],
+  '08-20': [{n:'Всемирный день комаров',t:'memorial'}],
+  '08-21': [{n:'День Студента в Аргентине',t:'memorial'}],
+  '08-22': [{n:'День Государственного флага РФ',t:'official'}],
+  '08-23': [{n:'День воинской славы — Курская битва',t:'official'}],
+  '08-24': [{n:'День жажды',t:'memorial'}],
+  '08-25': [{n:'День рождения чая в пакетиках',t:'memorial'}],
+  '08-26': [{n:'День благодарности собаке',t:'memorial'}],
+  '08-27': [{n:'День кино',t:'official'},{n:'День российского кино',t:'official'}],
+  '08-28': [{n:'Успение Пресвятой Богородицы',t:'official'}],
+  '08-29': [{n:'Ореховый Спас',t:'official'}],
+  '08-30': [{n:'День освобождения Москвы от поляков',t:'memorial'}],
+  '08-31': [{n:'День блога',t:'memorial'},{n:'День ветеринара',t:'memorial'}],
+
+  // Сентябрь
+  '09-01': [{n:'День знаний',t:'official'}],
+  '09-02': [{n:'День окончания Второй мировой войны',t:'official'},{n:'День рождения паровой машины',t:'memorial'}],
+  '09-03': [{n:'День солидарности в борьбе с терроризмом',t:'official'}],
+  '09-04': [{n:'День специалиста по ядерному обеспечению',t:'memorial'},{n:'День рождения Google',t:'memorial'}],
+  '09-05': [{n:'Международный день благотворительности',t:'memorial'}],
+  '09-06': [{n:'День нефтяника',t:'memorial'}],
+  '09-07': [{n:'День города Москвы',t:'memorial'}],
+  '09-08': [{n:'Международный день грамотности',t:'memorial'},{n:'День финансиста',t:'official'}],
+  '09-09': [{n:'Всемирный день красоты',t:'memorial'},{n:'Международный день судоку',t:'memorial'}],
+  '09-10': [{n:'Всемирный день предотвращения самоубийств',t:'memorial'}],
+  '09-11': [{n:'Всемирный день трезвости',t:'memorial'},{n:'День специалиста органов воспитательной работы',t:'memorial'}],
+  '09-12': [{n:'День программиста',t:'official'},{n:'Международный день вязания крючком',t:'memorial'}],
+  '09-13': [{n:'День танкиста',t:'memorial'},{n:'День парикмахера',t:'memorial'}],
+  '09-14': [{n:'День слушания шорохов',t:'memorial'}],
+  '09-15': [{n:'Международный день демократии',t:'memorial'},{n:'День рождения экологической организации Гринпис',t:'memorial'}],
+  '09-16': [{n:'Международный день охраны озонового слоя',t:'memorial'}],
+  '09-17': [{n:'Всемирный день безопасности пациентов',t:'memorial'},{n:'День Конституции и гражданства',t:'memorial'}],
+  '09-18': [{n:'Всемирный день мониторинга воды',t:'memorial'}],
+  '09-19': [{n:'День рождения «Смайлика»',t:'memorial'},{n:'День оружейника',t:'official'}],
+  '09-20': [{n:'Международный день мира',t:'memorial'},{n:'День работников леса',t:'memorial'}],
+  '09-21': [{n:'Международный день мира',t:'memorial'},{n:'День зарождения российской государственности',t:'memorial'}],
+  '09-22': [{n:'Всемирный день без автомобиля',t:'memorial'}],
+  '09-23': [{n:'День осеннего равноденствия',t:'memorial'},{n:'День рождения жевательной резинки',t:'memorial'}],
+  '09-24': [{n:'Всемирный день моря',t:'memorial'},{n:'День Государственного герба и флага',t:'memorial'}],
+  '09-25': [{n:'Всемирный день фармацевта',t:'memorial'}],
+  '09-26': [{n:'Всемирный день контрацепции',t:'memorial'}],
+  '09-27': [{n:'Всемирный день туризма',t:'memorial'},{n:'День воспитателя',t:'official'}],
+  '09-28': [{n:'Всемирный день борьбы против бешенства',t:'memorial'},{n:'День работника атомной промышленности',t:'official'}],
+  '09-29': [{n:'Всемирный день сердца',t:'memorial'},{n:'День отоларинголога',t:'memorial'}],
+  '09-30': [{n:'Международный день переводчика',t:'memorial'},{n:'День интернета в России',t:'memorial'}],
+
+  // Октябрь
+  '10-01': [{n:'Международный день музыки',t:'memorial'},{n:'День пожилых людей',t:'memorial'},{n:'День Сухопутных войск',t:'official'}],
+  '10-02': [{n:'Международный день ненасилия',t:'memorial'}],
+  '10-03': [{n:'Всемирный день трезвости',t:'memorial'},{n:'День ОМОН',t:'memorial'}],
+  '10-04': [{n:'Всемирный день животных',t:'memorial'},{n:'День Космических войск',t:'official'}],
+  '10-05': [{n:'День учителя',t:'official'},{n:'Всемирный день жилища',t:'memorial'}],
+  '10-06': [{n:'Всемирный день охраны мест обитания',t:'memorial'},{n:'День российского страховщика',t:'memorial'}],
+  '10-07': [{n:'Всемирный день улыбки',t:'memorial'},{n:'День рождения Путина',t:'memorial'}],
+  '10-08': [{n:'Всемирный день яйца',t:'memorial'},{n:'День работника сельского хозяйства',t:'memorial'}],
+  '10-09': [{n:'Всемирный день почты',t:'memorial'},{n:'День работника прокуратуры',t:'memorial'}],
+  '10-10': [{n:'Всемирный день психического здоровья',t:'memorial'},{n:'День рождения социальной сети «ВКонтакте»',t:'memorial'}],
+  '10-11': [{n:'Международный день девочек',t:'memorial'}],
+  '10-12': [{n:'Всемирный день борьбы с артритом',t:'memorial'}],
+  '10-13': [{n:'Всемирный день без бюстгальтера',t:'memorial'},{n:'День работника сельского хозяйства',t:'memorial'}],
+  '10-14': [{n:'Всемирный день стандартов',t:'memorial'},{n:'День рождения Винни-Пуха',t:'memorial'}],
+  '10-15': [{n:'Всемирный день мытья рук',t:'memorial'},{n:'День работника пищевой промышленности',t:'memorial'}],
+  '10-16': [{n:'Всемирный день продовольствия',t:'memorial'},{n:'День отца в России',t:'memorial'}],
+  '10-17': [{n:'Международный день борьбы с бедностью',t:'memorial'}],
+  '10-18': [{n:'Всемирный день конфет',t:'memorial'},{n:'День работников дорожного хозяйства',t:'memorial'}],
+  '10-19': [{n:'День лицеиста',t:'memorial'},{n:'Всемирный день борьбы с раком груди',t:'memorial'}],
+  '10-20': [{n:'Всемирный день повара',t:'memorial'},{n:'День военного связиста',t:'official'}],
+  '10-21': [{n:'День яблока',t:'memorial'},{n:'День работника пищевой промышленности',t:'memorial'}],
+  '10-22': [{n:'Международный день заикания',t:'memorial'},{n:'День финансово-экономической службы',t:'memorial'}],
+  '10-23': [{n:'Международный день снежного барса',t:'memorial'},{n:'День работников рекламы',t:'memorial'}],
+  '10-24': [{n:'День ООН',t:'memorial'},{n:'День подразделений специального назначения',t:'official'}],
+  '10-25': [{n:'Всемирный день макарон',t:'memorial'},{n:'День таможенника РФ',t:'official'}],
+  '10-26': [{n:'Международный день анимации',t:'memorial'},{n:'День автомобилиста',t:'memorial'}],
+  '10-27': [{n:'Всемирный день аудиовизуального наследия',t:'memorial'}],
+  '10-28': [{n:'Международный день анимации',t:'memorial'},{n:'День бабушек и дедушек',t:'memorial'}],
+  '10-29': [{n:'Всемирный день борьбы с инсультом',t:'memorial'},{n:'День работников вневедомственной охраны',t:'memorial'}],
+  '10-30': [{n:'День памяти жертв политических репрессий',t:'official'}],
+  '10-31': [{n:'Хэллоуин',t:'memorial'},{n:'День сурдопереводчика',t:'memorial'}],
+
+  // Ноябрь
+  '11-01': [{n:'День судебного пристава',t:'memorial'},{n:'День менеджера',t:'memorial'}],
+  '11-02': [{n:'Всемирный день мужчин',t:'memorial'}],
+  '11-03': [{n:'День рождения почтовой марки',t:'memorial'},{n:'День народного единства (традиция)',t:'memorial'}],
+  '11-04': [{n:'День народного единства',t:'official'}],
+  '11-05': [{n:'День военного разведчика',t:'official'},{n:'Всемирный день распространения информации о цунами',t:'memorial'}],
+  '11-06': [{n:'День рождения А. С. Пушкина (по старому стилю)',t:'memorial'}],
+  '11-07': [{n:'День Октябрьской революции',t:'memorial'},{n:'День воинской славы — парад 1941 года',t:'official'}],
+  '11-08': [{n:'День журналиста',t:'memorial'},{n:'День памяти погибших при исполнении служебных обязанностей',t:'memorial'}],
+  '11-09': [{n:'Международный день против фашизма',t:'memorial'}],
+  '11-10': [{n:'Всемирный день молодёжи',t:'memorial'},{n:'День сотрудника органов внутренних дел',t:'official'}],
+  '11-11': [{n:'День работника восстановительного поезда',t:'memorial'},{n:'Всемирный день шопинга',t:'memorial'}],
+  '11-12': [{n:'День работника Сбербанка России',t:'official'},{n:'Всемирный день борьбы с пневмонией',t:'memorial'}],
+  '11-13': [{n:'Всемирный день доброты',t:'memorial'},{n:'День войск радиационной, химической и биологической защиты',t:'official'}],
+  '11-14': [{n:'Всемирный день борьбы с диабетом',t:'memorial'},{n:'День социолога',t:'memorial'}],
+  '11-15': [{n:'Всемирный день вторичной переработки',t:'memorial'},{n:'День создания подразделений по борьбе с организованной преступностью',t:'memorial'}],
+  '11-16': [{n:'Международный день толерантности',t:'memorial'},{n:'День работника Сбербанка',t:'memorial'}],
+  '11-17': [{n:'Международный день студента',t:'memorial'},{n:'День участкового',t:'official'}],
+  '11-18': [{n:'День рождения Деда Мороза',t:'memorial'},{n:'День правовой помощи детям',t:'memorial'}],
+  '11-19': [{n:'Международный день мужчин',t:'memorial'},{n:'День ракетных войск и артиллерии',t:'official'}],
+  '11-20': [{n:'Всемирный день ребёнка',t:'memorial'},{n:'День работника транспорта',t:'memorial'}],
+  '11-21': [{n:'Всемирный день приветствий',t:'memorial'},{n:'День бухгалтера',t:'memorial'}],
+  '11-22': [{n:'День психолога',t:'memorial'},{n:'День сыновей',t:'memorial'}],
+  '11-23': [{n:'Международный день борьбы с безнаказанностью',t:'memorial'}],
+  '11-24': [{n:'День моржа',t:'memorial'},{n:'День матери в России',t:'official'}],
+  '11-25': [{n:'Международный день борьбы за ликвидацию насилия в отношении женщин',t:'memorial'}],
+  '11-26': [{n:'Всемирный день информации',t:'memorial'},{n:'День матери',t:'memorial'}],
+  '11-27': [{n:'День оценщика',t:'memorial'},{n:'День морской пехоты',t:'official'}],
+  '11-28': [{n:'День работника органов наркоконтроля',t:'memorial'}],
+  '11-29': [{n:'День буквы «Ё»',t:'memorial'},{n:'День мостов',t:'memorial'}],
+  '11-30': [{n:'Международный день защиты информации',t:'memorial'},{n:'День домашних животных',t:'memorial'}],
+
+  // Декабрь
+  '12-01': [{n:'Всемирный день борьбы со СПИДом',t:'memorial'},{n:'День воинской славы — Нахимов',t:'official'}],
+  '12-02': [{n:'День банковского работника',t:'memorial'},{n:'Международный день отмены рабства',t:'memorial'}],
+  '12-03': [{n:'Международный день инвалидов',t:'memorial'},{n:'День юриста',t:'official'}],
+  '12-04': [{n:'День заказа подарков на Новый год',t:'memorial'},{n:'Международный день объятий (зимний)',t:'memorial'}],
+  '12-05': [{n:'День воинской славы — Битва под Москвой',t:'official'},{n:'Международный день добровольцев',t:'memorial'}],
+  '12-06': [{n:'День рождения Деда Мороза',t:'memorial'}],
+  '12-07': [{n:'Международный день гражданской авиации',t:'memorial'},{n:'День Эрмитажа',t:'memorial'}],
+  '12-08': [{n:'День образования казначейства России',t:'memorial'},{n:'Международный день художника',t:'memorial'}],
+  '12-09': [{n:'День героев Отечества',t:'official'},{n:'Международный день борьбы с коррупцией',t:'memorial'}],
+  '12-10': [{n:'День прав человека',t:'memorial'},{n:'Международный день прав животных',t:'memorial'}],
+  '12-11': [{n:'Международный день гор',t:'memorial'},{n:'Международный день танго',t:'memorial'}],
+  '12-12': [{n:'День Конституции РФ',t:'official'}],
+  '12-13': [{n:'День медведя в России',t:'memorial'}],
+  '12-14': [{n:'День обезьян',t:'memorial'},{n:'День Наума Грамотника',t:'memorial'}],
+  '12-15': [{n:'Международный день чая',t:'memorial'},{n:'День памяти журналистов, погибших при исполнении',t:'memorial'}],
+  '12-16': [{n:'День работника прокуратуры (по старому стилю)',t:'memorial'}],
+  '12-17': [{n:'День ракетных войск стратегического назначения',t:'official'},{n:'День курьера',t:'memorial'}],
+  '12-18': [{n:'День работника органов безопасности РФ',t:'official'},{n:'Международный день мигранта',t:'memorial'}],
+  '12-19': [{n:'День святителя Николая',t:'memorial'},{n:'День снабженца',t:'memorial'}],
+  '12-20': [{n:'Международный день солидарности людей',t:'memorial'},{n:'День работника органов безопасности',t:'memorial'}],
+  '12-21': [{n:'День зимнего солнцестояния',t:'memorial'},{n:'День рождения баскетбола',t:'memorial'}],
+  '12-22': [{n:'День энергетика',t:'official'},{n:'День рождения скрепки',t:'memorial'}],
+  '12-23': [{n:'День дальней авиации ВВС России',t:'memorial'},{n:'Всемирный день сноубординга',t:'memorial'}],
+  '12-24': [{n:'Сочельник католический',t:'memorial'},{n:'День варежки',t:'memorial'}],
+  '12-25': [{n:'Рождество Христово (католическое)',t:'memorial'},{n:'День дарения ёлочных шаров',t:'memorial'}],
+  '12-26': [{n:'День подарков',t:'memorial'},{n:'День рождения ЖКХ',t:'memorial'}],
+  '12-27': [{n:'День спасателя РФ',t:'official'},{n:'Международный день кино',t:'memorial'}],
+  '12-28': [{n:'Международный день кино',t:'memorial'},{n:'День рождения шоколадного печенья',t:'memorial'}],
+  '12-29': [{n:'День рождения жевательной резинки',t:'memorial'}],
+  '12-30': [{n:'День заворачивания подарков',t:'memorial'}],
+  '12-31': [{n:'Новогодняя ночь',t:'official'},{n:'День сварщика (по старому стилю)',t:'memorial'}]
+};
+
+function getHolidaysFor(date){
+  var k = pad(date.getMonth()+1) + '-' + pad(date.getDate());
+  return ALL_HOLIDAYS[k] || [];
+}
+
+/* ---------- Утилиты ---------- */
+function pad(n){ return (n<10?'0':'')+n; }
+function isoDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function parseISO(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function uid(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+/* ---------- Хранилище (устойчивое к блокировке) ---------- */
+var LS_TASKS = 'qacd_tasks_v1';
+var LS_THEME = 'qacd_theme_v1';
+var memoryStore = {};  // fallback, если localStorage недоступен
+
+function lsGet(key){
+  try{ return localStorage.getItem(key); }
+  catch(e){ return memoryStore[key] || null; }
+}
+function lsSet(key,val){
+  try{ localStorage.setItem(key,val); }
+  catch(e){ memoryStore[key]=val; }
+}
+
+/* ---------- Состояние ---------- */
+var today = new Date();
+var viewYear = today.getFullYear();
+var viewMonth = today.getMonth();
+var selectedDate = null;
+var tasks = [];
+var theme = lsGet(LS_THEME) || 'light';
+var sortMode = 'date-asc';
+var currentScreen = 'calendar';
+var selectionMode = false;
+var selectedTaskIds = {};
+var ctxTaskId = null;
+
+/* ---------- DOM-ссылки ---------- */
+var $ = function(id){ return document.getElementById(id); };
+var elMonth, elYear, elDaysGrid, elDayDetail, elPhotoWrap;
+var elTasksList, elSelToolbar, elCtxMenu, elScrim, elSheet, elSheetContent, elToast;
+var elFabAdd, elSortSelect, elAppbarTitle;
+
+/* ---------- Загрузка задач ---------- */
+function loadTasks(){
+  var raw = lsGet(LS_TASKS);
+  if(!raw) return seedTasks();
+  try{
+    var arr = JSON.parse(raw);
+    if(Array.isArray(arr)) return arr;
+  }catch(e){}
+  return seedTasks();
+}
+function seedTasks(){
+  var t0 = new Date();
+  var t1 = new Date(t0); t1.setDate(t1.getDate()+2);
+  var t2 = new Date(t0); t2.setDate(t2.getDate()+5);
+  var s = [
+    {id:uid(),title:'Проверить прототип календаря',desc:'Пройтись по всем вкладкам',date:isoDate(t0),time:'18:00',prio:'mid',done:false,created:Date.now()},
+    {id:uid(),title:'Купить продукты',desc:'Молоко, хлеб, овощи',date:isoDate(t1),time:'10:30',prio:'low',done:false,created:Date.now()+1},
+    {id:uid(),title:'Созвон с командой',desc:'Обсудить релиз',date:isoDate(t2),time:'14:00',prio:'high',done:false,created:Date.now()+2}
+  ];
+  lsSet(LS_TASKS, JSON.stringify(s));
+  return s;
+}
+function saveTasks(){ lsSet(LS_TASKS, JSON.stringify(tasks)); }
+
+/* ---------- Тема ---------- */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', theme);
+  var btns = document.querySelectorAll('#themeSeg button');
+  for(var i=0;i<btns.length;i++){
+    btns[i].classList.toggle('active', btns[i].getAttribute('data-theme')===theme);
+  }
+  var ico = $('themeIco');
+  if(ico) ico.textContent = theme==='dark' ? 'dark_mode' : 'light_mode';
+  lsSet(LS_THEME, theme);
+}
+
+/* ---------- Фото ---------- */
+function renderPhoto(){
+  if(!elPhotoWrap) return;
+  var num = viewMonth+1;
+  elPhotoWrap.innerHTML = '';
+  var img = document.createElement('img');
+  img.alt = MONTHS[viewMonth];
+  img.onerror = function(){
+    elPhotoWrap.innerHTML =
+      '<div class="photo-placeholder">' +
+      '<span class="material-symbols-rounded">image</span>' +
+      '<small>Фото ' + MONTHS[viewMonth].toLowerCase() + ' (' + num + '.jpg)</small>' +
+      '</div>';
+  };
+  img.src = num + '.jpg';
+  elPhotoWrap.appendChild(img);
+}
+
+/* ---------- Сетка календаря ---------- */
+function renderGrid(){
+  if(!elDaysGrid) return;
+  elDaysGrid.innerHTML = '';
+  var first = new Date(viewYear, viewMonth, 1);
+  var startIdx = (first.getDay() + 6) % 7;  // Пн=0
+  var daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  var prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+
+  var cells = [];
+  var i, d;
+  for(i = startIdx-1; i >= 0; i--){
+    d = prevMonthDays - i;
+    cells.push({day:d, other:true, date:new Date(viewYear, viewMonth-1, d)});
+  }
+  for(d = 1; d <= daysInMonth; d++){
+    cells.push({day:d, other:false, date:new Date(viewYear, viewMonth, d)});
+  }
+  var nextDay = 1;
+  while(cells.length % 7 !== 0){
+    cells.push({day:nextDay, other:true, date:new Date(viewYear, viewMonth+1, nextDay)});
+    nextDay++;
+  }
+
+  var todayIso = isoDate(new Date());
+  for(var c = 0; c < cells.length; c++){
+    (function(cell){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'day';
+      if(cell.other) btn.classList.add('other');
+      var dow = cell.date.getDay();
+      if(dow === 0 || dow === 6) btn.classList.add('weekend');
+      var iso = isoDate(cell.date);
+      if(iso === todayIso) btn.classList.add('today');
+      if(selectedDate === iso) btn.classList.add('selected');
+
+      var numEl = document.createElement('span');
+      numEl.textContent = cell.day;
+      btn.appendChild(numEl);
+
+      var hols = getHolidaysFor(cell.date);
+      var dayTasks = [];
+      for(var ti=0; ti<tasks.length; ti++){
+        if(tasks[ti].date === iso) dayTasks.push(tasks[ti]);
+      }
+      if(hols.length || dayTasks.length){
+        var dots = document.createElement('div');
+        dots.className = 'dots';
+        if(hols.length){
+          var d1 = document.createElement('span');
+          d1.className = 'dot dot-holiday';
+          dots.appendChild(d1);
+        }
+        if(dayTasks.length){
+          var d2 = document.createElement('span');
+          d2.className = 'dot dot-task';
+          dots.appendChild(d2);
+        }
+        btn.appendChild(dots);
+      }
+
+      btn.addEventListener('click', function(){
+        selectedDate = iso;
+        renderGrid();
+        renderDayDetail();
+      });
+      elDaysGrid.appendChild(btn);
+    })(cells[c]);
+  }
+}
+
+/* ---------- Детали дня ---------- */
+function renderDayDetail(){
+  if(!elDayDetail) return;
+  if(!selectedDate){ elDayDetail.innerHTML = ''; return; }
+
+  var d = parseISO(selectedDate);
+  var hols = getHolidaysFor(d);
+  var dayTasks = [];
+  for(var i=0; i<tasks.length; i++){
+    if(tasks[i].date === selectedDate) dayTasks.push(tasks[i]);
+  }
+
+  var dow = WEEKDAYS_FULL[d.getDay()];
+  var html = '<div class="detail-card"><h3>' + d.getDate() + ' ' + MONTHS_GEN[d.getMonth()] + '</h3>';
+  html += '<div class="detail-date">' + dow.charAt(0).toUpperCase() + dow.slice(1) + ', ' + d.getFullYear() + '</div>';
+
+  html += '<div class="section-label">Праздники</div>';
+  if(hols.length){
+    for(var h=0; h<hols.length; h++){
+      var hh = hols[h];
+      html += '<div class="holiday-item">';
+      html += '<div class="h-ico"><span class="material-symbols-rounded">' +
+              (hh.t === 'official' ? 'celebration' : 'event') + '</span></div>';
+      html += '<div>' + escapeHtml(hh.n) + '</div></div>';
+    }
+  } else {
+    html += '<div class="empty-note">Праздников нет</div>';
+  }
+
+  html += '<div class="section-label">Задачи</div>';
+  if(dayTasks.length){
+    for(var j=0; j<dayTasks.length; j++){
+      var t = dayTasks[j];
+      html += '<div class="task-row ' + (t.done ? 'done' : '') + '">';
+      html += '<div class="t-check" data-check="' + t.id + '">' +
+              (t.done ? '<span class="material-symbols-rounded">check</span>' : '') + '</div>';
+      html += '<div class="t-body" data-open="' + t.id + '">' +
+              '<div class="t-title">' + escapeHtml(t.title) + '</div>' +
+              (t.time ? '<div class="t-time">' + t.time + '</div>' : '') +
+              '</div>';
+      html += '<button class="menu-btn" data-menu="' + t.id + '">' +
+              '<span class="material-symbols-rounded">more_vert</span></button>';
+      html += '</div>';
+    }
+  } else {
+    html += '<div class="empty-note">Задач на этот день нет</div>';
+  }
+
+  html += '<button class="add-task-btn" id="addForDay">' +
+          '<span class="material-symbols-rounded">add</span> Добавить задачу на этот день' +
+          '</button></div>';
+  elDayDetail.innerHTML = html;
+
+  var addBtn = $('addForDay');
+  if(addBtn) addBtn.addEventListener('click', function(){ openTaskEditor(null, selectedDate); });
+
+  var checks = elDayDetail.querySelectorAll('[data-check]');
+  for(var k=0; k<checks.length; k++){
+    (function(elc){ elc.addEventListener('click', function(){ toggleDone(elc.getAttribute('data-check')); }); })(checks[k]);
+  }
+  var opens = elDayDetail.querySelectorAll('[data-open]');
+  for(var m=0; m<opens.length; m++){
+    (function(elo){ elo.addEventListener('click', function(){ openTaskViewer(elo.getAttribute('data-open')); }); })(opens[m]);
+  }
+  var menus = elDayDetail.querySelectorAll('[data-menu]');
+  for(var n=0; n<menus.length; n++){
+    (function(elm){
+      elm.addEventListener('click', function(e){
+        e.stopPropagation();
+        openCtxMenu(e, elm.getAttribute('data-menu'));
+      });
+    })(menus[n]);
+  }
+}
+
+/* ---------- Полный рендер календаря ---------- */
+function renderCalendar(){
+  if(elMonth) elMonth.textContent = MONTHS[viewMonth];
+  if(elYear) elYear.textContent = viewYear;
+  renderPhoto();
+  renderGrid();
+  renderDayDetail();
+}
+
+/* ---------- Сортировка задач ---------- */
+function sortTasks(arr){
+  var a = arr.slice();
+  var prioRank = {high:3, mid:2, low:1};
+  switch(sortMode){
+    case 'date-asc': return a.sort(function(x,y){ return (x.date||'').localeCompare(y.date||'') || (x.time||'').localeCompare(y.time||''); });
+    case 'date-desc': return a.sort(function(x,y){ return (y.date||'').localeCompare(x.date||'') || (y.time||'').localeCompare(x.time||''); });
+    case 'created-desc': return a.sort(function(x,y){ return (y.created||0)-(x.created||0); });
+    case 'created-asc': return a.sort(function(x,y){ return (x.created||0)-(y.created||0); });
+    case 'title-asc': return a.sort(function(x,y){ return x.title.localeCompare(y.title,'ru'); });
+    case 'title-desc': return a.sort(function(x,y){ return y.title.localeCompare(x.title,'ru'); });
+    case 'prio-desc': return a.sort(function(x,y){ return (prioRank[y.prio]||0)-(prioRank[x.prio]||0); });
+    case 'done': return a.sort(function(x,y){ return Number(y.done)-Number(x.done); });
+    case 'undone': return a.sort(function(x,y){ return Number(x.done)-Number(y.done); });
+    default: return a;
+  }
+}
+
+function formatTaskDate(iso){
+  var d = parseISO(iso);
+  return d.getDate() + ' ' + MONTHS_GEN[d.getMonth()];
+}
+
+/* ---------- Список задач ---------- */
+function renderTasks(){
+  if(!elTasksList) return;
+  var sorted = sortTasks(tasks);
+  if(!sorted.length){
+    elTasksList.innerHTML =
+      '<div class="empty-state"><span class="material-symbols-rounded">task_alt</span>' +
+      '<p>Задач пока нет</p><p>Нажмите +, чтобы добавить</p></div>';
+    return;
+  }
+  elTasksList.innerHTML = '';
+  for(var i=0; i<sorted.length; i++){
+    (function(t){
+      var card = document.createElement('div');
+      card.className = 'task-card' + (selectedTaskIds[t.id] ? ' selected' : '');
+      card.setAttribute('data-id', t.id);
+
+      var prioLabel = {high:'Высокий', mid:'Средний', low:'Низкий'}[t.prio] || '';
+      var prioClass = {high:'prio-high', mid:'prio-mid', low:''}[t.prio] || '';
+
+      var metaHtml = '';
+      if(t.date) metaHtml += '<span class="tc-chip">' + formatTaskDate(t.date) + (t.time ? ' ' + t.time : '') + '</span>';
+      if(prioLabel) metaHtml += '<span class="tc-chip ' + prioClass + '">' + prioLabel + '</span>';
+      if(t.done) metaHtml += '<span class="tc-chip">Выполнено</span>';
+
+      card.innerHTML =
+        '<div class="tc-main">' +
+          '<div class="tc-title ' + (t.done?'done':'') + '">' + escapeHtml(t.title) + '</div>' +
+          '<div class="tc-meta">' + metaHtml + '</div>' +
+        '</div>' +
+        '<button class="menu-btn" data-menu="' + t.id + '">' +
+          '<span class="material-symbols-rounded">more_vert</span>' +
+        '</button>';
+
+      card.querySelector('.tc-main').addEventListener('click', function(){
+        if(selectionMode) toggleTaskSelection(t.id);
+        else openTaskViewer(t.id);
+      });
+
+      card.querySelector('[data-menu]').addEventListener('click', function(e){
+        e.stopPropagation();
+        openCtxMenu(e, t.id);
+      });
+
+      var pressTimer = null;
+      card.addEventListener('touchstart', function(){
+        pressTimer = setTimeout(function(){
+          if(!selectionMode) enterSelectionMode(t.id);
+          else toggleTaskSelection(t.id);
+          pressTimer = null;
+        }, 500);
+      }, {passive:true});
+      card.addEventListener('touchend', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; } });
+      card.addEventListener('touchmove', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; } });
+      card.addEventListener('contextmenu', function(e){
+        e.preventDefault();
+        if(!selectionMode) enterSelectionMode(t.id);
+        else toggleTaskSelection(t.id);
+      });
+
+      elTasksList.appendChild(card);
+    })(sorted[i]);
+  }
+}
+
+/* ---------- Режим выбора ---------- */
+function enterSelectionMode(firstId){
+  selectionMode = true;
+  if(firstId) selectedTaskIds[firstId] = true;
+  elSelToolbar.classList.add('show');
+  elFabAdd.classList.add('hidden');
+  renderTasks();
+}
+function exitSelectionMode(){
+  selectionMode = false;
+  selectedTaskIds = {};
+  elSelToolbar.classList.remove('show');
+  if(currentScreen === 'tasks') elFabAdd.classList.remove('hidden');
+  renderTasks();
+}
+function toggleTaskSelection(id){
+  if(selectedTaskIds[id]) delete selectedTaskIds[id];
+  else selectedTaskIds[id] = true;
+  var count = Object.keys(selectedTaskIds).length;
+  if(count === 0) exitSelectionMode();
+  else renderTasks();
+}
+
+/* ---------- Контекстное меню ---------- */
+function openCtxMenu(evt, taskId){
+  ctxTaskId = taskId;
+  elCtxMenu.innerHTML =
+    '<button data-act="view"><span class="material-symbols-rounded">visibility</span>Смотреть</button>' +
+    '<button data-act="select"><span class="material-symbols-rounded">check_circle</span>Выбрать</button>' +
+    '<button data-act="edit"><span class="material-symbols-rounded">edit</span>Изменить</button>' +
+    '<button class="danger" data-act="delete"><span class="material-symbols-rounded">delete</span>Удалить</button>';
+
+  var target = evt.currentTarget || evt.target;
+  var rect = target.getBoundingClientRect();
+  elCtxMenu.style.display = 'block';
+  var mw = elCtxMenu.offsetWidth, mh = elCtxMenu.offsetHeight;
+  var left = rect.right - mw;
+  var top = rect.bottom + 6;
+  if(left < 8) left = 8;
+  if(top + mh > window.innerHeight - 8) top = rect.top - mh - 6;
+  elCtxMenu.style.left = left + 'px';
+  elCtxMenu.style.top = top + 'px';
+
+  var btns = elCtxMenu.querySelectorAll('button');
+  for(var i=0; i<btns.length; i++){
+    (function(b){
+      b.addEventListener('click', function(){
+        var act = b.getAttribute('data-act');
+        var id = ctxTaskId;
+        closeCtxMenu();
+        if(act === 'view') openTaskViewer(id);
+        else if(act === 'select') enterSelectionMode(id);
+        else if(act === 'edit') openTaskEditor(id);
+        else if(act === 'delete'){
+          if(confirm('Удалить задачу?')){
+            var newTasks = [];
+            for(var k=0; k<tasks.length; k++) if(tasks[k].id !== id) newTasks.push(tasks[k]);
+            tasks = newTasks;
+            saveTasks(); renderTasks(); renderCalendar(); toast('Задача удалена');
+          }
+        }
+      });
+    })(btns[i]);
+  }
+}
+function closeCtxMenu(){
+  elCtxMenu.style.display = 'none';
+  ctxTaskId = null;
+}
+
+/* ---------- Шторка ---------- */
+function openSheet(html){
+  elSheetContent.innerHTML = html;
+  elScrim.classList.add('show');
+  elSheet.classList.add('show');
+}
+function closeSheet(){
+  elScrim.classList.remove('show');
+  elSheet.classList.remove('show');
+}
+
+/* ---------- Редактор задачи ---------- */
+function openTaskEditor(taskId, presetDate){
+  var isEdit = !!taskId;
+  var t = null;
+  if(isEdit){
+    for(var i=0; i<tasks.length; i++) if(tasks[i].id === taskId){ t = tasks[i]; break; }
+  }
+  if(!t){
+    t = {title:'', desc:'', date: presetDate || isoDate(new Date()), time:'', prio:'mid', done:false};
+  }
+
+  openSheet(
+    '<h2>' + (isEdit ? 'Изменить задачу' : 'Новая задача') + '</h2>' +
+    '<div class="field"><label>Название</label>' +
+      '<input id="fTitle" type="text" value="' + escapeHtml(t.title) + '" placeholder="Что нужно сделать?"></div>' +
+    '<div class="field"><label>Описание</label>' +
+      '<textarea id="fDesc" placeholder="Детали (необязательно)">' + escapeHtml(t.desc||'') + '</textarea></div>' +
+    '<div class="row2">' +
+      '<div class="field"><label>Дата</label><input id="fDate" type="date" value="' + (t.date||'') + '"></div>' +
+      '<div class="field"><label>Время</label><input id="fTime" type="time" value="' + (t.time||'') + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Важность</label>' +
+      '<select id="fPrio">' +
+        '<option value="low" ' + (t.prio==='low'?'selected':'') + '>Низкая</option>' +
+        '<option value="mid" ' + (t.prio==='mid'?'selected':'') + '>Средняя</option>' +
+        '<option value="high" ' + (t.prio==='high'?'selected':'') + '>Высокая</option>' +
+      '</select></div>' +
+    '<div class="sheet-actions">' +
+      '<button class="btn btn-text" id="fCancel">Отмена</button>' +
+      '<button class="btn btn-filled" id="fSave">' + (isEdit ? 'Сохранить' : 'Добавить') + '</button>' +
+    '</div>'
+  );
+
+  $('fCancel').addEventListener('click', closeSheet);
+  $('fSave').addEventListener('click', function(){
+    var title = $('fTitle').value.trim();
+    if(!title){ toast('Введите название'); return; }
+    var data = {
+      title: title,
+      desc: $('fDesc').value.trim(),
+      date: $('fDate').value,
+      time: $('fTime').value,
+      prio: $('fPrio').value
+    };
+    if(isEdit){
+      for(var k in data) t[k] = data[k];
+      toast('Задача обновлена');
+    } else {
+      data.id = uid();
+      data.done = false;
+      data.created = Date.now();
+      tasks.push(data);
+      toast('Задача добавлена');
+    }
+    saveTasks(); renderTasks(); renderCalendar(); closeSheet();
+  });
+}
+
+/* ---------- Просмотр задачи ---------- */
+function openTaskViewer(taskId){
+  var t = null;
+  for(var i=0; i<tasks.length; i++) if(tasks[i].id === taskId){ t = tasks[i]; break; }
+  if(!t) return;
+
+  var prioLabel = {high:'Высокая', mid:'Средняя', low:'Низкая'}[t.prio] || '—';
+  var d = t.date ? parseISO(t.date) : null;
+  var dateStr = d ? (d.getDate() + ' ' + MONTHS_GEN[d.getMonth()] + ' ' + d.getFullYear()) : '—';
+
+  openSheet(
+    '<h2>' + escapeHtml(t.title) + '</h2>' +
+    (t.desc ? '<p style="color:var(--md-on-surface-variant);font-size:14px;margin-top:-6px;margin-bottom:16px;line-height:1.5">' + escapeHtml(t.desc) + '</p>' : '') +
+    '<div class="pref-card" style="margin-bottom:14px">' +
+      '<div class="pref-item" style="cursor:default">' +
+        '<div class="p-ico"><span class="material-symbols-rounded">event</span></div>' +
+        '<div class="p-body"><div class="p-title">Дата</div>' +
+          '<div class="p-summary">' + dateStr + (t.time ? ' • ' + t.time : '') + '</div></div></div>' +
+      '<div class="pref-item" style="cursor:default">' +
+        '<div class="p-ico"><span class="material-symbols-rounded">flag</span></div>' +
+        '<div class="p-body"><div class="p-title">Важность</div>' +
+          '<div class="p-summary">' + prioLabel + '</div></div></div>' +
+      '<div class="pref-item" style="cursor:default">' +
+        '<div class="p-ico"><span class="material-symbols-rounded">' +
+          (t.done ? 'check_circle' : 'radio_button_unchecked') + '</span></div>' +
+        '<div class="p-body"><div class="p-title">Статус</div>' +
+          '<div class="p-summary">' + (t.done ? 'Выполнено' : 'Не выполнено') + '</div></div></div>' +
+    '</div>' +
+    '<div class="sheet-actions">' +
+      '<button class="btn btn-tonal" id="vToggle">' + (t.done ? 'Вернуть' : 'Выполнить') + '</button>' +
+      '<button class="btn btn-filled" id="vEdit">Изменить</button>' +
+    '</div>' +
+    '<div style="margin-top:10px">' +
+      '<button class="btn btn-text" style="width:100%;color:var(--md-error)" id="vDelete">Удалить</button>' +
+    '</div>'
+  );
+
+  $('vToggle').addEventListener('click', function(){ toggleDone(taskId); closeSheet(); });
+  $('vEdit').addEventListener('click', function(){ closeSheet(); openTaskEditor(taskId); });
+  $('vDelete').addEventListener('click', function(){
+    if(confirm('Удалить задачу?')){
+      var newTasks = [];
+      for(var k=0; k<tasks.length; k++) if(tasks[k].id !== taskId) newTasks.push(tasks[k]);
+      tasks = newTasks;
+      saveTasks(); renderTasks(); renderCalendar(); closeSheet(); toast('Задача удалена');
+    }
+  });
+}
+
+/* ---------- Переключение выполнения ---------- */
+function toggleDone(id){
+  for(var i=0; i<tasks.length; i++){
+    if(tasks[i].id === id){ tasks[i].done = !tasks[i].done; break; }
+  }
+  saveTasks(); renderTasks(); renderCalendar();
+}
+
+/* ---------- Тост ---------- */
+var toastTimer = null;
+function toast(msg){
+  if(!elToast) return;
+  elToast.textContent = msg;
+  elToast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ elToast.classList.remove('show'); }, 2200);
+}
+
+/* ---------- Навигация ---------- */
+var screenTitles = {calendar:'Календарь', tasks:'Задачи', settings:'Настройки'};
+function switchScreen(name){
+  currentScreen = name;
+  var scr = document.querySelectorAll('.screen');
+  for(var i=0; i<scr.length; i++) scr[i].classList.remove('active');
+  var target = $('screen-' + name);
+  if(target) target.classList.add('active');
+
+  var nav = document.querySelectorAll('.navitem');
+  for(var j=0; j<nav.length; j++){
+    nav[j].classList.toggle('active', nav[j].getAttribute('data-screen') === name);
+  }
+  elAppbarTitle.textContent = screenTitles[name] || '';
+  elFabAdd.classList.toggle('hidden', name !== 'tasks');
+  if(name !== 'tasks') exitSelectionMode();
+  if(name === 'tasks') renderTasks();
+  if(name === 'calendar') renderCalendar();
+  closeCtxMenu();
+}
+
+/* ---------- ИНИЦИАЛИЗАЦИЯ ---------- */
+function init(){
+  // Кэширование DOM
+  elMonth = $('calMonth');
+  elYear = $('calYear');
+  elDaysGrid = $('daysGrid');
+  elDayDetail = $('dayDetail');
+  elPhotoWrap = $('photoWrap');
+  elTasksList = $('tasksList');
+  elSelToolbar = $('selToolbar');
+  elCtxMenu = $('ctxMenu');
+  elScrim = $('scrim');
+  elSheet = $('sheet');
+  elSheetContent = $('sheetContent');
+  elToast = $('toast');
+  elFabAdd = $('fabAdd');
+  elSortSelect = $('sortSelect');
+  elAppbarTitle = $('appbarTitle');
+
+  // Загрузка данных
+  tasks = loadTasks();
+  applyTheme();
+  renderCalendar();
+  renderTasks();
+  switchScreen('calendar');
+
+  // Навигация
+  var nav = document.querySelectorAll('.navitem');
+  for(var i=0; i<nav.length; i++){
+    (function(b){
+      b.addEventListener('click', function(){ switchScreen(b.getAttribute('data-screen')); });
+    })(nav[i]);
+  }
+
+  // Кнопки месяца
+  $('prevMonth').addEventListener('click', function(){
+    viewMonth--;
+    if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+    selectedDate = null;
+    renderCalendar();
+  });
+  $('nextMonth').addEventListener('click', function(){
+    viewMonth++;
+    if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+    selectedDate = null;
+    renderCalendar();
+  });
+
+  // Тема
+  $('themeSeg').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-theme]');
+    if(!btn) return;
+    theme = btn.getAttribute('data-theme');
+    applyTheme();
+    toast(theme === 'dark' ? 'Тёмная тема' : 'Светлая тема');
+  });
+
+  // Сортировка
+  elSortSelect.addEventListener('change', function(e){
+    sortMode = e.target.value;
+    renderTasks();
+  });
+
+  // FAB
+  elFabAdd.addEventListener('click', function(){
+    openTaskEditor(null, selectedDate || isoDate(new Date()));
+  });
+
+  // Панель выбора
+  $('selCancel').addEventListener('click', exitSelectionMode);
+  $('selAll').addEventListener('click', function(){
+    for(var k=0; k<tasks.length; k++) selectedTaskIds[tasks[k].id] = true;
+    renderTasks();
+  });
+  $('selDelete').addEventListener('click', function(){
+    var count = Object.keys(selectedTaskIds).length;
+    if(!count) return;
+    var newTasks = [];
+    for(var k=0; k<tasks.length; k++){
+      if(!selectedTaskIds[tasks[k].id]) newTasks.push(tasks[k]);
+    }
+    tasks = newTasks;
+    saveTasks(); exitSelectionMode(); renderTasks(); renderCalendar();
+    toast('Удалено задач: ' + count);
+  });
+
+  // Закрытие шторки
+  elScrim.addEventListener('click', closeSheet);
+
+  // Глобальные клики
+  document.addEventListener('click', function(e){
+    if(elCtxMenu && !elCtxMenu.contains(e.target) && !e.target.closest('[data-menu]')){
+      closeCtxMenu();
+    }
+  });
+  window.addEventListener('scroll', closeCtxMenu, true);
+}
+
+/* ---------- Запуск ---------- */
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
