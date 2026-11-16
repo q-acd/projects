@@ -3,5 +3,7 @@
   "latest_version_code": 42,
   "force_update": false,
   "release_notes": "Добавлены новые настройки, исправлена иконка",
-  "update_url": "https://appteka.store/app/758r339728"
+  "update_url": "https://appteka.store/app/758r339728",
+  "appteka_url": "https://appteka.store/app/758r339728", 
+  "rustore_url": "https://www.rustore.ru/catalog/app/acd.q.hellomusic"
 }
