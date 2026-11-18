@@ -1,0 +1,145 @@
+{
+  "profile": {
+    "name": "Quantum ACD",
+    "icon": "💊",
+    "joined": "Nov 2026",
+    "status": "Online",
+    "appteka": "https://appteka.store/profile/598037",
+    "github": "https://github.com/q-acd",
+    "channel": "https://max.ru/channel_qacd"
+  },
+  "projects": [
+    {
+      "title": "HelloMusic License",
+      "desc": "Текст лицензии проекта HelloMusic.",
+      "url": "/projects/license/HelloMusic/",
+      "status": "stable",
+      "tags": ["license", "legal"],
+      "category": "License",
+      "rating": null,
+      "downloads": null,
+      "size": null,
+      "source": "github"
+    },
+    {
+      "title": "25 фактов о России",
+      "desc": "Интерактивная презентация с анимациями на ванильном JS. Пролистывание, случайный факт, свайпы.",
+      "url": "/projects/factsRu/",
+      "status": "beta",
+      "tags": ["html", "css", "js", "presentation"],
+      "category": "Presentation",
+      "rating": null,
+      "downloads": null,
+      "size": null,
+      "source": "github"
+    },
+    {
+      "title": "RUMS",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["mod", "game"],
+      "category": "Games",
+      "rating": "5.0",
+      "downloads": 2,
+      "size": "8.25 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "Igroman",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["game"],
+      "category": "Games",
+      "rating": "5.0",
+      "downloads": 18,
+      "size": "11.72 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "Календарь",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["tool", "calendar"],
+      "category": "Tools",
+      "rating": "5.0",
+      "downloads": 15,
+      "size": "8.34 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "HelloMusic",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["music", "audio"],
+      "category": "Music",
+      "rating": "5.0",
+      "downloads": 3,
+      "size": "6.49 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "HelloMusic (v2)",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["music", "audio"],
+      "category": "Music",
+      "rating": "5.0",
+      "downloads": 15,
+      "size": "6.29 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "QNotes",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["tool", "notes"],
+      "category": "Tools",
+      "rating": "5.0",
+      "downloads": 13,
+      "size": "8.32 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "Tap&Tap – Кликер",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["game", "clicker"],
+      "category": "Games",
+      "rating": "5.0",
+      "downloads": 1,
+      "size": "8.1 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "Material Utils",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["tool", "material"],
+      "category": "Tools",
+      "rating": "5.0",
+      "downloads": 8,
+      "size": "8.48 MB",
+      "source": "appteka"
+    },
+    {
+      "title": "HelloMusic (v3)",
+      "desc": "<!-- ОПИСАНИЕ С GITHUB -->",
+      "url": "https://github.com/q-acd",
+      "status": "stable",
+      "tags": ["music", "audio"],
+      "category": "Music",
+      "rating": "5.0",
+      "downloads": 38,
+      "size": "6.37 MB",
+      "source": "appteka"
+    }
+  ]
+    }
