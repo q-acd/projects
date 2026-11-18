@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Projects · q-acd</title>
-<meta name="description" content="Хаб проектов q-acd: лицензии, презентации, эксперименты.">
-<meta property="og:title" content="Projects · q-acd">
-<meta property="og:description" content="Хаб проектов q-acd.">
+<title>Quantum ACD · Projects</title>
+<meta name="description" content="Хаб проектов Quantum ACD: приложения, лицензии, презентации и эксперименты.">
+<meta property="og:title" content="Quantum ACD · Projects">
+<meta property="og:description" content="Хаб проектов Quantum ACD.">
 <meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,6 +21,7 @@
     --accent: #7aa5ff;
     --accent2: #c5b4ff;
     --radius: 18px;
+    --shadow: 0 22px 45px -25px rgba(0,0,0,0.8);
   }
 
   html[data-theme="light"] {
@@ -28,6 +30,7 @@
     --border: rgba(10, 20, 40, 0.08);
     --text: #0f1a2e;
     --muted: #5b6b85;
+    --shadow: 0 22px 45px -30px rgba(10,20,40,0.25);
   }
 
   html, body { min-height: 100%; }
@@ -42,7 +45,7 @@
     position: relative;
   }
 
-  /* ─── Живой фон: плавающие орбы ───────────────────────────── */
+  /* ─── Живой фон ───────────────────────────────────────────── */
   .orb {
     position: fixed;
     border-radius: 50%;
@@ -73,34 +76,60 @@
     animation-delay: -12s;
   }
 
-  @keyframes floatA {
-    0%   { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(6vmax, 5vmax) scale(1.12); }
-  }
-  @keyframes floatB {
-    0%   { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(-7vmax, -4vmax) scale(1.08); }
-  }
-  @keyframes floatC {
-    0%   { transform: translate(-50%, -50%) scale(1); }
-    100% { transform: translate(-42%, -58%) scale(1.2); }
-  }
+  @keyframes floatA { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(6vmax,5vmax) scale(1.12); } }
+  @keyframes floatB { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-7vmax,-4vmax) scale(1.08); } }
+  @keyframes floatC { 0% { transform: translate(-50%,-50%) scale(1); } 100% { transform: translate(-42%,-58%) scale(1.2); } }
 
   /* ─── Контейнер ───────────────────────────────────────────── */
-  .wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
 
   header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.2rem;
     flex-wrap: wrap;
     margin-bottom: 1.6rem;
     animation: fadeDown 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
   }
 
+  .profile { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+  /* ─── Логотип профиля (картинка с Appteka) ────────────────── */
+  .avatar {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 24px rgba(122,165,255,0.35);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+  }
+  .avatar::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    opacity: 0.4;
+    animation: pulse 2.5s infinite;
+    pointer-events: none;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.1); opacity: 0.1; }
+  }
+
   h1 {
-    font-size: clamp(1.7rem, 5vw, 2.6rem);
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
     font-weight: 700;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, var(--text) 20%, var(--accent) 65%, var(--accent2) 100%);
@@ -111,9 +140,19 @@
 
   .subtitle { color: var(--muted); margin-top: 0.35rem; font-size: 0.95rem; }
 
+  .meta-row {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .meta-row span { display: flex; align-items: center; gap: 0.3rem; }
+
   .counter-badge {
     display: inline-block;
-    margin-top: 0.7rem;
+    margin-top: 0.6rem;
     padding: 0.22rem 0.9rem;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.06);
@@ -125,6 +164,29 @@
     font-weight: 500;
   }
   .counter-badge b { color: var(--text); font-weight: 700; }
+
+  .header-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+
+  .profile-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .profile-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .profile-links a:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
 
   .theme-btn {
     width: 42px; height: 42px;
@@ -141,7 +203,7 @@
   }
   .theme-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
 
-  /* ─── Тулбар: поиск + фильтры ─────────────────────────────── */
+  /* ─── Тулбар ──────────────────────────────────────────────── */
   .toolbar {
     display: flex;
     gap: 0.6rem;
@@ -200,10 +262,10 @@
     color: var(--text);
   }
 
-  /* ─── Сетка карточек ──────────────────────────────────────── */
+  /* ─── Сетка ───────────────────────────────────────────────── */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
     gap: 1.1rem;
   }
 
@@ -239,13 +301,31 @@
   .card:hover {
     transform: translateY(-5px);
     border-color: rgba(122, 165, 255, 0.35);
-    box-shadow: 0 22px 45px -25px rgba(0,0,0,0.8);
+    box-shadow: var(--shadow);
   }
   .card:hover::after { opacity: 1; }
 
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
   .card h2 { font-size: 1.08rem; font-weight: 650; letter-spacing: -0.01em; line-height: 1.3; }
   .card p { color: var(--muted); font-size: 0.87rem; line-height: 1.55; flex: 1; }
+
+  .card-category {
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 0.15rem;
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .card-stats span { display: flex; align-items: center; gap: 0.25rem; }
 
   .badge {
     font-size: 0.65rem;
@@ -271,7 +351,7 @@
   }
   .card:hover .card-arrow { color: var(--accent); gap: 0.6rem; }
 
-  /* ─── Empty state ─────────────────────────────────────────── */
+  /* ─── Empty ───────────────────────────────────────────────── */
   .empty {
     grid-column: 1 / -1;
     text-align: center;
@@ -310,6 +390,7 @@
     .card { padding: 1.15rem; }
     .card h2 { font-size: 1rem; }
     .toolbar { gap: 0.5rem; }
+    .avatar { width: 56px; height: 56px; }
   }
 </style>
 </head>
@@ -323,12 +404,22 @@
 <div class="wrap">
 
   <header>
-    <div>
-      <h1>Projects</h1>
-      <p class="subtitle">Лицензии, презентации и эксперименты q-acd</p>
-      <span class="counter-badge" id="counter"><b>0</b> проектов</span>
+    <div class="profile">
+      <!-- Логотип: картинка с Appteka -->
+      <div class="avatar" id="profileAvatar">
+        <img id="profileLogo" alt="Quantum ACD" src="">
+      </div>
+      <div>
+        <h1 id="profileName">Quantum ACD</h1>
+        <p class="subtitle">Приложения, лицензии, презентации и эксперименты</p>
+        <div class="meta-row" id="profileMeta"></div>
+        <span class="counter-badge" id="counter"><b>0</b> проектов</span>
+      </div>
     </div>
-    <button class="theme-btn" id="themeBtn" title="Сменить тему" aria-label="Сменить тему">🌙</button>
+    <div class="header-actions">
+      <div class="profile-links" id="profileLinks"></div>
+      <button class="theme-btn" id="themeBtn" title="Сменить тему" aria-label="Сменить тему">🌙</button>
+    </div>
   </header>
 
   <div class="toolbar">
@@ -349,35 +440,56 @@
   </main>
 
   <footer>
-    <span>q-acd · projects</span>
-    <span><a href="https://github.com/q-acd" target="_blank" rel="noopener">GitHub</a></span>
+    <span>Quantum ACD · projects</span>
+    <span><a href="https://github.com/q-acd" target="_blank" rel="noopener">GitHub</a> · <a href="https://appteka.store/profile/598037" target="_blank" rel="noopener">💊 Appteka</a></span>
   </footer>
 </div>
 
 <script>
-(function () {
-  // ─── Данные проектов ─────────────────────────────────────────
-  // Позже можно вынести в projects.json и заменить на:
-  // const projects = await fetch('projects.json').then(r => r.json());
-  const projects = [
-    {
-      title: "HelloMusic License",
-      desc: "Текст лицензии проекта HelloMusic.",
-      url: "/projects/license/HelloMusic/",
-      status: "stable",
-      tags: ["license", "legal"]
-    },
-    {
-      title: "25 фактов о России",
-      desc: "Интерактивная презентация с анимациями на ванильном JS. Пролистывание, случайный факт, свайпы.",
-      url: "/projects/factsRu/",
-      status: "beta",
-      tags: ["html", "css", "js", "presentation"]
-    }
-    // ↓ добавляйте новые записи сюда
-  ];
+(async function () {
+  // ─── Загрузка данных ────────────────────────────────────────
+  let data;
+  try {
+    data = await fetch('projects.json').then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  } catch (e) {
+    console.error('Не удалось загрузить projects.json:', e);
+    document.getElementById('grid').innerHTML =
+      '<div class="empty visible">Ошибка загрузки данных. Проверьте projects.json.</div>';
+    return;
+  }
 
-  // ─── DOM ─────────────────────────────────────────────────────
+  const profile = data.profile;
+  const projects = data.projects;
+
+  // ─── Профиль: логотип-картинка ──────────────────────────────
+  const logoImg = document.getElementById('profileLogo');
+  logoImg.src = profile.logo;
+  logoImg.onerror = () => {
+    // Фолбэк: если картинка не загрузилась — показываем таблетку
+    document.getElementById('profileAvatar').innerHTML = '💊';
+  };
+
+  document.getElementById('profileName').textContent = profile.name;
+
+  const meta = document.getElementById('profileMeta');
+  meta.innerHTML = `
+    <span>📅 Joined ${profile.joined}</span>
+    <span>🟢 ${profile.status}</span>
+    <span>📦 ${projects.length} проектов</span>
+  `;
+
+  // ─── Ссылки профиля: иконка-таблетка у Appteka ──────────────
+  const links = document.getElementById('profileLinks');
+  links.innerHTML = `
+    <a href="${profile.appteka}" target="_blank" rel="noopener">💊 Appteka</a>
+    <a href="${profile.github}" target="_blank" rel="noopener">🐙 GitHub</a>
+    <a href="${profile.channel}" target="_blank" rel="noopener">📢 Канал</a>
+  `;
+
+  // ─── DOM ────────────────────────────────────────────────────
   const grid    = document.getElementById('grid');
   const empty   = document.getElementById('empty');
   const search  = document.getElementById('search');
@@ -387,21 +499,21 @@
 
   const state = { query: "", filter: "all" };
 
-  // ─── Escape HTML ─────────────────────────────────────────────
+  // ─── Escape ─────────────────────────────────────────────────
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     }[c]));
   }
 
-  // ─── Рендер ──────────────────────────────────────────────────
+  // ─── Рендер ─────────────────────────────────────────────────
   function render() {
     const q = state.query.trim().toLowerCase();
     const f = state.filter;
 
     const list = projects.filter(p => {
       const matchFilter = (f === "all") || (p.status === f);
-      const haystack = (p.title + " " + p.desc + " " + p.tags.join(" ")).toLowerCase();
+      const haystack = (p.title + " " + p.desc + " " + p.tags.join(" ") + " " + p.category).toLowerCase();
       const matchQuery = !q || haystack.includes(q);
       return matchFilter && matchQuery;
     });
@@ -421,18 +533,29 @@
         card.style.setProperty('--my', (e.clientY - r.top) + 'px');
       });
 
+      const stats = [];
+      if (p.rating)    stats.push(`<span>⭐ ${escapeHtml(p.rating)}</span>`);
+      if (p.downloads != null) stats.push(`<span>⬇ ${p.downloads}</span>`);
+      if (p.size)      stats.push(`<span>💾 ${escapeHtml(p.size)}</span>`);
+
+      // Бейдж источника: таблетка для Appteka
+      const sourceBadge = p.source === 'appteka'
+        ? '<span class="badge appteka">💊 Appteka</span>'
+        : '';
+
       card.innerHTML = `
         <div class="card-top">
           <h2>${escapeHtml(p.title)}</h2>
           <span class="badge ${escapeHtml(p.status)}">${escapeHtml(p.status.toUpperCase())}</span>
         </div>
+        <div class="card-category">${escapeHtml(p.category)} ${sourceBadge}</div>
         <p>${escapeHtml(p.desc)}</p>
+        ${stats.length ? `<div class="card-stats">${stats.join('')}</div>` : ''}
         <div class="card-arrow">Открыть <span>→</span></div>
       `;
       grid.appendChild(card);
     });
 
-    // Счётчик — показываем «N проектов» (всего)
     const total = projects.length;
     const word = plural(total, "проект", "проекта", "проектов");
     counter.innerHTML = `<b>${total}</b> ${word}`;
@@ -445,7 +568,7 @@
     return many;
   }
 
-  // ─── Поиск с дебаунсом ───────────────────────────────────────
+  // ─── Поиск с дебаунсом ──────────────────────────────────────
   let t;
   search.addEventListener('input', (e) => {
     clearTimeout(t);
@@ -455,7 +578,7 @@
     }, 120);
   });
 
-  // ─── Фильтры ─────────────────────────────────────────────────
+  // ─── Фильтры ────────────────────────────────────────────────
   chips.addEventListener('click', (e) => {
     const btn = e.target.closest('.chip');
     if (!btn) return;
@@ -465,7 +588,7 @@
     render();
   });
 
-  // ─── Тема ────────────────────────────────────────────────────
+  // ─── Тема ───────────────────────────────────────────────────
   if (localStorage.getItem('theme') === 'light') {
     document.documentElement.dataset.theme = 'light';
     themeBtn.textContent = '☀️';
@@ -484,9 +607,19 @@
     }
   });
 
-  // ─── Старт ───────────────────────────────────────────────────
+  // ─── Старт ──────────────────────────────────────────────────
   render();
 })();
 </script>
+
+<!-- Стиль для бейджа Appteka -->
+<style>
+  .badge.appteka {
+    background: rgba(122, 165, 255, 0.14);
+    color: var(--accent);
+    border: 1px solid rgba(122,165,255,0.3);
+    margin-left: 0.4rem;
+  }
+</style>
 </body>
-       </html>
+ </html>
