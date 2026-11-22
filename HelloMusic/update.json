@@ -1,8 +1,8 @@
 {
-  "latest_version_name": "1.3 (16.11.2026) Build 045",
-  "latest_version_code": 45,
+  "latest_version_name": "1.4 (22.11.2026) Build 051",
+  "latest_version_code": 51,
   "force_update": false,
-  "release_notes": "Радио теперь на главной, а не в библиотеке, Изменен вид настроек и радио, Добавили виджет и эквалайзер (бета), Добавили уведомления об обновлениях",
+  "release_notes": "Добавлена лента музыки, исправлены баги с некоторыми стилями",
   "update_url": "https://appteka.store/app/c4ar340111",
   "appteka_url": "https://appteka.store/profile/598037", 
   "rustore_url": "https://www.rustore.ru/catalog/app/acd.q.hellomusic"
